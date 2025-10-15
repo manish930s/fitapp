@@ -585,9 +585,7 @@ async def get_measurements_history(limit: int = 30, current_user: dict = Depends
 # AI Fitness Coach Chatbot
 @app.post("/api/chat/fitness")
 async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depends(get_current_user)):
-    """
-    Chat with AI Fitness Coach using OpenRouter API
-    """
+    """Chat with AI Fitness Coach using OpenAI GPT-4o with multilingual support"""
     try:
         # Get user profile for context
         user = current_user
