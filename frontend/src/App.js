@@ -617,16 +617,31 @@ function App() {
 
       {/* AI Fitness Coach Chatbot */}
       <div className="chatbot-section">
-        <div className="chatbot-header" onClick={() => setShowChat(!showChat)}>
-          <div className="chatbot-title">
+        <div className="chatbot-header">
+          <div className="chatbot-title" onClick={() => setShowChat(!showChat)}>
             <span className="chatbot-icon">🤖</span>
             <h3>AI Fitness Coach</h3>
           </div>
-          <span className="chatbot-toggle">{showChat ? '▼' : '▲'}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button 
+              className="language-btn" 
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowLanguageModal(true);
+              }}
+              title="Select Language"
+            >
+              🌐
+            </button>
+            <span className="chatbot-toggle" onClick={() => setShowChat(!showChat)}>{showChat ? '▼' : '▲'}</span>
+          </div>
         </div>
         
         {showChat && (
           <div className="chatbot-content">
+            <div className="language-indicator" style={{ fontSize: '12px', color: '#888', padding: '8px', textAlign: 'center' }}>
+              Language: {chatLanguage.charAt(0).toUpperCase() + chatLanguage.slice(1)}
+            </div>
             <div className="chat-messages">
               {chatMessages.length === 0 ? (
                 <div className="chat-welcome">
@@ -674,6 +689,30 @@ function App() {
               >
                 ➤
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Language Modal */}
+        {showLanguageModal && (
+          <div className="modal-overlay" onClick={() => setShowLanguageModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>Select Language</h3>
+              <div className="language-options">
+                {['english', 'hindi', 'marathi', 'spanish', 'french', 'german', 'chinese', 'japanese'].map((lang) => (
+                  <button
+                    key={lang}
+                    className={`language-option ${chatLanguage === lang ? 'active' : ''}`}
+                    onClick={() => {
+                      setChatLanguage(lang);
+                      setShowLanguageModal(false);
+                    }}
+                  >
+                    {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <button className="modal-close" onClick={() => setShowLanguageModal(false)}>Close</button>
             </div>
           </div>
         )}
