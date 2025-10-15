@@ -627,47 +627,27 @@ Guidelines:
             messages.append({"role": "user", "content": chat_msg["user_message"]})
             messages.append({"role": "assistant", "content": chat_msg["assistant_message"]})
         
-        # Add current message
-        messages.append({"role": "user", "content": chat.message})
+        # Add language instruction to system message
+        language_instruction = ""
+        if chat.language and chat.language.lower() != "english":
+            language_instruction = f"\n\nIMPORTANT: Respond in {chat.language.upper()} language. Translate all your responses to {chat.language}."
+            messages[0]["content"] += language_instruction
         
-        # TEMPORARY MOCK FOR TESTING - OpenRouter API key appears to be invalid/expired
-        print("WARNING: Using mock AI fitness coach due to OpenRouter API authentication issues")
+        # Use session_id based on user_id for persistent chat history
+        session_id = f"fitness_coach_{user['user_id']}"
         
-        # Generate a mock response based on the user's message
-        user_message = chat.message.lower()
-        if "workout" in user_message or "exercise" in user_message:
-            if "weight loss" in user_message:
-                assistant_message = f"Great question! For weight loss, I recommend a combination of cardio and strength training. Based on your profile (Weight: {user.get('weight', 'N/A')} kg, Goal: {user.get('goal_weight', 'N/A')} kg), try: 1) 30 minutes of moderate cardio 4-5 times per week, 2) Full-body strength training 2-3 times per week, 3) High-intensity interval training (HIIT) 1-2 times per week. Remember to maintain a caloric deficit through proper nutrition!"
-            else:
-                assistant_message = "For general fitness, I recommend a balanced routine including cardio, strength training, and flexibility work. Aim for 150 minutes of moderate exercise per week as recommended by health guidelines."
-        elif "calorie" in user_message:
-            assistant_message = f"Based on your profile, your daily calorie target is around 2000-2500 calories (this varies based on your specific metrics). For weight loss, aim to burn an additional 300-500 calories through exercise while maintaining a balanced diet. This could be achieved through 45-60 minutes of moderate activity."
-        elif "diet" in user_message or "nutrition" in user_message:
-            assistant_message = "Focus on a balanced diet with lean proteins, complex carbohydrates, healthy fats, and plenty of vegetables. Aim for portion control and stay hydrated. Consider tracking your food intake to better understand your eating patterns."
-        else:
-            assistant_message = f"Hello! I'm your AI Fitness Coach. I'm here to help you with personalized fitness advice based on your profile. Feel free to ask me about workouts, nutrition, or any fitness-related questions. Based on your current stats, I can provide tailored recommendations to help you reach your goals!"
+        # Create chat instance with Emergent LLM Key
+        llm_chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message=messages[0]["content"]
+        ).with_model("openai", "gpt-4o")
         
-        # Original implementation (commented out due to API key issues):
-        """
-        # Call OpenRouter API
-        headers = {
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://fitflow.app",
-            "X-Title": "FitFlow"
-        }
+        # Create user message
+        user_msg = UserMessage(text=chat.message)
         
-        payload = {
-            "model": OPENROUTER_MODEL,
-            "messages": messages
-        }
-        
-        response = requests.post(OPENROUTER_URL, headers=headers, json=payload)
-        response.raise_for_status()
-        
-        result = response.json()
-        assistant_message = result["choices"][0]["message"]["content"]
-        """
+        # Send message and get response
+        assistant_message = await llm_chat.send_message(user_msg)
         
         # Save chat to history
         chat_history_collection.insert_one({
