@@ -354,12 +354,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Goals Management API"
-    - "Measurements Tracking API"
-    - "AI Fitness Coach Chatbot API"
     - "Profile Page"
     - "AI Fitness Coach Chatbot UI"
-  stuck_tasks: []
+  stuck_tasks: 
+    - "AI Fitness Coach Chatbot API"
+    - "Food Scanner - AI Image Analysis"
   test_all: false
   test_priority: "high_first"
 
