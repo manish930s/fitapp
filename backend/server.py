@@ -177,32 +177,17 @@ def calculate_daily_calories(weight: float, height: float, age: int, gender: str
 
 async def analyze_food_with_ai(image_base64: str) -> dict:
     """
-    Analyze food image using OpenRouter API with Google Gemma 3 27B
+    Analyze food image using OpenAI GPT-4o vision with Emergent LLM Key
     """
-    # TEMPORARY MOCK FOR TESTING - OpenRouter API key appears to be invalid/expired
-    # This should be replaced with actual API call once key is fixed
-    print("WARNING: Using mock food analysis due to OpenRouter API authentication issues")
-    
-    # Mock response for testing
-    return {
-        "food_name": "Mock Food Item",
-        "calories": 150.0,
-        "protein": 5.0,
-        "carbs": 30.0,
-        "fat": 2.0,
-        "portion_size": "1 serving"
-    }
-    
-    # Original implementation (commented out due to API key issues):
-    """
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://fitflow.app",
-        "X-Title": "FitFlow"
-    }
-    
-    prompt = '''Analyze this food image and provide ONLY a JSON response with the following structure:
+    try:
+        # Create chat instance with Emergent LLM Key
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"food_analysis_{uuid.uuid4()}",
+            system_message="You are a nutrition expert AI. Analyze food images and provide accurate nutritional information."
+        ).with_model("openai", "gpt-4o")
+        
+        prompt = '''Analyze this food image and provide ONLY a JSON response with the following structure:
 {
   "food_name": "name of the food",
   "calories": estimated total calories (number),
@@ -213,34 +198,21 @@ async def analyze_food_with_ai(image_base64: str) -> dict:
 }
 
 Provide realistic estimates based on the visible portion. Return ONLY valid JSON, no additional text.'''
-    
-    payload = {
-        "model": OPENROUTER_MODEL,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": prompt
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{image_base64}"
-                        }
-                    }
-                ]
-            }
-        ]
-    }
-    
-    try:
-        response = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=30)
-        response.raise_for_status()
         
-        result = response.json()
-        content = result['choices'][0]['message']['content']
+        # Create image content from base64
+        image_content = ImageContent(image_base64=image_base64)
+        
+        # Create user message with text and image
+        user_message = UserMessage(
+            text=prompt,
+            file_contents=[image_content]
+        )
+        
+        # Send message and get response
+        response = await chat.send_message(user_message)
+        
+        # Parse the JSON response
+        content = response.strip()
         
         # Try to extract JSON from the response
         # Sometimes the model wraps JSON in markdown code blocks
