@@ -48,7 +48,7 @@ JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
 # OpenRouter API Configuration
 OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-OPENROUTER_MODEL = "google/gemma-3-27b-it:free"
+OPENROUTER_MODEL = "meta-llama/llama-3.2-3b-instruct:free"
 
 security = HTTPBearer()
 
