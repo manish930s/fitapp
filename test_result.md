@@ -107,15 +107,18 @@ user_problem_statement: "Build a full-stack mobile and web fitness application (
 backend:
   - task: "User Registration and Login (JWT Auth)"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented JWT-based authentication with email/password. Registration endpoint creates user with bcrypt password hashing. Login endpoint verifies credentials and returns JWT token. Token expires in 7 days."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: Both registration and login endpoints working correctly. JWT tokens generated successfully. Password hashing with bcrypt verified. User creation and authentication flow complete."
   
   - task: "User Profile Management"
     implemented: true
