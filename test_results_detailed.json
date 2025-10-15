@@ -3,60 +3,78 @@
     "success": true,
     "message": "Service is healthy: FitFlow API",
     "details": null,
-    "timestamp": "2025-10-15T07:38:04.366441"
+    "timestamp": "2025-10-15T08:17:44.979659"
   },
   "User Registration": {
     "success": true,
-    "message": "User already exists (expected for repeated tests)",
+    "message": "User registered successfully. Daily calories: {'bmr': 1648.75, 'tdee': 2555.56, 'daily_target': 2055.56}",
     "details": null,
-    "timestamp": "2025-10-15T07:38:04.907994"
+    "timestamp": "2025-10-15T08:17:45.785966"
   },
   "User Login": {
     "success": true,
     "message": "Login successful, token received",
     "details": null,
-    "timestamp": "2025-10-15T07:38:05.942252"
+    "timestamp": "2025-10-15T08:17:46.551046"
   },
   "Get User Profile": {
     "success": true,
-    "message": "Profile retrieved. Daily target: 2047.81 calories",
+    "message": "Profile retrieved. Daily target: 2055.56 calories",
     "details": null,
-    "timestamp": "2025-10-15T07:38:06.481851"
+    "timestamp": "2025-10-15T08:17:47.103870"
   },
   "Update User Profile": {
     "success": true,
     "message": "Profile updated successfully",
     "details": null,
-    "timestamp": "2025-10-15T07:38:07.021434"
+    "timestamp": "2025-10-15T08:17:47.642033"
   },
   "AI Food Scan": {
-    "success": true,
-    "message": "Food analyzed: Unknown, Calories: 0.0, Portion: None",
+    "success": false,
+    "message": "Status: 500, Response: {\"detail\":\"500: Failed to analyze food image: 401 Client Error: Unauthorized for url: https://openrouter.ai/api/v1/chat/completions\"}",
     "details": null,
-    "timestamp": "2025-10-15T07:38:10.073019"
+    "timestamp": "2025-10-15T08:17:48.369326"
   },
   "Food History": {
     "success": true,
-    "message": "Retrieved 2 food scan records",
+    "message": "Retrieved 0 food scan records",
     "details": null,
-    "timestamp": "2025-10-15T07:38:10.645863"
+    "timestamp": "2025-10-15T08:17:48.911783"
   },
   "Today Food Summary": {
     "success": true,
-    "message": "Today's totals - Calories: 0.0, Meals: 2",
+    "message": "Today's totals - Calories: 0, Meals: 0",
     "details": null,
-    "timestamp": "2025-10-15T07:38:11.185628"
+    "timestamp": "2025-10-15T08:17:49.452723"
   },
   "Daily Stats": {
     "success": true,
     "message": "Stats updated and retrieved successfully",
     "details": null,
-    "timestamp": "2025-10-15T07:38:11.764793"
+    "timestamp": "2025-10-15T08:17:50.080667"
   },
   "Streak Calculation": {
     "success": true,
     "message": "Current streak: 1 days",
     "details": null,
-    "timestamp": "2025-10-15T07:38:12.304902"
+    "timestamp": "2025-10-15T08:17:50.624637"
+  },
+  "Goals Management": {
+    "success": true,
+    "message": "Goal created, retrieved, and updated successfully. Goal ID: a534d1dd-ff44-4d00-a632-f607ef5331c1",
+    "details": null,
+    "timestamp": "2025-10-15T08:17:51.265658"
+  },
+  "Measurements Tracking": {
+    "success": true,
+    "message": "Measurement added, latest retrieved, and history retrieved successfully. History count: 1",
+    "details": null,
+    "timestamp": "2025-10-15T08:17:51.920164"
+  },
+  "AI Fitness Coach - Chat": {
+    "success": false,
+    "message": "Chat failed - Status: 500, Response: {\"detail\":\"Chat error: 401 Client Error: Unauthorized for url: https://openrouter.ai/api/v1/chat/completions\"}",
+    "details": null,
+    "timestamp": "2025-10-15T08:17:52.619583"
   }
 }
