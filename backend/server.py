@@ -72,6 +72,7 @@ class UserProfile(BaseModel):
     weight: Optional[float] = None
     activity_level: Optional[str] = None
     goal_weight: Optional[float] = None
+    theme: Optional[str] = "system"  # system, dark, light
 
 class FoodScanResult(BaseModel):
     food_name: str
