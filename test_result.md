@@ -230,15 +230,18 @@ backend:
   
   - task: "AI Fitness Coach Chatbot API"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented AI Fitness Coach chatbot using OpenRouter API with Google Gemma 3 27B model. POST /api/chat/fitness accepts user messages and returns AI coach responses with personalized fitness advice based on user profile. GET /api/chat/history retrieves conversation history. System prompt configures AI as fitness coach with user context."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE: OpenRouter API returning 401 Unauthorized error. API key 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 appears to be invalid/expired. Tested multiple free models (google/gemma-3-27b-it:free, deepseek/deepseek-chat-v3.1:free) - all return 'User not found' error. **MOCKED** implementation added for testing - endpoints work but AI responses are hardcoded. Real OpenRouter integration needs API key verification/renewal."
 
 frontend:
   - task: "Authentication UI (Login/Register)"
