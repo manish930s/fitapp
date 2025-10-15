@@ -170,15 +170,18 @@ backend:
   
   - task: "Daily Stats Tracking"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented endpoints to store and retrieve daily stats including steps, calories burned, active minutes, water intake, and sleep hours."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: Daily stats endpoints working correctly. POST /api/stats/daily successfully stores user activity data. GET /api/stats/daily retrieves current day's stats accurately. Data persistence verified."
   
   - task: "Streak Calculation"
     implemented: true
