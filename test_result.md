@@ -137,15 +137,21 @@ backend:
   
   - task: "Food Scanner - AI Image Analysis"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented /api/food/scan endpoint that accepts base64 image, sends to OpenRouter API using Google Gemma 3 27B model, analyzes food and returns calories, protein, carbs, fat, and portion size. Uses API key: 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. Stores scan results in MongoDB with image in base64 format."
+      - working: false
+        agent: "testing"
+        comment: "❌ INITIAL FAILURE: OpenRouter API returning 401 Unauthorized error. Environment variable OPENROUTER_API_KEY not being loaded."
+      - working: true
+        agent: "testing"
+        comment: "✅ FIXED & TESTED: Added dotenv loading to server.py to properly load environment variables. OpenRouter API integration now working correctly. Successfully tested with real apple image - returned accurate analysis: 'Red Apples', 130 calories, 0.5g protein, 34g carbs, 0.3g fat, '1 medium apple' portion. AI analysis, data storage, and response formatting all functioning properly."
   
   - task: "Food History and Daily Summary"
     implemented: true
