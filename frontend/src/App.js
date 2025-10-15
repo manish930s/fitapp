@@ -117,6 +117,93 @@ function App() {
     }
   };
 
+  const fetchGoals = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/goals`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setGoals(data.goals);
+      }
+    } catch (err) {
+      console.error('Error fetching goals:', err);
+    }
+  };
+
+  const fetchMeasurements = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/measurements/latest`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMeasurements(data.measurement);
+      }
+    } catch (err) {
+      console.error('Error fetching measurements:', err);
+    }
+  };
+
+  const fetchChatHistory = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/chat/history`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setChatMessages(data.chats);
+      }
+    } catch (err) {
+      console.error('Error fetching chat history:', err);
+    }
+  };
+
+  const sendChatMessage = async () => {
+    if (!chatInput.trim()) return;
+    
+    const userMessage = chatInput.trim();
+    setChatInput('');
+    setIsChatLoading(true);
+    
+    // Add user message to chat
+    const tempUserMsg = {
+      user_message: userMessage,
+      assistant_message: '',
+      timestamp: new Date().toISOString()
+    };
+    setChatMessages(prev => [...prev, tempUserMsg]);
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/chat/fitness`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: userMessage })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Update the last message with assistant's response
+        setChatMessages(prev => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1] = {
+            user_message: userMessage,
+            assistant_message: data.message,
+            timestamp: data.timestamp
+          };
+          return newMessages;
+        });
+      }
+    } catch (err) {
+      console.error('Error sending chat message:', err);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
   const fetchFoodHistory = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/food/history?limit=10`, {
