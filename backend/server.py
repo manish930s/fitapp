@@ -102,6 +102,7 @@ class Measurement(BaseModel):
 
 class ChatMessage(BaseModel):
     message: str
+    language: Optional[str] = "english"  # Language for response (english, hindi, marathi, etc.)
 
 # Helper Functions
 def hash_password(password: str) -> str:
