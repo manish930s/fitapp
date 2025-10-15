@@ -13,6 +13,10 @@ import base64
 import requests
 import json
 from io import BytesIO
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = FastAPI()
 
