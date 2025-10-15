@@ -197,6 +197,42 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ TESTED: Streak calculation endpoint working correctly. GET /api/stats/streak returns accurate consecutive activity days count based on user's daily stats history."
+  
+  - task: "Goals Management API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented goals management endpoints: POST /api/goals (create goal), GET /api/goals (get user's goals), PUT /api/goals/{goal_id} (update goal progress). Goals support different types (weight_loss, muscle_gain) with progress tracking."
+  
+  - task: "Measurements Tracking API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented measurements endpoints: POST /api/measurements (add measurement), GET /api/measurements/latest (get latest measurement), GET /api/measurements/history (get measurement history). Tracks weight, body fat %, and BMI."
+  
+  - task: "AI Fitness Coach Chatbot API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented AI Fitness Coach chatbot using OpenRouter API with Google Gemma 3 27B model. POST /api/chat/fitness accepts user messages and returns AI coach responses with personalized fitness advice based on user profile. GET /api/chat/history retrieves conversation history. System prompt configures AI as fitness coach with user context."
 
 frontend:
   - task: "Authentication UI (Login/Register)"
