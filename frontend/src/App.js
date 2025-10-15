@@ -24,6 +24,17 @@ function App() {
   const [streak, setStreak] = useState(0);
   const [dailyCalories, setDailyCalories] = useState(null);
   
+  // Profile state
+  const [goals, setGoals] = useState([]);
+  const [measurements, setMeasurements] = useState(null);
+  const [notifications, setNotifications] = useState(true);
+  
+  // Chatbot state
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  
   // Camera refs
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
