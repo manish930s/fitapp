@@ -607,6 +607,70 @@ function App() {
           <p className="calorie-detail">BMR: {Math.round(dailyCalories.bmr)} | TDEE: {Math.round(dailyCalories.tdee)}</p>
         </div>
       )}
+
+      {/* AI Fitness Coach Chatbot */}
+      <div className="chatbot-section">
+        <div className="chatbot-header" onClick={() => setShowChat(!showChat)}>
+          <div className="chatbot-title">
+            <span className="chatbot-icon">🤖</span>
+            <h3>AI Fitness Coach</h3>
+          </div>
+          <span className="chatbot-toggle">{showChat ? '▼' : '▲'}</span>
+        </div>
+        
+        {showChat && (
+          <div className="chatbot-content">
+            <div className="chat-messages">
+              {chatMessages.length === 0 ? (
+                <div className="chat-welcome">
+                  <p>👋 Hi! I'm your AI Fitness Coach.</p>
+                  <p>Ask me about workouts, nutrition, or fitness goals!</p>
+                </div>
+              ) : (
+                chatMessages.map((msg, index) => (
+                  <div key={index} className="chat-message-group">
+                    <div className="chat-message user-message">
+                      <span className="message-icon">👤</span>
+                      <p>{msg.user_message}</p>
+                    </div>
+                    {msg.assistant_message && (
+                      <div className="chat-message assistant-message">
+                        <span className="message-icon">🤖</span>
+                        <p>{msg.assistant_message}</p>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+              {isChatLoading && (
+                <div className="chat-message assistant-message">
+                  <span className="message-icon">🤖</span>
+                  <p className="typing-indicator">Thinking...</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="chat-input-container">
+              <input
+                type="text"
+                className="chat-input"
+                placeholder="Ask your fitness coach..."
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+                disabled={isChatLoading}
+              />
+              <button 
+                className="chat-send-btn"
+                onClick={sendChatMessage}
+                disabled={isChatLoading || !chatInput.trim()}
+              >
+                ➤
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 
