@@ -51,6 +51,11 @@ function App() {
   useEffect(() => {
     if (currentPage === 'home' && token) {
       fetchDashboardData();
+      fetchChatHistory();
+    }
+    if (currentPage === 'profile' && token) {
+      fetchGoals();
+      fetchMeasurements();
     }
   }, [currentPage, token]);
 
