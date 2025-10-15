@@ -190,7 +190,10 @@ function App() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: userMessage })
+        body: JSON.stringify({ 
+          message: userMessage,
+          language: chatLanguage
+        })
       });
       
       if (response.ok) {
