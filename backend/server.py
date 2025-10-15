@@ -10,10 +10,9 @@ import jwt
 import bcrypt
 import uuid
 import base64
-import requests
 import json
-from io import BytesIO
 from dotenv import load_dotenv
+from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
 
 # Load environment variables from .env file
 load_dotenv()
@@ -45,10 +44,8 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production'
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
 
-# OpenRouter API Configuration
-OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-OPENROUTER_MODEL = "deepseek/deepseek-chat-v3.1:free"
+# OpenAI API Configuration (using Emergent LLM Key)
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 
 security = HTTPBearer()
 
