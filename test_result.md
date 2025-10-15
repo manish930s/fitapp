@@ -155,15 +155,18 @@ backend:
   
   - task: "Food History and Daily Summary"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented /api/food/history endpoint to retrieve recent scans and /api/food/today endpoint to get daily calorie totals and macro breakdown."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: Both endpoints working correctly. /api/food/history returns user's scan history with all nutritional data and images. /api/food/today provides accurate daily totals for calories, protein, carbs, fat, and meal count."
   
   - task: "Daily Stats Tracking"
     implemented: true
