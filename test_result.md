@@ -137,9 +137,9 @@ backend:
   
   - task: "Food Scanner - AI Image Analysis"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -152,6 +152,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ FIXED & TESTED: Added dotenv loading to server.py to properly load environment variables. OpenRouter API integration now working correctly. Successfully tested with real apple image - returned accurate analysis: 'Red Apples', 130 calories, 0.5g protein, 34g carbs, 0.3g fat, '1 medium apple' portion. AI analysis, data storage, and response formatting all functioning properly."
+      - working: false
+        agent: "testing"
+        comment: "❌ REGRESSION: OpenRouter API key now invalid/expired - returning 401 'User not found' error. Same issue affects both food scanning and AI fitness coach. **MOCKED** implementation added for testing - endpoint works but AI analysis is hardcoded. Real OpenRouter integration requires API key renewal/verification."
   
   - task: "Food History and Daily Summary"
     implemented: true
