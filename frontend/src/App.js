@@ -28,12 +28,16 @@ function App() {
   const [goals, setGoals] = useState([]);
   const [measurements, setMeasurements] = useState(null);
   const [notifications, setNotifications] = useState(true);
+  const [theme, setTheme] = useState(localStorage.getItem('fitflow_theme') || 'system');
+  const [showThemeModal, setShowThemeModal] = useState(false);
   
   // Chatbot state
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [chatLanguage, setChatLanguage] = useState('english');
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   
   // Camera refs
   const videoRef = useRef(null);
