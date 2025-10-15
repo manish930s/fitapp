@@ -966,9 +966,12 @@ function App() {
                 <span className="toggle-slider"></span>
               </label>
             </div>
-            <div className="settings-item">
+            <div className="settings-item" onClick={() => setShowThemeModal(true)}>
               <span>Theme</span>
-              <span className="settings-arrow">›</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: '#888', fontSize: '14px' }}>{theme}</span>
+                <span className="settings-arrow">›</span>
+              </div>
             </div>
             <div className="settings-item">
               <span>Units</span>
@@ -982,8 +985,33 @@ function App() {
         </div>
 
         <button className="btn-logout" onClick={handleLogout}>
-          <span className="logout-icon">🏠</span> Logout
+          <span className="logout-icon">🚪</span> Logout
         </button>
+
+        {/* Theme Modal */}
+        {showThemeModal && (
+          <div className="modal-overlay" onClick={() => setShowThemeModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>Select Theme</h3>
+              <div className="theme-options">
+                {['system', 'dark', 'light'].map((t) => (
+                  <button
+                    key={t}
+                    className={`theme-option ${theme === t ? 'active' : ''}`}
+                    onClick={() => {
+                      setTheme(t);
+                      localStorage.setItem('fitflow_theme', t);
+                      setShowThemeModal(false);
+                    }}
+                  >
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <button className="modal-close" onClick={() => setShowThemeModal(false)}>Close</button>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
