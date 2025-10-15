@@ -342,10 +342,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "User Registration and Login (JWT Auth)"
-    - "Food Scanner - AI Image Analysis"
-    - "User Profile Management"
-    - "Food History and Daily Summary"
+    - "Goals Management API"
+    - "Measurements Tracking API"
+    - "AI Fitness Coach Chatbot API"
+    - "Profile Page"
+    - "AI Fitness Coach Chatbot UI"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
