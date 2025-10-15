@@ -122,15 +122,18 @@ backend:
   
   - task: "User Profile Management"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented GET and PUT endpoints for user profile. Calculates daily calorie requirements using Mifflin-St Jeor equation based on weight, height, age, gender, activity level, and goal weight."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: Profile endpoints working correctly. GET /api/user/profile returns complete user data with accurate daily calorie calculations (BMR, TDEE, daily target). PUT /api/user/profile successfully updates user information. Mifflin-St Jeor equation implementation verified."
   
   - task: "Food Scanner - AI Image Analysis"
     implemented: true
