@@ -200,15 +200,18 @@ backend:
   
   - task: "Goals Management API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented goals management endpoints: POST /api/goals (create goal), GET /api/goals (get user's goals), PUT /api/goals/{goal_id} (update goal progress). Goals support different types (weight_loss, muscle_gain) with progress tracking."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: All goals management endpoints working correctly. POST /api/goals successfully creates goals with weight_loss type, target 65kg, current 70kg. GET /api/goals retrieves user's goals properly. PUT /api/goals/{goal_id} updates goal progress from 70kg to 68kg successfully. Goal ID generation and data persistence verified."
   
   - task: "Measurements Tracking API"
     implemented: true
