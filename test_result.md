@@ -300,12 +300,27 @@ frontend:
     working: "NA"
     file: "/app/frontend/src/App.js"
     stuck_count: 0
-    priority: "low"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented profile page displaying user information (name, email, age, gender, height, weight, goal weight, activity level)."
+      - working: "NA"
+        agent: "main"
+        comment: "REDESIGNED: Completely redesigned profile page to match user's design. Now includes: 1) Large profile avatar with green border, 2) My Goals section with progress bars for Weight Loss and Muscle Gain, 3) My Measurements grid showing Weight, Body Fat %, and BMI, 4) General settings with Notifications toggle, Theme, Units, and Privacy Policy options, 5) Logout button with red text. All styled with dark theme and green accents."
+  
+  - task: "AI Fitness Coach Chatbot UI"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented AI Fitness Coach chatbot integrated into home dashboard. Features: 1) Collapsible chat interface, 2) Welcome message explaining chatbot purpose, 3) Message history display with user/assistant messages, 4) Chat input with send button, 5) Loading state during AI responses, 6) Fetches chat history on page load. Uses OpenRouter API backend endpoint."
   
   - task: "Bottom Navigation"
     implemented: true
