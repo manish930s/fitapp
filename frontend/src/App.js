@@ -820,33 +820,102 @@ function App() {
   );
 
   // Render Profile Page
-  const renderProfile = () => (
-    <div className="profile-container">
-      <div className="page-header">
-        <h2>Profile</h2>
-        <button className="icon-btn" onClick={handleLogout}>⚙️</button>
-      </div>
+  const renderProfile = () => {
+    const defaultGoals = [
+      { goal_type: 'Weight Loss', current_progress: 75, target_value: 100, unit: '%' },
+      { goal_type: 'Muscle Gain', current_progress: 50, target_value: 100, unit: '%' }
+    ];
+    
+    const displayGoals = goals.length > 0 ? goals : defaultGoals;
+    
+    return (
+      <div className="profile-container">
+        <div className="profile-header">
+          <h2 className="profile-title">Profile</h2>
+          <button className="icon-btn settings-btn">⚙️</button>
+        </div>
 
-      <div className="profile-card">
-        <div className="profile-avatar">👤</div>
-        <h3>{user?.name}</h3>
-        <p>{user?.email}</p>
-      </div>
+        <div className="profile-user-card">
+          <div className="profile-avatar-large">👤</div>
+          <h3 className="profile-name">{user?.name || 'Jane Doe'}</h3>
+          <p className="profile-member">Member Since 2023</p>
+          <button className="btn-edit-profile">Edit Profile</button>
+        </div>
 
-      <div className="profile-stats">
-        {user?.age && <div className="profile-stat"><span>Age:</span> {user.age} years</div>}
-        {user?.gender && <div className="profile-stat"><span>Gender:</span> {user.gender}</div>}
-        {user?.height && <div className="profile-stat"><span>Height:</span> {user.height} cm</div>}
-        {user?.weight && <div className="profile-stat"><span>Weight:</span> {user.weight} kg</div>}
-        {user?.goal_weight && <div className="profile-stat"><span>Goal Weight:</span> {user.goal_weight} kg</div>}
-        {user?.activity_level && <div className="profile-stat"><span>Activity:</span> {user.activity_level}</div>}
-      </div>
+        <div className="profile-section">
+          <h3 className="section-title">My Goals</h3>
+          {displayGoals.map((goal, index) => (
+            <div key={index} className="goal-item">
+              <div className="goal-header">
+                <div className="goal-icon">🎯</div>
+                <span className="goal-name">{goal.goal_type}</span>
+                <span className="goal-percentage">{goal.current_progress}%</span>
+              </div>
+              <div className="goal-progress-bar">
+                <div 
+                  className="goal-progress-fill" 
+                  style={{ width: `${goal.current_progress}%` }}
+                ></div>
+              </div>
+            </div>
+          ))}
+          <button className="btn-manage">Manage Goals</button>
+        </div>
 
-      <button className="btn-primary" onClick={handleLogout}>
-        Logout
-      </button>
-    </div>
-  );
+        <div className="profile-section">
+          <h3 className="section-title">My Measurements</h3>
+          <div className="measurements-grid">
+            <div className="measurement-item">
+              <div className="measurement-value">{measurements?.weight || user?.weight || 150}lbs</div>
+              <div className="measurement-label">Weight</div>
+            </div>
+            <div className="measurement-item">
+              <div className="measurement-value">{measurements?.body_fat || 18}%</div>
+              <div className="measurement-label">Body Fat</div>
+            </div>
+            <div className="measurement-item">
+              <div className="measurement-value">{measurements?.bmi || 22.1}</div>
+              <div className="measurement-label">BMI</div>
+            </div>
+          </div>
+          <button className="btn-manage">View History</button>
+        </div>
+
+        <div className="profile-section">
+          <h3 className="section-title">General</h3>
+          <div className="settings-list">
+            <div className="settings-item">
+              <span>Notifications</span>
+              <label className="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  checked={notifications}
+                  onChange={() => setNotifications(!notifications)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+            <div className="settings-item">
+              <span>Theme</span>
+              <span className="settings-arrow">›</span>
+            </div>
+            <div className="settings-item">
+              <span>Units</span>
+              <span className="settings-arrow">›</span>
+            </div>
+            <div className="settings-item">
+              <span>Privacy Policy</span>
+              <span className="settings-arrow">›</span>
+            </div>
+          </div>
+        </div>
+
+        <button className="btn-logout" onClick={handleLogout}>
+          <span className="logout-icon">🏠</span> Logout
+        </button>
+      </div>
+    );
+  };
 
   // Bottom Navigation
   const renderBottomNav = () => (
