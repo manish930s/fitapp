@@ -36,6 +36,9 @@ db = client['fitflow_db']
 users_collection = db['users']
 food_scans_collection = db['food_scans']
 user_stats_collection = db['user_stats']
+goals_collection = db['goals']
+measurements_collection = db['measurements']
+chat_history_collection = db['chat_history']
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
