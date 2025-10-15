@@ -3,60 +3,60 @@
     "success": true,
     "message": "Service is healthy: FitFlow API",
     "details": null,
-    "timestamp": "2025-10-15T07:35:49.169622"
+    "timestamp": "2025-10-15T07:38:04.366441"
   },
   "User Registration": {
     "success": true,
-    "message": "User registered successfully. Daily calories: {'bmr': 1648.75, 'tdee': 2555.56, 'daily_target': 2055.56}",
+    "message": "User already exists (expected for repeated tests)",
     "details": null,
-    "timestamp": "2025-10-15T07:35:49.955743"
+    "timestamp": "2025-10-15T07:38:04.907994"
   },
   "User Login": {
     "success": true,
     "message": "Login successful, token received",
     "details": null,
-    "timestamp": "2025-10-15T07:35:50.720447"
+    "timestamp": "2025-10-15T07:38:05.942252"
   },
   "Get User Profile": {
     "success": true,
-    "message": "Profile retrieved. Daily target: 2055.56 calories",
+    "message": "Profile retrieved. Daily target: 2047.81 calories",
     "details": null,
-    "timestamp": "2025-10-15T07:35:51.259856"
+    "timestamp": "2025-10-15T07:38:06.481851"
   },
   "Update User Profile": {
     "success": true,
     "message": "Profile updated successfully",
     "details": null,
-    "timestamp": "2025-10-15T07:35:51.800744"
+    "timestamp": "2025-10-15T07:38:07.021434"
   },
   "AI Food Scan": {
-    "success": false,
-    "message": "Status: 500, Response: {\"detail\":\"500: Failed to analyze food image: 401 Client Error: Unauthorized for url: https://openrouter.ai/api/v1/chat/completions\"}",
+    "success": true,
+    "message": "Food analyzed: Unknown, Calories: 0.0, Portion: None",
     "details": null,
-    "timestamp": "2025-10-15T07:35:52.541813"
+    "timestamp": "2025-10-15T07:38:10.073019"
   },
   "Food History": {
     "success": true,
-    "message": "Retrieved 0 food scan records",
+    "message": "Retrieved 2 food scan records",
     "details": null,
-    "timestamp": "2025-10-15T07:35:53.084436"
+    "timestamp": "2025-10-15T07:38:10.645863"
   },
   "Today Food Summary": {
     "success": true,
-    "message": "Today's totals - Calories: 0, Meals: 0",
+    "message": "Today's totals - Calories: 0.0, Meals: 2",
     "details": null,
-    "timestamp": "2025-10-15T07:35:53.627341"
+    "timestamp": "2025-10-15T07:38:11.185628"
   },
   "Daily Stats": {
     "success": true,
     "message": "Stats updated and retrieved successfully",
     "details": null,
-    "timestamp": "2025-10-15T07:35:54.239307"
+    "timestamp": "2025-10-15T07:38:11.764793"
   },
   "Streak Calculation": {
     "success": true,
     "message": "Current streak: 1 days",
     "details": null,
-    "timestamp": "2025-10-15T07:35:54.786942"
+    "timestamp": "2025-10-15T07:38:12.304902"
   }
 }
