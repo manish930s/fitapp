@@ -521,6 +521,173 @@ async def get_streak(current_user: dict = Depends(get_current_user)):
     
     return {"streak_days": streak}
 
+# Goals Management
+@app.post("/api/goals")
+async def create_goal(goal: Goal, current_user: dict = Depends(get_current_user)):
+    goal_id = str(uuid.uuid4())
+    goal_data = {
+        "goal_id": goal_id,
+        "user_id": current_user["user_id"],
+        "goal_type": goal.goal_type,
+        "target_value": goal.target_value,
+        "current_progress": goal.current_progress,
+        "unit": goal.unit,
+        "created_at": datetime.utcnow().isoformat(),
+        "updated_at": datetime.utcnow().isoformat()
+    }
+    goals_collection.insert_one(goal_data)
+    return {"message": "Goal created successfully", "goal_id": goal_id}
+
+@app.get("/api/goals")
+async def get_goals(current_user: dict = Depends(get_current_user)):
+    goals = list(goals_collection.find(
+        {"user_id": current_user["user_id"]},
+        {"_id": 0}
+    ))
+    return {"goals": goals}
+
+@app.put("/api/goals/{goal_id}")
+async def update_goal(goal_id: str, goal: Goal, current_user: dict = Depends(get_current_user)):
+    result = goals_collection.update_one(
+        {"goal_id": goal_id, "user_id": current_user["user_id"]},
+        {"$set": {
+            "current_progress": goal.current_progress,
+            "target_value": goal.target_value,
+            "updated_at": datetime.utcnow().isoformat()
+        }}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    return {"message": "Goal updated successfully"}
+
+# Measurements Management
+@app.post("/api/measurements")
+async def add_measurement(measurement: Measurement, current_user: dict = Depends(get_current_user)):
+    measurement_id = str(uuid.uuid4())
+    measurement_data = {
+        "measurement_id": measurement_id,
+        "user_id": current_user["user_id"],
+        "weight": measurement.weight,
+        "body_fat": measurement.body_fat,
+        "bmi": measurement.bmi,
+        "date": datetime.utcnow().isoformat()
+    }
+    measurements_collection.insert_one(measurement_data)
+    return {"message": "Measurement added successfully", "measurement_id": measurement_id}
+
+@app.get("/api/measurements/latest")
+async def get_latest_measurement(current_user: dict = Depends(get_current_user)):
+    measurement = measurements_collection.find_one(
+        {"user_id": current_user["user_id"]},
+        {"_id": 0},
+        sort=[("date", -1)]
+    )
+    if not measurement:
+        return {"measurement": None}
+    return {"measurement": measurement}
+
+@app.get("/api/measurements/history")
+async def get_measurements_history(limit: int = 30, current_user: dict = Depends(get_current_user)):
+    measurements = list(measurements_collection.find(
+        {"user_id": current_user["user_id"]},
+        {"_id": 0}
+    ).sort("date", -1).limit(limit))
+    return {"measurements": measurements}
+
+# AI Fitness Coach Chatbot
+@app.post("/api/chat/fitness")
+async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depends(get_current_user)):
+    """
+    Chat with AI Fitness Coach using OpenRouter API
+    """
+    try:
+        # Get user profile for context
+        user = current_user
+        user_context = f"""User Profile:
+- Name: {user.get('name', 'Unknown')}
+- Age: {user.get('age', 'N/A')} years
+- Gender: {user.get('gender', 'N/A')}
+- Weight: {user.get('weight', 'N/A')} kg
+- Height: {user.get('height', 'N/A')} cm
+- Goal Weight: {user.get('goal_weight', 'N/A')} kg
+- Activity Level: {user.get('activity_level', 'N/A')}"""
+
+        # Get recent chat history for context
+        recent_chats = list(chat_history_collection.find(
+            {"user_id": user["user_id"]},
+            {"_id": 0}
+        ).sort("timestamp", -1).limit(5))
+        
+        messages = [
+            {
+                "role": "system",
+                "content": f"""You are FitFlow's AI Fitness Coach. You provide personalized fitness advice, workout recommendations, nutrition guidance, and motivation.
+
+{user_context}
+
+Guidelines:
+- Provide actionable, science-based fitness advice
+- Be encouraging and motivational
+- Keep responses concise and easy to understand
+- Tailor advice to the user's profile and goals
+- Suggest specific exercises, meal ideas, or habits when appropriate
+- If asked about medical concerns, recommend consulting a healthcare professional"""
+            }
+        ]
+        
+        # Add recent chat history for context
+        for chat_msg in reversed(recent_chats):
+            messages.append({"role": "user", "content": chat_msg["user_message"]})
+            messages.append({"role": "assistant", "content": chat_msg["assistant_message"]})
+        
+        # Add current message
+        messages.append({"role": "user", "content": chat.message})
+        
+        # Call OpenRouter API
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://fitflow.app",
+            "X-Title": "FitFlow"
+        }
+        
+        payload = {
+            "model": OPENROUTER_MODEL,
+            "messages": messages
+        }
+        
+        response = requests.post(OPENROUTER_URL, headers=headers, json=payload)
+        response.raise_for_status()
+        
+        result = response.json()
+        assistant_message = result["choices"][0]["message"]["content"]
+        
+        # Save chat to history
+        chat_history_collection.insert_one({
+            "chat_id": str(uuid.uuid4()),
+            "user_id": user["user_id"],
+            "user_message": chat.message,
+            "assistant_message": assistant_message,
+            "timestamp": datetime.utcnow().isoformat()
+        })
+        
+        return {
+            "message": assistant_message,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
+
+@app.get("/api/chat/history")
+async def get_chat_history(limit: int = 20, current_user: dict = Depends(get_current_user)):
+    """Get chat history"""
+    chats = list(chat_history_collection.find(
+        {"user_id": current_user["user_id"]},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit))
+    return {"chats": list(reversed(chats))}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
