@@ -374,6 +374,216 @@ def test_streak_calculation():
         log_test("Streak Calculation", False, f"Error: {str(e)}")
         return False
 
+def test_goals_management():
+    """Test goals management endpoints"""
+    if not auth_token:
+        log_test("Goals Management", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test creating a goal
+        goal_data = {
+            "goal_type": "weight_loss",
+            "target_value": 65.0,
+            "current_progress": 70.0,
+            "unit": "kg"
+        }
+        
+        response = requests.post(f"{BASE_URL}/goals", 
+                               headers=headers, json=goal_data, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Goals Management - Create", False, 
+                    f"Create goal failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        create_data = response.json()
+        goal_id = create_data.get("goal_id")
+        
+        if not goal_id:
+            log_test("Goals Management - Create", False, "No goal_id returned")
+            return False
+        
+        # Test getting all goals
+        response = requests.get(f"{BASE_URL}/goals", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Goals Management - Get", False, 
+                    f"Get goals failed - Status: {response.status_code}")
+            return False
+        
+        get_data = response.json()
+        goals = get_data.get("goals", [])
+        
+        if not goals:
+            log_test("Goals Management - Get", False, "No goals returned")
+            return False
+        
+        # Test updating goal progress
+        update_data = {
+            "goal_type": "weight_loss",
+            "target_value": 65.0,
+            "current_progress": 68.0,
+            "unit": "kg"
+        }
+        
+        response = requests.put(f"{BASE_URL}/goals/{goal_id}", 
+                              headers=headers, json=update_data, timeout=10)
+        
+        if response.status_code == 200:
+            log_test("Goals Management", True, 
+                    f"Goal created, retrieved, and updated successfully. Goal ID: {goal_id}")
+            return True
+        else:
+            log_test("Goals Management - Update", False, 
+                    f"Update goal failed - Status: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        log_test("Goals Management", False, f"Error: {str(e)}")
+        return False
+
+def test_measurements_tracking():
+    """Test measurements tracking endpoints"""
+    if not auth_token:
+        log_test("Measurements Tracking", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test adding a measurement
+        measurement_data = {
+            "weight": 68.5,
+            "body_fat": 15.2,
+            "bmi": 22.4
+        }
+        
+        response = requests.post(f"{BASE_URL}/measurements", 
+                               headers=headers, json=measurement_data, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Measurements Tracking - Add", False, 
+                    f"Add measurement failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        add_data = response.json()
+        measurement_id = add_data.get("measurement_id")
+        
+        if not measurement_id:
+            log_test("Measurements Tracking - Add", False, "No measurement_id returned")
+            return False
+        
+        # Test getting latest measurement
+        response = requests.get(f"{BASE_URL}/measurements/latest", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Measurements Tracking - Latest", False, 
+                    f"Get latest measurement failed - Status: {response.status_code}")
+            return False
+        
+        latest_data = response.json()
+        measurement = latest_data.get("measurement")
+        
+        if not measurement or measurement.get("weight") != 68.5:
+            log_test("Measurements Tracking - Latest", False, 
+                    f"Latest measurement not correct: {measurement}")
+            return False
+        
+        # Test getting measurement history
+        response = requests.get(f"{BASE_URL}/measurements/history", headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            history_data = response.json()
+            measurements = history_data.get("measurements", [])
+            
+            log_test("Measurements Tracking", True, 
+                    f"Measurement added, latest retrieved, and history retrieved successfully. "
+                    f"History count: {len(measurements)}")
+            return True
+        else:
+            log_test("Measurements Tracking - History", False, 
+                    f"Get measurement history failed - Status: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        log_test("Measurements Tracking", False, f"Error: {str(e)}")
+        return False
+
+def test_ai_fitness_coach():
+    """Test AI Fitness Coach chatbot endpoints"""
+    if not auth_token:
+        log_test("AI Fitness Coach", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test sending a message to the AI coach
+        chat_data = {
+            "message": "What's a good workout for weight loss?"
+        }
+        
+        print("🤖 Testing AI Fitness Coach (this may take 10-30 seconds)...")
+        response = requests.post(f"{BASE_URL}/chat/fitness", 
+                               headers=headers, json=chat_data, timeout=45)
+        
+        if response.status_code != 200:
+            log_test("AI Fitness Coach - Chat", False, 
+                    f"Chat failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        chat_response = response.json()
+        ai_message = chat_response.get("message")
+        
+        if not ai_message or len(ai_message.strip()) < 10:
+            log_test("AI Fitness Coach - Chat", False, 
+                    f"AI response too short or empty: {ai_message}")
+            return False
+        
+        # Test sending another message to verify conversation context
+        chat_data2 = {
+            "message": "How many calories should I burn per day?"
+        }
+        
+        response = requests.post(f"{BASE_URL}/chat/fitness", 
+                               headers=headers, json=chat_data2, timeout=45)
+        
+        if response.status_code != 200:
+            log_test("AI Fitness Coach - Context", False, 
+                    f"Second chat failed - Status: {response.status_code}")
+            return False
+        
+        # Test getting chat history
+        response = requests.get(f"{BASE_URL}/chat/history", headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            history_data = response.json()
+            chats = history_data.get("chats", [])
+            
+            if len(chats) >= 2:
+                log_test("AI Fitness Coach", True, 
+                        f"AI coach responded successfully. Chat history: {len(chats)} messages. "
+                        f"Sample response: {ai_message[:100]}...")
+                return True
+            else:
+                log_test("AI Fitness Coach - History", False, 
+                        f"Chat history incomplete: {len(chats)} messages")
+                return False
+        else:
+            log_test("AI Fitness Coach - History", False, 
+                    f"Get chat history failed - Status: {response.status_code}")
+            return False
+            
+    except requests.exceptions.Timeout:
+        log_test("AI Fitness Coach", False, "Request timeout - OpenRouter API may be slow")
+        return False
+    except Exception as e:
+        log_test("AI Fitness Coach", False, f"Error: {str(e)}")
+        return False
+
 def run_all_tests():
     """Run all backend tests in order"""
     print("🚀 Starting FitFlow Backend API Tests")
