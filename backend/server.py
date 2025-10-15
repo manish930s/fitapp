@@ -92,6 +92,20 @@ class DailyStats(BaseModel):
     water_intake: int
     sleep_hours: float
 
+class Goal(BaseModel):
+    goal_type: str  # "weight_loss", "muscle_gain", "endurance", etc.
+    target_value: float
+    current_progress: float
+    unit: str  # "kg", "lbs", "%", etc.
+
+class Measurement(BaseModel):
+    weight: Optional[float] = None
+    body_fat: Optional[float] = None
+    bmi: Optional[float] = None
+
+class ChatMessage(BaseModel):
+    message: str
+
 # Helper Functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
