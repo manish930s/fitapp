@@ -600,7 +600,10 @@ def run_all_tests():
         ("Food History", test_food_history),
         ("Today Food Summary", test_today_food_summary),
         ("Daily Stats", test_daily_stats),
-        ("Streak Calculation", test_streak_calculation)
+        ("Streak Calculation", test_streak_calculation),
+        ("Goals Management (NEW)", test_goals_management),
+        ("Measurements Tracking (NEW)", test_measurements_tracking),
+        ("AI Fitness Coach (NEW CRITICAL)", test_ai_fitness_coach)
     ]
     
     passed = 0
