@@ -600,16 +600,8 @@ async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depend
 - Goal Weight: {user.get('goal_weight', 'N/A')} kg
 - Activity Level: {user.get('activity_level', 'N/A')}"""
 
-        # Get recent chat history for context
-        recent_chats = list(chat_history_collection.find(
-            {"user_id": user["user_id"]},
-            {"_id": 0}
-        ).sort("timestamp", -1).limit(5))
-        
-        messages = [
-            {
-                "role": "system",
-                "content": f"""You are FitFlow's AI Fitness Coach. You provide personalized fitness advice, workout recommendations, nutrition guidance, and motivation.
+        # Build system message
+        system_content = f"""You are FitFlow's AI Fitness Coach. You provide personalized fitness advice, workout recommendations, nutrition guidance, and motivation.
 
 {user_context}
 
@@ -620,19 +612,10 @@ Guidelines:
 - Tailor advice to the user's profile and goals
 - Suggest specific exercises, meal ideas, or habits when appropriate
 - If asked about medical concerns, recommend consulting a healthcare professional"""
-            }
-        ]
         
-        # Add recent chat history for context
-        for chat_msg in reversed(recent_chats):
-            messages.append({"role": "user", "content": chat_msg["user_message"]})
-            messages.append({"role": "assistant", "content": chat_msg["assistant_message"]})
-        
-        # Add language instruction to system message
-        language_instruction = ""
+        # Add language instruction if needed
         if chat.language and chat.language.lower() != "english":
-            language_instruction = f"\n\nIMPORTANT: Respond in {chat.language.upper()} language. Translate all your responses to {chat.language}."
-            messages[0]["content"] += language_instruction
+            system_content += f"\n\nIMPORTANT: Respond in {chat.language.upper()} language. Translate all your responses to {chat.language}."
         
         # Use session_id based on user_id for persistent chat history
         session_id = f"fitness_coach_{user['user_id']}"
@@ -641,7 +624,7 @@ Guidelines:
         llm_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=session_id,
-            system_message=messages[0]["content"]
+            system_message=system_content
         ).with_model("openai", "gpt-4o")
         
         # Create user message
