@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Build a full-stack mobile and web fitness application (FitFlow) with AI-powered calorie detection using OpenRouter API (Google Gemma 3 27B model). Features include: user authentication (JWT), food scanner with camera/upload, AI calorie analysis, dashboard with stats, workout library, meal planner, and profile management."
+user_problem_statement: "Build a full-stack mobile and web fitness application (FitFlow) with AI-powered calorie detection using OpenRouter API (Google Gemma 3 27B model). Features include: user authentication (JWT), food scanner with camera/upload, AI calorie analysis, dashboard with stats, workout library, meal planner, and profile management. UPDATES: 1) Redesign profile section to match provided design with goals tracking, measurements, and settings. 2) Add AI Fitness Coach chatbot integrated into home dashboard using OpenRouter API."
 
 backend:
   - task: "User Registration and Login (JWT Auth)"
