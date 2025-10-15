@@ -591,31 +591,36 @@ async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depend
     try:
         # Get user profile for context
         user = current_user
-        user_context = f"""User Profile:
-- Name: {user.get('name', 'Unknown')}
-- Age: {user.get('age', 'N/A')} years
-- Gender: {user.get('gender', 'N/A')}
-- Weight: {user.get('weight', 'N/A')} kg
-- Height: {user.get('height', 'N/A')} cm
-- Goal Weight: {user.get('goal_weight', 'N/A')} kg
-- Activity Level: {user.get('activity_level', 'N/A')}"""
-
+        user_name = user.get('name', 'Unknown')
+        user_age = user.get('age', 'N/A')
+        user_gender = user.get('gender', 'N/A')
+        user_weight = user.get('weight', 'N/A')
+        user_height = user.get('height', 'N/A')
+        user_goal_weight = user.get('goal_weight', 'N/A')
+        user_activity = user.get('activity_level', 'N/A')
+        
         # Build system message
-        system_content = f"""You are FitFlow's AI Fitness Coach. You provide personalized fitness advice, workout recommendations, nutrition guidance, and motivation.
-
-{user_context}
-
-Guidelines:
-- Provide actionable, science-based fitness advice
-- Be encouraging and motivational
-- Keep responses concise and easy to understand
-- Tailor advice to the user's profile and goals
-- Suggest specific exercises, meal ideas, or habits when appropriate
-- If asked about medical concerns, recommend consulting a healthcare professional"""
+        system_content = "You are FitFlow's AI Fitness Coach. You provide personalized fitness advice, workout recommendations, nutrition guidance, and motivation.\n\n"
+        system_content += "User Profile:\n"
+        system_content += f"- Name: {user_name}\n"
+        system_content += f"- Age: {user_age} years\n"
+        system_content += f"- Gender: {user_gender}\n"
+        system_content += f"- Weight: {user_weight} kg\n"
+        system_content += f"- Height: {user_height} cm\n"
+        system_content += f"- Goal Weight: {user_goal_weight} kg\n"
+        system_content += f"- Activity Level: {user_activity}\n\n"
+        system_content += "Guidelines:\n"
+        system_content += "- Provide actionable, science-based fitness advice\n"
+        system_content += "- Be encouraging and motivational\n"
+        system_content += "- Keep responses concise and easy to understand\n"
+        system_content += "- Tailor advice to the user's profile and goals\n"
+        system_content += "- Suggest specific exercises, meal ideas, or habits when appropriate\n"
+        system_content += "- If asked about medical concerns, recommend consulting a healthcare professional"
         
         # Add language instruction if needed
         if chat.language and chat.language.lower() != "english":
-            system_content += f"\n\nIMPORTANT: Respond in {chat.language.upper()} language. Translate all your responses to {chat.language}."
+            lang_upper = chat.language.upper()
+            system_content += f"\n\nIMPORTANT: Respond in {lang_upper} language. Translate all your responses to {chat.language}."
         
         # Use session_id based on user_id for persistent chat history
         session_id = f"fitness_coach_{user['user_id']}"
