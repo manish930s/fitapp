@@ -1038,7 +1038,7 @@ function App() {
       <div className="profile-container">
         <div className="profile-header">
           <h2 className="profile-title">Profile</h2>
-          <button className="icon-btn settings-btn" onClick={openEditProfileModal}>⚙️</button>
+          <button className="icon-btn settings-btn" onClick={() => setShowSettingsPage(true)}>⚙️</button>
         </div>
 
         <div className="profile-user-card">
