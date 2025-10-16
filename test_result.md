@@ -340,7 +340,7 @@ frontend:
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -360,6 +360,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "🎉 FRONTEND UI TESTING COMPLETE: Edit Profile functionality with profile picture upload - ALL CRITICAL REQUIREMENTS VERIFIED (100% success rate). Fixed critical CSS syntax error (extra closing brace in App.css line 1645). Comprehensive testing results: ✅ Login & Profile Navigation: Working perfectly with test credentials (test@fitflow.com/Test123!), ✅ Edit Profile Modal: Opens correctly via settings icon (⚙️) and Edit Profile button, contains all required fields (profile picture upload, name, age, gender, height, weight, goal weight, activity level), ✅ Profile Picture Upload: File input accepts images, preview appears after selection, supports up to 5MB files, ✅ Form Fields Testing: All fields accept input correctly (name: 'Jane Smith', age: 28, weight: 65kg), ✅ Form Submission: Save button works, success feedback provided, modal closes after save, ✅ Profile Picture Display: Uploaded image displays on avatar with green border styling, ✅ Data Persistence: All updates persist after page reload (name, profile picture), ✅ Modal Close/Cancel: Cancel button closes modal without saving. UI is production-ready with excellent user experience and visual design matching requirements."
+      - working: "NA"
+        agent: "main"
+        comment: "FEATURE ENHANCEMENT: Extended profile picture visibility across the application. Changes implemented: 1) Home page dashboard now shows user's profile picture in the user avatar (top-left greeting section) - circular image with 100% fill, fallback to 👤 emoji if no picture uploaded, 2) AI Fitness Coach chatbot now displays user's profile picture in all user message icons - circular image matching chatbot style, fallback to 👤 emoji if no picture uploaded. Both implementations use conditional rendering with user?.profile_picture check and maintain consistent styling (borderRadius: 50%, objectFit: cover). Ready for frontend testing to verify profile picture displays correctly in home page and chatbot."
   
   - task: "AI Fitness Coach Chatbot UI"
     implemented: true
