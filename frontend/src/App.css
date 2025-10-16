@@ -987,7 +987,7 @@ body {
 .goal-progress-bar {
   width: 100%;
   height: 12px;
-  background: #1a1a1a;
+  background: var(--bg-input);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -1001,7 +1001,7 @@ body {
 
 .btn-manage {
   width: 100%;
-  background: #2a2a2a;
+  background: var(--bg-input);
   color: var(--brand-primary);
   border: none;
   border-radius: 15px;
@@ -1014,7 +1014,8 @@ body {
 }
 
 .btn-manage:hover {
-  background: #333;
+  background: var(--bg-secondary);
+  opacity: 0.8;
 }
 
 .measurements-grid {
