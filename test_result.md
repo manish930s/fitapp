@@ -368,9 +368,7 @@ test_plan:
   current_focus:
     - "Profile Page"
     - "AI Fitness Coach Chatbot UI"
-  stuck_tasks: 
-    - "AI Fitness Coach Chatbot API"
-    - "Food Scanner - AI Image Analysis"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
