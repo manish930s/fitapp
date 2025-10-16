@@ -236,11 +236,11 @@ backend:
   
   - task: "AI Fitness Coach Chatbot API"
     implemented: true
-    working: false
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -248,6 +248,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE: OpenRouter API returning 401 Unauthorized error. API key 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 appears to be invalid/expired. Tested multiple free models (google/gemma-3-27b-it:free, deepseek/deepseek-chat-v3.1:free) - all return 'User not found' error. **MOCKED** implementation added for testing - endpoints work but AI responses are hardcoded. Real OpenRouter integration needs API key verification/renewal."
+      - working: "NA"
+        agent: "main"
+        comment: "FIXED: Replaced OpenRouter integration with Emergent LLM Key + OpenAI GPT-4o. Using emergentintegrations library for AI chatbot with session management and multilingual support. Backend server restarted successfully. Ready for testing with real AI responses."
 
 frontend:
   - task: "Authentication UI (Login/Register)"
