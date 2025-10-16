@@ -1332,6 +1332,24 @@ input:checked + .toggle-slider:before {
 
 /* Responsive */
 @media (max-width: 480px) {
+  /* Adjust container padding for small screens */
+  .dashboard-container,
+  .scanner-container,
+  .workout-container,
+  .meal-plan-container,
+  .profile-container {
+    padding: 16px;
+    padding-bottom: 100px;
+  }
+  
+  .settings-header {
+    padding: 16px;
+  }
+  
+  .settings-section {
+    padding: 0 16px;
+  }
+  
   .stats-grid {
     gap: 12px;
   }
