@@ -38,10 +38,10 @@ def log_test(test_name, success, message="", details=None):
 
 def get_sample_food_image_base64():
     """Get a sample food image as base64 for testing"""
-    # This is a small sample image of an apple (1x1 pixel PNG for testing)
-    # In real testing, you'd use an actual food image
-    sample_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-    return sample_image
+    # This is a simple red apple image (64x64 PNG) for testing
+    # A more realistic food image for AI analysis
+    apple_image = "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAQABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+    return apple_image
 
 def test_health_check():
     """Test the health check endpoint"""
