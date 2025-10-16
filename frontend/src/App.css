@@ -1520,6 +1520,7 @@ input:checked + .toggle-slider:before {
 /* Edit Profile Modal Styles */
 .edit-profile-modal {
   max-width: 500px;
+  width: 100%;
   max-height: 90vh;
   overflow-y: auto;
 }
