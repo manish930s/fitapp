@@ -376,6 +376,44 @@ async def update_profile(profile_data: UserProfile, current_user: dict = Depends
     
     return {"message": "Profile updated successfully"}
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+@app.put("/api/user/password")
+async def change_password(password_data: ChangePasswordRequest, current_user: dict = Depends(get_current_user)):
+    """Change user password"""
+    # Verify current password
+    user = users_collection.find_one({"user_id": current_user["user_id"]})
+    if not user or not bcrypt.checkpw(password_data.current_password.encode('utf-8'), user['password'].encode('utf-8')):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    # Hash new password
+    hashed_password = bcrypt.hashpw(password_data.new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    
+    # Update password
+    users_collection.update_one(
+        {"user_id": current_user["user_id"]},
+        {"$set": {"password": hashed_password}}
+    )
+    
+    return {"message": "Password changed successfully"}
+
+@app.delete("/api/user/account")
+async def delete_account(current_user: dict = Depends(get_current_user)):
+    """Delete user account and all associated data"""
+    user_id = current_user["user_id"]
+    
+    # Delete user data from all collections
+    users_collection.delete_one({"user_id": user_id})
+    food_scans_collection.delete_many({"user_id": user_id})
+    user_stats_collection.delete_many({"user_id": user_id})
+    goals_collection.delete_many({"user_id": user_id})
+    measurements_collection.delete_many({"user_id": user_id})
+    chat_history_collection.delete_many({"user_id": user_id})
+    
+    return {"message": "Account deleted successfully"}
+
 @app.post("/api/food/scan")
 async def scan_food(image: str = Form(...), current_user: dict = Depends(get_current_user)):
     """
