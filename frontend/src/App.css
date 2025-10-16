@@ -83,7 +83,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--bg-dark);
+  background: var(--bg-primary);
 }
 
 .auth-card {
