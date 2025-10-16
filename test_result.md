@@ -345,6 +345,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Implemented AI Fitness Coach chatbot integrated into home dashboard. Features: 1) Collapsible chat interface, 2) Welcome message explaining chatbot purpose, 3) Message history display with user/assistant messages, 4) Chat input with send button, 5) Loading state during AI responses, 6) Fetches chat history on page load. Uses OpenRouter API backend endpoint."
+      - working: "NA"
+        agent: "main"
+        comment: "Backend integration updated to use Emergent LLM Key + OpenAI GPT-4o. Frontend UI ready for testing with real AI responses."
   
   - task: "Bottom Navigation"
     implemented: true
