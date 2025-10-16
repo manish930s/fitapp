@@ -1934,3 +1934,71 @@ input:checked + .toggle-slider:before {
 :root[data-theme="light"] .settings-item {
   border-bottom: 1px solid var(--border-light);
 }
+
+:root[data-theme="light"] .user-message p {
+  color: #000000;
+  font-weight: 600;
+}
+
+:root[data-theme="light"] .chat-input {
+  border: 1px solid var(--border-light);
+}
+
+:root[data-theme="light"] .btn-logout {
+  background: #fff;
+  color: #dc3545;
+  border: 2px solid #dc3545;
+}
+
+:root[data-theme="light"] .btn-logout:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+:root[data-theme="light"] .btn-scan {
+  color: #000000;
+  font-weight: 600;
+}
+
+:root[data-theme="light"] .btn-send {
+  color: #000000;
+}
+
+:root[data-theme="light"] .theme-option {
+  border: 2px solid var(--border-light);
+  background: var(--bg-card);
+}
+
+:root[data-theme="light"] .theme-option.active {
+  border-color: var(--brand-primary);
+  background: rgba(0, 255, 0, 0.05);
+}
+
+:root[data-theme="light"] .btn-nav.active {
+  color: var(--brand-primary);
+}
+
+:root[data-theme="light"] .stat-value {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+:root[data-theme="light"] .measurement-value {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+:root[data-theme="light"] .goal-progress {
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+:root[data-theme="light"] .workout-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-light);
+}
+
+:root[data-theme="light"] .food-item {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-light);
+}
