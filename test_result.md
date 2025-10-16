@@ -396,6 +396,18 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ TESTED: Bottom navigation fully functional with all 5 tabs (Home, Scan, Workout, Meal Plan, Profile). Navigation between pages working smoothly. Active state highlighting with green color working correctly. All page transitions successful."
+  
+  - task: "Settings Page with Account Management"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented comprehensive Settings page accessible via settings icon (⚙️) in Profile page. Backend: Added PUT /api/user/password endpoint for password changes with current password verification, Added DELETE /api/user/account endpoint for account deletion with cascade delete across all collections. Frontend: Created Settings page with 3 sections: 1) Notifications (Workout Reminders toggle, App Updates toggle), 2) Privacy (Connected Apps - placeholder page), 3) Account (Change Password with validation, Delete Account with confirmation dialog, Help Center & FAQ with sample FAQs, Contact Support form). Features: Dark theme UI matching app design, Back navigation for sub-pages, Form validation for password changes, Confirmation dialog for account deletion, Success/error message handling. Profile page General settings section kept as requested. Ready for frontend and backend testing."
 
 metadata:
   created_by: "main_agent"
