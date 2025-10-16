@@ -1020,14 +1020,20 @@ function App() {
       <div className="profile-container">
         <div className="profile-header">
           <h2 className="profile-title">Profile</h2>
-          <button className="icon-btn settings-btn">⚙️</button>
+          <button className="icon-btn settings-btn" onClick={openEditProfileModal}>⚙️</button>
         </div>
 
         <div className="profile-user-card">
-          <div className="profile-avatar-large">👤</div>
+          <div className="profile-avatar-large" onClick={openEditProfileModal} style={{ cursor: 'pointer' }}>
+            {user?.profile_picture ? (
+              <img src={user.profile_picture} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : (
+              '👤'
+            )}
+          </div>
           <h3 className="profile-name">{user?.name || 'Jane Doe'}</h3>
           <p className="profile-member">Member Since 2023</p>
-          <button className="btn-edit-profile">Edit Profile</button>
+          <button className="btn-edit-profile" onClick={openEditProfileModal}>Edit Profile</button>
         </div>
 
         <div className="profile-section">
