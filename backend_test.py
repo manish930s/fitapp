@@ -12,7 +12,7 @@ from datetime import datetime
 import os
 
 # Configuration
-BASE_URL = "https://userprofile-test.preview.emergentagent.com/api"
+BASE_URL = "https://profile-photo-link.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "fitflow.tester@example.com"
 TEST_USER_PASSWORD = "SecureTest123!"
 TEST_USER_NAME = "FitFlow Tester"
