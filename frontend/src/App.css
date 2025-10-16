@@ -18,21 +18,23 @@
   --border-medium: rgba(255, 255, 255, 0.2);
 }
 
-/* Light Theme */
+/* Light Theme - Bright Modern Design */
 :root[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-dark: #f5f5f5;
+  --bg-primary: #f7f7f7;
+  --bg-dark: #f0f0f0;
   --bg-card: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-input: #e9ecef;
-  --text-primary: #1a1a1a;
+  --bg-secondary: #ffffff;
+  --bg-input: #f5f5f5;
+  --text-primary: #000000;
   --text-secondary: #6c757d;
   --text-muted: #9ca3af;
-  --brand-primary: #00dd77;
-  --brand-hover: #00bb66;
-  --brand-active: #009955;
-  --border-light: rgba(0, 0, 0, 0.1);
-  --border-medium: rgba(0, 0, 0, 0.2);
+  --brand-primary: #00FF00;
+  --brand-hover: #00dd00;
+  --brand-active: #00bb00;
+  --border-light: rgba(0, 0, 0, 0.08);
+  --border-medium: rgba(0, 0, 0, 0.15);
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 * {
