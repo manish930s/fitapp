@@ -738,7 +738,7 @@ function App() {
                     <div className="chat-message user-message">
                       <span className="message-icon">
                         {user?.profile_picture ? (
-                          <img src={user.profile_picture} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                          <img src={user.profile_picture} alt="User" style={{ width: '24px', height: '24px', objectFit: 'cover', borderRadius: '50%' }} />
                         ) : (
                           '👤'
                         )}
