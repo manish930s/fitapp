@@ -391,7 +391,7 @@ def run_profile_picture_tests():
     
     # Test order based on dependencies
     tests = [
-        ("User Login", test_user_login),
+        ("User Registration & Login", test_user_registration_and_login),
         ("1. GET Profile Picture Field", test_get_profile_picture_field),
         ("2. Comprehensive Profile Update", test_comprehensive_profile_update),
         ("3. Data Persistence Verification", test_data_persistence_verification),
