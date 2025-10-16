@@ -336,11 +336,11 @@ frontend:
   
   - task: "Profile Page"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -351,6 +351,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ TESTED: Profile page redesign fully functional and matches design requirements. Profile avatar, name (Test User), My Goals section with 2 goal items (Weight Loss 75%, Muscle Gain 50%), My Measurements section with 3 measurement items (60lbs Weight, 18% Body Fat, 22.1 BMI), and General settings section all displaying correctly. Dark theme with green accents properly applied. Navigation working smoothly."
+      - working: "NA"
+        agent: "main"
+        comment: "FEATURE ADDED: Implemented Edit Profile functionality with profile picture upload. Changes include: 1) Added onClick handlers to 'Edit Profile' button and settings icon (⚙️), 2) Created Edit Profile modal with file upload for profile pictures (supports images up to 5MB), 3) Modal includes editable fields: profile picture, name, age, gender, height, weight, goal weight, activity level, 4) Profile picture displays on avatar instead of emoji when uploaded, 5) Added backend support for profile_picture field (stores as base64), 6) Profile picture preview with hover effect, 7) Form validation and error handling. Backend endpoint /api/user/profile updated to accept name and profile_picture fields."
   
   - task: "AI Fitness Coach Chatbot UI"
     implemented: true
