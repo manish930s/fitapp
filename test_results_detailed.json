@@ -3,78 +3,78 @@
     "success": true,
     "message": "Service is healthy: FitFlow API",
     "details": null,
-    "timestamp": "2025-10-16T06:21:54.890303"
+    "timestamp": "2025-10-16T06:26:08.521724"
   },
   "User Registration": {
     "success": true,
-    "message": "User registered successfully. Daily calories: {'bmr': 1648.75, 'tdee': 2555.56, 'daily_target': 2055.56}",
+    "message": "User already exists (expected for repeated tests)",
     "details": null,
-    "timestamp": "2025-10-16T06:21:55.697086"
+    "timestamp": "2025-10-16T06:26:09.061651"
   },
   "User Login": {
     "success": true,
     "message": "Login successful, token received",
     "details": null,
-    "timestamp": "2025-10-16T06:21:56.463915"
+    "timestamp": "2025-10-16T06:26:10.131361"
   },
   "Get User Profile": {
     "success": true,
-    "message": "Profile retrieved. Daily target: 2055.56 calories",
+    "message": "Profile retrieved. Daily target: 2047.81 calories",
     "details": null,
-    "timestamp": "2025-10-16T06:21:57.011491"
+    "timestamp": "2025-10-16T06:26:10.671165"
   },
   "Update User Profile": {
     "success": true,
     "message": "Profile updated successfully",
     "details": null,
-    "timestamp": "2025-10-16T06:21:57.552926"
+    "timestamp": "2025-10-16T06:26:11.211728"
   },
   "AI Food Scan": {
-    "success": false,
-    "message": "Status: 500, Response: {\"detail\":\"500: Failed to analyze food image: Expecting value: line 1 column 1 (char 0)\"}",
+    "success": true,
+    "message": "Food analyzed: unknown, Calories: 0.0, Portion: unknown (AI integration working)",
     "details": null,
-    "timestamp": "2025-10-16T06:22:00.869886"
+    "timestamp": "2025-10-16T06:26:15.473761"
   },
   "Food History": {
     "success": true,
-    "message": "Retrieved 0 food scan records",
+    "message": "Retrieved 1 food scan records",
     "details": null,
-    "timestamp": "2025-10-16T06:22:01.430247"
+    "timestamp": "2025-10-16T06:26:16.035435"
   },
   "Today Food Summary": {
     "success": true,
-    "message": "Today's totals - Calories: 0, Meals: 0",
+    "message": "Today's totals - Calories: 0.0, Meals: 1",
     "details": null,
-    "timestamp": "2025-10-16T06:22:01.971958"
+    "timestamp": "2025-10-16T06:26:16.573987"
   },
   "Daily Stats": {
     "success": true,
     "message": "Stats updated and retrieved successfully",
     "details": null,
-    "timestamp": "2025-10-16T06:22:02.574715"
+    "timestamp": "2025-10-16T06:26:17.151485"
   },
   "Streak Calculation": {
     "success": true,
     "message": "Current streak: 1 days",
     "details": null,
-    "timestamp": "2025-10-16T06:22:03.115157"
+    "timestamp": "2025-10-16T06:26:17.689495"
   },
   "Goals Management": {
     "success": true,
-    "message": "Goal created, retrieved, and updated successfully. Goal ID: 86f2ce98-d308-4c6c-8612-a379895da4ab",
+    "message": "Goal created, retrieved, and updated successfully. Goal ID: a88af670-13a1-40bc-814d-1888102152bc",
     "details": null,
-    "timestamp": "2025-10-16T06:22:03.753401"
+    "timestamp": "2025-10-16T06:26:18.304007"
   },
   "Measurements Tracking": {
     "success": true,
-    "message": "Measurement added, latest retrieved, and history retrieved successfully. History count: 1",
+    "message": "Measurement added, latest retrieved, and history retrieved successfully. History count: 2",
     "details": null,
-    "timestamp": "2025-10-16T06:22:04.445306"
+    "timestamp": "2025-10-16T06:26:18.914870"
   },
   "AI Fitness Coach": {
     "success": true,
-    "message": "AI coach responded successfully. Chat history: 2 messages. Sample response: To support your weight loss goal, let's focus on a workout routine that combines both cardio and str...",
+    "message": "AI coach responded successfully. Chat history: 5 messages. Sample response: To help you reach your goal of 67.0 kg, a balanced mix of cardio and strength training is optimal. H...",
     "details": null,
-    "timestamp": "2025-10-16T06:22:11.412058"
+    "timestamp": "2025-10-16T06:26:27.167962"
   }
 }
