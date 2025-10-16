@@ -1135,6 +1135,145 @@ function App() {
             </div>
           </div>
         )}
+
+        {/* Edit Profile Modal */}
+        {showEditProfileModal && (
+          <div className="modal-overlay" onClick={() => setShowEditProfileModal(false)}>
+            <div className="modal-content edit-profile-modal" onClick={(e) => e.stopPropagation()}>
+              <h3>Edit Profile</h3>
+              
+              {error && <div className="error-message">{error}</div>}
+              {success && <div className="success-message">{success}</div>}
+              
+              <div className="edit-profile-form">
+                {/* Profile Picture */}
+                <div className="form-group profile-picture-section">
+                  <label>Profile Picture</label>
+                  <div className="profile-picture-upload">
+                    <div 
+                      className="profile-picture-preview" 
+                      onClick={() => profilePictureInputRef.current?.click()}
+                    >
+                      {profilePicturePreview ? (
+                        <img src={profilePicturePreview} alt="Profile Preview" />
+                      ) : (
+                        <span className="upload-placeholder">📷<br/>Click to upload</span>
+                      )}
+                    </div>
+                    <input 
+                      type="file" 
+                      ref={profilePictureInputRef}
+                      accept="image/*"
+                      onChange={handleProfilePictureChange}
+                      style={{ display: 'none' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Name */}
+                <div className="form-group">
+                  <label>Name</label>
+                  <input 
+                    type="text" 
+                    value={editProfileData.name || ''}
+                    onChange={(e) => setEditProfileData({...editProfileData, name: e.target.value})}
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                {/* Age */}
+                <div className="form-group">
+                  <label>Age</label>
+                  <input 
+                    type="number" 
+                    value={editProfileData.age || ''}
+                    onChange={(e) => setEditProfileData({...editProfileData, age: parseInt(e.target.value) || ''})}
+                    placeholder="Enter your age"
+                  />
+                </div>
+
+                {/* Gender */}
+                <div className="form-group">
+                  <label>Gender</label>
+                  <select 
+                    value={editProfileData.gender || ''}
+                    onChange={(e) => setEditProfileData({...editProfileData, gender: e.target.value})}
+                  >
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                {/* Height */}
+                <div className="form-group">
+                  <label>Height (cm)</label>
+                  <input 
+                    type="number" 
+                    value={editProfileData.height || ''}
+                    onChange={(e) => setEditProfileData({...editProfileData, height: parseFloat(e.target.value) || ''})}
+                    placeholder="Enter your height"
+                  />
+                </div>
+
+                {/* Weight */}
+                <div className="form-group">
+                  <label>Weight (kg)</label>
+                  <input 
+                    type="number" 
+                    value={editProfileData.weight || ''}
+                    onChange={(e) => setEditProfileData({...editProfileData, weight: parseFloat(e.target.value) || ''})}
+                    placeholder="Enter your weight"
+                  />
+                </div>
+
+                {/* Goal Weight */}
+                <div className="form-group">
+                  <label>Goal Weight (kg)</label>
+                  <input 
+                    type="number" 
+                    value={editProfileData.goal_weight || ''}
+                    onChange={(e) => setEditProfileData({...editProfileData, goal_weight: parseFloat(e.target.value) || ''})}
+                    placeholder="Enter your goal weight"
+                  />
+                </div>
+
+                {/* Activity Level */}
+                <div className="form-group">
+                  <label>Activity Level</label>
+                  <select 
+                    value={editProfileData.activity_level || 'moderate'}
+                    onChange={(e) => setEditProfileData({...editProfileData, activity_level: e.target.value})}
+                  >
+                    <option value="sedentary">Sedentary</option>
+                    <option value="light">Light</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="active">Active</option>
+                    <option value="very_active">Very Active</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="modal-buttons">
+                <button 
+                  className="btn-save" 
+                  onClick={handleEditProfileSubmit}
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button 
+                  className="modal-close" 
+                  onClick={() => setShowEditProfileModal(false)}
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
