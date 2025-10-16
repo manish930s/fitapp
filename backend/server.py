@@ -237,7 +237,6 @@ Provide realistic estimates based on the visible portion. Return ONLY valid JSON
     except Exception as e:
         print(f"Error analyzing food: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to analyze food image: {str(e)}")
-    """
 
 # Routes
 @app.get("/api/health")
