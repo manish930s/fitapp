@@ -40,6 +40,11 @@ function App() {
   const [settingsSubPage, setSettingsSubPage] = useState('main'); // main, connected-apps, change-password, help, contact
   const [workoutReminders, setWorkoutReminders] = useState(true);
   const [appUpdates, setAppUpdates] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  const [contactSubject, setContactSubject] = useState('');
   
   // Chatbot state
   const [chatMessages, setChatMessages] = useState([]);
