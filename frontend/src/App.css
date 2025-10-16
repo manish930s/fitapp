@@ -1501,17 +1501,64 @@ input:checked + .toggle-slider:before {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
 }
 
 .theme-option:hover, .language-option:hover {
-  background: var(--bg-dark);
+  background: var(--bg-secondary);
   border-color: var(--brand-primary);
+  transform: translateY(-2px);
 }
 
 .theme-option.active, .language-option.active {
-  background: var(--brand-primary);
-  color: #000;
+  background: rgba(0, 255, 136, 0.1);
   border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px var(--brand-primary);
+}
+
+.theme-option-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.theme-icon {
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+}
+
+.theme-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.theme-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.theme-desc {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.theme-check {
+  font-size: 20px;
+  color: var(--brand-primary);
+  font-weight: bold;
 }
 
 .modal-close {
