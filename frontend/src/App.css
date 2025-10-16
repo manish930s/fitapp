@@ -1091,9 +1091,6 @@ input:checked + .toggle-slider:before {
   font-size: 40px;
   margin: 0 auto 16px;
 }
-  font-size: 14px;
-  font-weight: 600;
-}
 
 /* Meal Plan */
 .meal-plan-container {
