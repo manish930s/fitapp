@@ -69,3 +69,11 @@ uvicorn==0.25.0
 watchfiles==1.1.0
 emergentintegrations
 litellm
+httpx
+aiohttp
+openai
+fastuuid
+PyYAML
+jinja2
+tiktoken
+tokenizers
