@@ -1054,7 +1054,7 @@ body {
   padding: 16px 0;
   font-size: 16px;
   color: var(--text-primary);
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .settings-item:last-child {
