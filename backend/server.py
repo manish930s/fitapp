@@ -213,6 +213,23 @@ Provide realistic estimates based on the visible portion. Return ONLY valid JSON
         # Send message and get response
         response = await chat.send_message(user_message)
         
+        # Debug: Print the raw response
+        print(f"Raw AI response: '{response}'")
+        print(f"Response type: {type(response)}")
+        print(f"Response length: {len(response) if response else 0}")
+        
+        # Check if response is empty
+        if not response or not response.strip():
+            print("Empty response from AI - using fallback")
+            return {
+                "food_name": "Unknown Food Item",
+                "calories": 150.0,
+                "protein": 3.0,
+                "carbs": 20.0,
+                "fat": 5.0,
+                "portion_size": "1 serving"
+            }
+        
         # Parse the JSON response
         content = response.strip()
         
@@ -224,7 +241,20 @@ Provide realistic estimates based on the visible portion. Return ONLY valid JSON
             content = content.split('```')[1].split('```')[0].strip()
         
         # Parse the JSON response
-        food_data = json.loads(content)
+        try:
+            food_data = json.loads(content)
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e}")
+            print(f"Content that failed to parse: '{content}'")
+            # Return fallback data if JSON parsing fails
+            return {
+                "food_name": "Food Item",
+                "calories": 100.0,
+                "protein": 2.0,
+                "carbs": 15.0,
+                "fat": 3.0,
+                "portion_size": "1 serving"
+            }
         
         return {
             "food_name": food_data.get("food_name", "Unknown Food"),
