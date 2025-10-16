@@ -1176,17 +1176,28 @@ function App() {
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <h3>Select Theme</h3>
               <div className="theme-options">
-                {['system', 'dark', 'light'].map((t) => (
+                {[
+                  { value: 'system', icon: '🌓', label: 'System', desc: 'Match your device settings' },
+                  { value: 'dark', icon: '🌙', label: 'Dark', desc: 'Dark theme for low light' },
+                  { value: 'light', icon: '☀️', label: 'Light', desc: 'Light theme for daytime' }
+                ].map((t) => (
                   <button
-                    key={t}
-                    className={`theme-option ${theme === t ? 'active' : ''}`}
+                    key={t.value}
+                    className={`theme-option ${theme === t.value ? 'active' : ''}`}
                     onClick={() => {
-                      setTheme(t);
-                      localStorage.setItem('fitflow_theme', t);
+                      setTheme(t.value);
+                      localStorage.setItem('fitflow_theme', t.value);
                       setShowThemeModal(false);
                     }}
                   >
-                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                    <div className="theme-option-content">
+                      <span className="theme-icon">{t.icon}</span>
+                      <div className="theme-text">
+                        <span className="theme-label">{t.label}</span>
+                        <span className="theme-desc">{t.desc}</span>
+                      </div>
+                    </div>
+                    {theme === t.value && <span className="theme-check">✓</span>}
                   </button>
                 ))}
               </div>
