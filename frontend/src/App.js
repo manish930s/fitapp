@@ -736,7 +736,13 @@ function App() {
                 chatMessages.map((msg, index) => (
                   <div key={index} className="chat-message-group">
                     <div className="chat-message user-message">
-                      <span className="message-icon">👤</span>
+                      <span className="message-icon">
+                        {user?.profile_picture ? (
+                          <img src={user.profile_picture} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                        ) : (
+                          '👤'
+                        )}
+                      </span>
                       <p>{msg.user_message}</p>
                     </div>
                     {msg.assistant_message && (
