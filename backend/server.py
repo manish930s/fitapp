@@ -359,7 +359,8 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
         "weight": current_user.get("weight"),
         "activity_level": current_user.get("activity_level"),
         "goal_weight": current_user.get("goal_weight"),
-        "daily_calories": daily_calories
+        "daily_calories": daily_calories,
+        "profile_picture": current_user.get("profile_picture")
     }
 
 @app.put("/api/user/profile")
