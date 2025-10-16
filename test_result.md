@@ -336,11 +336,11 @@ frontend:
   
   - task: "Profile Page"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -348,6 +348,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "REDESIGNED: Completely redesigned profile page to match user's design. Now includes: 1) Large profile avatar with green border, 2) My Goals section with progress bars for Weight Loss and Muscle Gain, 3) My Measurements grid showing Weight, Body Fat %, and BMI, 4) General settings with Notifications toggle, Theme, Units, and Privacy Policy options, 5) Logout button with red text. All styled with dark theme and green accents."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: Profile page redesign fully functional and matches design requirements. Profile avatar, name (Test User), My Goals section with 2 goal items (Weight Loss 75%, Muscle Gain 50%), My Measurements section with 3 measurement items (60lbs Weight, 18% Body Fat, 22.1 BMI), and General settings section all displaying correctly. Dark theme with green accents properly applied. Navigation working smoothly."
   
   - task: "AI Fitness Coach Chatbot UI"
     implemented: true
