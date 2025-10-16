@@ -1149,7 +1149,9 @@ function App() {
             <div className="settings-item" onClick={() => setShowThemeModal(true)}>
               <span>Theme</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: '#888', fontSize: '14px' }}>{theme}</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                  {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                </span>
                 <span className="settings-arrow">›</span>
               </div>
             </div>
