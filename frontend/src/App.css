@@ -1715,4 +1715,3 @@ input:checked + .toggle-slider:before {
   font-size: 20px;
   color: var(--text-secondary);
 }
-}
