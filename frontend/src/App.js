@@ -1690,14 +1690,20 @@ function App() {
         currentPage === 'login' ? renderLogin() : renderRegister()
       ) : (
         <>
-          <div className="app-content">
-            {currentPage === 'home' && renderHome()}
-            {currentPage === 'scan' && renderScanner()}
-            {currentPage === 'workout' && renderWorkout()}
-            {currentPage === 'mealplan' && renderMealPlan()}
-            {currentPage === 'profile' && renderProfile()}
-          </div>
-          {renderBottomNav()}
+          {showSettingsPage ? (
+            renderSettings()
+          ) : (
+            <>
+              <div className="app-content">
+                {currentPage === 'home' && renderHome()}
+                {currentPage === 'scan' && renderScanner()}
+                {currentPage === 'workout' && renderWorkout()}
+                {currentPage === 'mealplan' && renderMealPlan()}
+                {currentPage === 'profile' && renderProfile()}
+              </div>
+              {renderBottomNav()}
+            </>
+          )}
         </>
       )}
     </div>
