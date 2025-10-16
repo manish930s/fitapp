@@ -35,6 +35,12 @@ function App() {
   const [profilePicturePreview, setProfilePicturePreview] = useState(null);
   const profilePictureInputRef = useRef(null);
   
+  // Settings state
+  const [showSettingsPage, setShowSettingsPage] = useState(false);
+  const [settingsSubPage, setSettingsSubPage] = useState('main'); // main, connected-apps, change-password, help, contact
+  const [workoutReminders, setWorkoutReminders] = useState(true);
+  const [appUpdates, setAppUpdates] = useState(false);
+  
   // Chatbot state
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
