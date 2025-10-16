@@ -1647,18 +1647,20 @@ input:checked + .toggle-slider:before {
 .settings-page {
   min-height: 100vh;
   background: var(--bg-primary);
-  padding-bottom: 80px;
+  padding-bottom: 100px;
 }
 
 .settings-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
+  padding: 20px 24px;
   background: var(--bg-secondary);
   position: sticky;
   top: 0;
   z-index: 10;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .settings-header h2 {
@@ -1669,11 +1671,13 @@ input:checked + .toggle-slider:before {
 
 .settings-content {
   padding: 0;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .settings-section {
   margin-bottom: 24px;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
 .settings-section .section-title {
