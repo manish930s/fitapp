@@ -13,7 +13,7 @@ import os
 # Add backend to path to import modules
 sys.path.append('/app/backend')
 
-BASE_URL = "https://chat-repair-6.preview.emergentagent.com/api"
+BASE_URL = "https://fix-profile-edit.preview.emergentagent.com/api"
 
 def test_ai_fitness_coach_detailed():
     """Test AI Fitness Coach with multiple questions to verify real AI"""
