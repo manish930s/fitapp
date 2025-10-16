@@ -1855,7 +1855,7 @@ input:checked + .toggle-slider:before {
 .settings-arrow {
   font-size: 20px;
   color: var(--text-secondary);
-
+}
 
 /* Light Theme Specific Adjustments */
 :root[data-theme="light"] .settings-item:hover {
