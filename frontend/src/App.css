@@ -41,6 +41,15 @@
   box-sizing: border-box;
 }
 
+/* Smooth theme transitions for all elements */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
 html {
   /* Prevent zoom on iOS */
   -webkit-text-size-adjust: 100%;
