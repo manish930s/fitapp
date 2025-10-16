@@ -1451,9 +1451,6 @@ function App() {
     }
 
     if (settingsSubPage === 'contact') {
-      const [contactMessage, setContactMessage] = useState('');
-      const [contactSubject, setContactSubject] = useState('');
-      
       const handleContactSubmit = () => {
         if (!contactSubject || !contactMessage) {
           setError('Please fill in all fields');
