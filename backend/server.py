@@ -66,6 +66,7 @@ class UserLogin(BaseModel):
     password: str
 
 class UserProfile(BaseModel):
+    name: Optional[str] = None
     age: Optional[int] = None
     gender: Optional[str] = None
     height: Optional[float] = None
