@@ -1,38 +1,38 @@
 {
   "User Login": {
     "success": false,
-    "message": "Status: 502, Response: ",
+    "message": "Status: 401, Response: {\"detail\":\"Invalid email or password\"}",
     "details": null,
-    "timestamp": "2025-10-16T07:36:16.137164"
+    "timestamp": "2025-10-16T07:41:07.401407"
   },
   "GET Profile Picture Field": {
     "success": false,
     "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T07:36:16.637875"
+    "timestamp": "2025-10-16T07:41:07.902121"
   },
   "Comprehensive Profile Update": {
     "success": false,
     "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T07:36:17.137995"
+    "timestamp": "2025-10-16T07:41:08.402233"
   },
   "Data Persistence Verification": {
     "success": false,
     "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T07:36:17.638115"
+    "timestamp": "2025-10-16T07:41:08.902356"
   },
   "Partial Update Test": {
     "success": false,
     "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T07:36:18.138239"
+    "timestamp": "2025-10-16T07:41:09.402474"
   },
   "Edge Cases Test": {
     "success": false,
     "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T07:36:18.638376"
+    "timestamp": "2025-10-16T07:41:09.902596"
   }
 }
