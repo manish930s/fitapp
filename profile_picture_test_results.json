@@ -1,38 +1,38 @@
 {
-  "User Login": {
-    "success": false,
-    "message": "Status: 401, Response: {\"detail\":\"Invalid email or password\"}",
+  "User Registration & Login": {
+    "success": true,
+    "message": "User registered successfully, token received",
     "details": null,
-    "timestamp": "2025-10-16T07:41:07.401407"
+    "timestamp": "2025-10-16T07:41:35.091754"
   },
   "GET Profile Picture Field": {
-    "success": false,
-    "message": "No auth token available",
+    "success": true,
+    "message": "profile_picture field present. Current value: None",
     "details": null,
-    "timestamp": "2025-10-16T07:41:07.902121"
+    "timestamp": "2025-10-16T07:41:35.637883"
   },
   "Comprehensive Profile Update": {
-    "success": false,
-    "message": "No auth token available",
+    "success": true,
+    "message": "Profile updated with all fields including profile_picture",
     "details": null,
-    "timestamp": "2025-10-16T07:41:08.402233"
+    "timestamp": "2025-10-16T07:41:36.180523"
   },
   "Data Persistence Verification": {
-    "success": false,
-    "message": "No auth token available",
+    "success": true,
+    "message": "All data persisted correctly. \u2713 name: Jane Smith; \u2713 age: 28; \u2713 weight: 65.0; \u2713 profile_picture: base64 data persisted (296 chars)",
     "details": null,
-    "timestamp": "2025-10-16T07:41:08.902356"
+    "timestamp": "2025-10-16T07:41:36.726069"
   },
   "Partial Update Test": {
-    "success": false,
-    "message": "No auth token available",
+    "success": true,
+    "message": "Partial update successful. \u2713 name unchanged; \u2713 age unchanged; \u2713 weight unchanged; \u2713 profile_picture updated correctly",
     "details": null,
-    "timestamp": "2025-10-16T07:41:09.402474"
+    "timestamp": "2025-10-16T07:41:37.384023"
   },
   "Edge Cases Test": {
     "success": false,
-    "message": "No auth token available",
+    "message": "Edge cases failed - Null: False, Empty: True",
     "details": null,
-    "timestamp": "2025-10-16T07:41:09.902596"
+    "timestamp": "2025-10-16T07:41:39.112486"
   }
 }
