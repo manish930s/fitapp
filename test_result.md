@@ -354,11 +354,11 @@ frontend:
   
   - task: "AI Fitness Coach Chatbot UI"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -366,6 +366,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Backend integration updated to use Emergent LLM Key + OpenAI GPT-4o. Frontend UI ready for testing with real AI responses."
+      - working: true
+        agent: "testing"
+        comment: "🎉 CRITICAL SUCCESS: AI Fitness Coach chatbot FULLY FUNCTIONAL with REAL AI responses! Tested with 2 messages: 'What exercises should I do for weight loss?' and 'How many calories should I burn daily?'. Both received comprehensive, personalized AI responses from OpenAI GPT-4o. Chat interface expands/collapses correctly, message history persists, language selection available. Integration with backend working perfectly. NO mocked responses - genuine AI functionality confirmed."
   
   - task: "Bottom Navigation"
     implemented: true
