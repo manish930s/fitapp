@@ -1322,10 +1322,6 @@ function App() {
     }
 
     if (settingsSubPage === 'change-password') {
-      const [currentPassword, setCurrentPassword] = useState('');
-      const [newPassword, setNewPassword] = useState('');
-      const [confirmPassword, setConfirmPassword] = useState('');
-      
       const handleChangePassword = async () => {
         if (!currentPassword || !newPassword || !confirmPassword) {
           setError('All fields are required');
