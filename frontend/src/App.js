@@ -94,6 +94,40 @@ function App() {
     };
   }, [stream]);
 
+  // Theme handling
+  useEffect(() => {
+    const applyTheme = () => {
+      const root = document.documentElement;
+      
+      if (theme === 'system') {
+        // Detect system preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      } else {
+        root.setAttribute('data-theme', theme);
+      }
+    };
+
+    applyTheme();
+
+    // Listen for system theme changes when theme is set to 'system'
+    if (theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = () => applyTheme();
+      
+      // Modern browsers
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', handleChange);
+        return () => mediaQuery.removeEventListener('change', handleChange);
+      } 
+      // Legacy browsers
+      else if (mediaQuery.addListener) {
+        mediaQuery.addListener(handleChange);
+        return () => mediaQuery.removeListener(handleChange);
+      }
+    }
+  }, [theme]);
+
   const fetchUserProfile = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/user/profile`, {
