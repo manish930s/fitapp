@@ -1296,6 +1296,348 @@ function App() {
     );
   };
 
+  // Render Settings Page
+  const renderSettings = () => {
+    if (settingsSubPage === 'connected-apps') {
+      return (
+        <div className="settings-page">
+          <div className="settings-header">
+            <button className="back-btn" onClick={() => setSettingsSubPage('main')}>←</button>
+            <h2>Connected Apps</h2>
+            <div></div>
+          </div>
+          <div className="settings-content">
+            <p style={{ textAlign: 'center', color: '#888', marginTop: '40px' }}>
+              No connected apps yet.<br/>
+              Connect third-party apps to sync your fitness data.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (settingsSubPage === 'change-password') {
+      const [currentPassword, setCurrentPassword] = useState('');
+      const [newPassword, setNewPassword] = useState('');
+      const [confirmPassword, setConfirmPassword] = useState('');
+      
+      const handleChangePassword = async () => {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          setError('All fields are required');
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          setError('New passwords do not match');
+          return;
+        }
+        if (newPassword.length < 6) {
+          setError('Password must be at least 6 characters');
+          return;
+        }
+        
+        setLoading(true);
+        setError('');
+        try {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/user/password`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              current_password: currentPassword,
+              new_password: newPassword
+            })
+          });
+          
+          if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.detail || 'Failed to change password');
+          }
+          
+          setSuccess('Password changed successfully!');
+          setTimeout(() => {
+            setSettingsSubPage('main');
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+          }, 2000);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      return (
+        <div className="settings-page">
+          <div className="settings-header">
+            <button className="back-btn" onClick={() => setSettingsSubPage('main')}>←</button>
+            <h2>Change Password</h2>
+            <div></div>
+          </div>
+          <div className="settings-content" style={{ padding: '20px' }}>
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+            
+            <div className="form-group">
+              <label>Current Password</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>New Password</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Confirm New Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+              />
+            </div>
+            
+            <button 
+              className="btn-primary" 
+              onClick={handleChangePassword}
+              disabled={loading}
+              style={{ width: '100%', marginTop: '20px' }}
+            >
+              {loading ? 'Changing...' : 'Change Password'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (settingsSubPage === 'help') {
+      return (
+        <div className="settings-page">
+          <div className="settings-header">
+            <button className="back-btn" onClick={() => setSettingsSubPage('main')}>←</button>
+            <h2>Help Center & FAQ</h2>
+            <div></div>
+          </div>
+          <div className="settings-content" style={{ padding: '20px' }}>
+            <div className="faq-item" style={{ marginBottom: '20px' }}>
+              <h3 style={{ color: '#22c55e', marginBottom: '10px' }}>How do I scan food?</h3>
+              <p style={{ color: '#ccc' }}>Go to the Scan tab, then either take a photo or upload an image of your meal. Our AI will analyze it and provide nutritional information.</p>
+            </div>
+            <div className="faq-item" style={{ marginBottom: '20px' }}>
+              <h3 style={{ color: '#22c55e', marginBottom: '10px' }}>How do I track my progress?</h3>
+              <p style={{ color: '#ccc' }}>Your daily stats are displayed on the Home page. You can also view your goals and measurements in your Profile.</p>
+            </div>
+            <div className="faq-item" style={{ marginBottom: '20px' }}>
+              <h3 style={{ color: '#22c55e', marginBottom: '10px' }}>Can I change my fitness goals?</h3>
+              <p style={{ color: '#ccc' }}>Yes! Go to your Profile page and tap on any goal to update it. You can also add new goals.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (settingsSubPage === 'contact') {
+      const [contactMessage, setContactMessage] = useState('');
+      const [contactSubject, setContactSubject] = useState('');
+      
+      const handleContactSubmit = () => {
+        if (!contactSubject || !contactMessage) {
+          setError('Please fill in all fields');
+          return;
+        }
+        setSuccess('Message sent! We\'ll get back to you soon.');
+        setTimeout(() => {
+          setSettingsSubPage('main');
+          setContactMessage('');
+          setContactSubject('');
+        }, 2000);
+      };
+      
+      return (
+        <div className="settings-page">
+          <div className="settings-header">
+            <button className="back-btn" onClick={() => setSettingsSubPage('main')}>←</button>
+            <h2>Contact Support</h2>
+            <div></div>
+          </div>
+          <div className="settings-content" style={{ padding: '20px' }}>
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+            
+            <div className="form-group">
+              <label>Subject</label>
+              <input
+                type="text"
+                value={contactSubject}
+                onChange={(e) => setContactSubject(e.target.value)}
+                placeholder="What can we help you with?"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Message</label>
+              <textarea
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
+                placeholder="Describe your issue or question..."
+                rows="6"
+                style={{ resize: 'vertical' }}
+              />
+            </div>
+            
+            <button 
+              className="btn-primary" 
+              onClick={handleContactSubmit}
+              style={{ width: '100%', marginTop: '20px' }}
+            >
+              Send Message
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Main Settings Page
+    const handleDeleteAccount = async () => {
+      if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.')) {
+        return;
+      }
+      
+      setLoading(true);
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/user/account`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to delete account');
+        }
+        
+        // Logout and clear data
+        localStorage.removeItem('fitflow_token');
+        setToken(null);
+        setUser(null);
+        setCurrentPage('login');
+      } catch (err) {
+        setError('Failed to delete account. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    return (
+      <div className="settings-page">
+        <div className="settings-header">
+          <button className="back-btn" onClick={() => setShowSettingsPage(false)}>←</button>
+          <h2>Settings</h2>
+          <div></div>
+        </div>
+        
+        <div className="settings-content">
+          {/* Notifications Section */}
+          <div className="settings-section">
+            <h3 className="section-title">Notifications</h3>
+            <div className="settings-list">
+              <div className="settings-item">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="settings-icon">🔔</span>
+                  <span>Workout Reminders</span>
+                </div>
+                <label className="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    checked={workoutReminders}
+                    onChange={() => setWorkoutReminders(!workoutReminders)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+              <div className="settings-item">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="settings-icon">🔊</span>
+                  <span>App Updates</span>
+                </div>
+                <label className="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    checked={appUpdates}
+                    onChange={() => setAppUpdates(!appUpdates)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Privacy Section */}
+          <div className="settings-section">
+            <h3 className="section-title">Privacy</h3>
+            <div className="settings-list">
+              <div className="settings-item" onClick={() => setSettingsSubPage('connected-apps')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="settings-icon">🔗</span>
+                  <span>Connected Apps</span>
+                </div>
+                <span className="settings-arrow">›</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Account Section */}
+          <div className="settings-section">
+            <h3 className="section-title">Account</h3>
+            <div className="settings-list">
+              <div className="settings-item" onClick={() => setSettingsSubPage('change-password')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="settings-icon">🔒</span>
+                  <span>Change Password</span>
+                </div>
+                <span className="settings-arrow">›</span>
+              </div>
+              <div className="settings-item" onClick={handleDeleteAccount}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="settings-icon">🗑️</span>
+                  <span style={{ color: '#ef4444' }}>Delete Account</span>
+                </div>
+                <span className="settings-arrow">›</span>
+              </div>
+              <div className="settings-item" onClick={() => setSettingsSubPage('help')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="settings-icon">❓</span>
+                  <span>Help Center & FAQ</span>
+                </div>
+                <span className="settings-arrow">›</span>
+              </div>
+              <div className="settings-item" onClick={() => setSettingsSubPage('contact')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="settings-icon">✉️</span>
+                  <span>Contact Support</span>
+                </div>
+                <span className="settings-arrow">›</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Bottom Navigation
   const renderBottomNav = () => (
     <nav className="bottom-nav">
