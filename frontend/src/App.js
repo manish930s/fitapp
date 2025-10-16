@@ -320,6 +320,80 @@ function App() {
     }
   };
 
+  const openEditProfileModal = () => {
+    setEditProfileData({
+      name: user?.name || '',
+      age: user?.age || '',
+      gender: user?.gender || '',
+      height: user?.height || '',
+      weight: user?.weight || '',
+      activity_level: user?.activity_level || 'moderate',
+      goal_weight: user?.goal_weight || ''
+    });
+    setProfilePicturePreview(user?.profile_picture || null);
+    setShowEditProfileModal(true);
+  };
+
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size should be less than 5MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicturePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditProfileSubmit = async () => {
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const profileData = {
+        ...editProfileData,
+        profile_picture: profilePicturePreview
+      };
+
+      // Remove empty values
+      Object.keys(profileData).forEach(key => {
+        if (profileData[key] === '' || profileData[key] === null) {
+          delete profileData[key];
+        }
+      });
+
+      const response = await fetch(`${BACKEND_URL}/api/user/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(profileData)
+      });
+
+      if (response.ok) {
+        setSuccess('Profile updated successfully!');
+        await fetchUserProfile(); // Refresh user data
+        setTimeout(() => {
+          setShowEditProfileModal(false);
+          setSuccess('');
+        }, 1500);
+      } else {
+        const data = await response.json();
+        setError(data.detail || 'Failed to update profile');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const startCamera = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
