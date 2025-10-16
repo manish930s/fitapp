@@ -30,6 +30,10 @@ function App() {
   const [notifications, setNotifications] = useState(true);
   const [theme, setTheme] = useState(localStorage.getItem('fitflow_theme') || 'system');
   const [showThemeModal, setShowThemeModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [editProfileData, setEditProfileData] = useState({});
+  const [profilePicturePreview, setProfilePicturePreview] = useState(null);
+  const profilePictureInputRef = useRef(null);
   
   // Chatbot state
   const [chatMessages, setChatMessages] = useState([]);
