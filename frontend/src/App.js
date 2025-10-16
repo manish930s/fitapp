@@ -605,7 +605,13 @@ function App() {
     <div className="dashboard-container">
       <div className="dashboard-header">
         <div className="user-greeting">
-          <div className="user-avatar">👤</div>
+          <div className="user-avatar">
+            {user?.profile_picture ? (
+              <img src={user.profile_picture} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : (
+              '👤'
+            )}
+          </div>
           <h2>Hello, {user?.name?.split(' ')[0] || 'User'}!</h2>
         </div>
         <button className="icon-btn" onClick={handleLogout}>🔔</button>
