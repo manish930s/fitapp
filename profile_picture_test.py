@@ -40,17 +40,26 @@ def create_test_base64_image():
     # This is a 10x10 red square PNG image in base64
     return "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAABYSURBVBiVY/z//z8DJQAggBhJVQcQQIykqgMIIEZS1QEEECO56gACiJFcdQABxEiuOoAAYiRXHUAAMZKrDiCAGMlVBxBAjOSqAwggRnLVAQQQI7nqAAKIEQAALMABAfyFzrAAAAAASUVORK5CYII="
 
-def test_user_login():
-    """Test user login to get auth token"""
+def test_user_registration_and_login():
+    """Test user registration and login to get auth token"""
     global auth_token, user_id
     
-    login_data = {
+    # First try to register the user
+    register_data = {
+        "name": "Test User",
         "email": TEST_USER_EMAIL,
-        "password": TEST_USER_PASSWORD
+        "password": TEST_USER_PASSWORD,
+        "age": 30,
+        "gender": "male",
+        "height": 175.0,
+        "weight": 70.0,
+        "activity_level": "moderate",
+        "goal_weight": 68.0
     }
     
     try:
-        response = requests.post(f"{BASE_URL}/auth/login", json=login_data, timeout=10)
+        # Try registration first
+        response = requests.post(f"{BASE_URL}/auth/register", json=register_data, timeout=10)
         
         if response.status_code == 200:
             data = response.json()
@@ -58,18 +67,39 @@ def test_user_login():
             user_id = data.get("user", {}).get("user_id")
             
             if auth_token and user_id:
-                log_test("User Login", True, "Login successful, token received")
+                log_test("User Registration & Login", True, "User registered successfully, token received")
                 return True
+        elif response.status_code == 400 and "already registered" in response.text:
+            # User already exists, try to login
+            login_data = {
+                "email": TEST_USER_EMAIL,
+                "password": TEST_USER_PASSWORD
+            }
+            
+            response = requests.post(f"{BASE_URL}/auth/login", json=login_data, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                auth_token = data.get("token")
+                user_id = data.get("user", {}).get("user_id")
+                
+                if auth_token and user_id:
+                    log_test("User Registration & Login", True, "User login successful, token received")
+                    return True
+                else:
+                    log_test("User Registration & Login", False, "Missing token or user_id in login response")
+                    return False
             else:
-                log_test("User Login", False, "Missing token or user_id in response")
+                log_test("User Registration & Login", False, 
+                        f"Login failed - Status: {response.status_code}, Response: {response.text}")
                 return False
         else:
-            log_test("User Login", False, 
-                    f"Status: {response.status_code}, Response: {response.text}")
+            log_test("User Registration & Login", False, 
+                    f"Registration failed - Status: {response.status_code}, Response: {response.text}")
             return False
             
     except Exception as e:
-        log_test("User Login", False, f"Error: {str(e)}")
+        log_test("User Registration & Login", False, f"Error: {str(e)}")
         return False
 
 def test_get_profile_picture_field():
