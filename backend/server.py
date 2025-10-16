@@ -73,6 +73,7 @@ class UserProfile(BaseModel):
     activity_level: Optional[str] = None
     goal_weight: Optional[float] = None
     theme: Optional[str] = "system"  # system, dark, light
+    profile_picture: Optional[str] = None  # base64 encoded image
 
 class FoodScanResult(BaseModel):
     food_name: str
