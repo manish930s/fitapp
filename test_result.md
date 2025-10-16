@@ -137,11 +137,11 @@ backend:
   
   - task: "Food Scanner - AI Image Analysis"
     implemented: true
-    working: false
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -155,6 +155,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "❌ REGRESSION: OpenRouter API key now invalid/expired - returning 401 'User not found' error. Same issue affects both food scanning and AI fitness coach. **MOCKED** implementation added for testing - endpoint works but AI analysis is hardcoded. Real OpenRouter integration requires API key renewal/verification."
+      - working: "NA"
+        agent: "main"
+        comment: "FIXED: Replaced OpenRouter integration with Emergent LLM Key + OpenAI GPT-4o. Fixed syntax error (orphan docstring at line 240). Installed litellm dependency. Using emergentintegrations library for AI integration. Backend server restarted successfully. Ready for testing with real AI analysis."
   
   - task: "Food History and Daily Summary"
     implemented: true
