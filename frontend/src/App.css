@@ -1851,4 +1851,39 @@ input:checked + .toggle-slider:before {
 .settings-arrow {
   font-size: 20px;
   color: var(--text-secondary);
+
+
+/* Light Theme Specific Adjustments */
+:root[data-theme="light"] .settings-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme="light"] .stat-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] .auth-card {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="light"] .modal-overlay {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+:root[data-theme="light"] .bottom-nav {
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="light"] input[type="checkbox"]:checked + .toggle-slider {
+  background-color: var(--brand-primary);
+}
+
+:root[data-theme="light"] .btn-primary {
+  box-shadow: 0 4px 12px rgba(0, 221, 119, 0.3);
+}
+
+:root[data-theme="light"] .btn-primary:hover {
+  box-shadow: 0 6px 16px rgba(0, 221, 119, 0.4);
+}
+
 }
