@@ -1133,6 +1133,146 @@ function App() {
     </div>
   );
 
+  // Render Chatbot Page
+  const renderChatbot = () => {
+    const quickSuggestions = [
+      "Suggest a workout",
+      "What's a healthy snack?"
+    ];
+
+    return (
+      <div className="chatbot-page">
+        <div className="chatbot-page-header">
+          <button className="back-btn" onClick={() => setCurrentPage('home')}>
+            <span style={{ fontSize: '24px' }}>←</span>
+          </button>
+          <h2>AI Fitness Coach</h2>
+          <button 
+            className="menu-btn"
+            onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+          >
+            <span style={{ fontSize: '24px' }}>⋮</span>
+          </button>
+        </div>
+
+        {/* Language Menu Dropdown */}
+        {showLanguageMenu && (
+          <div className="language-dropdown">
+            <div className="language-dropdown-header">Select Language</div>
+            {['english', 'hindi', 'marathi', 'spanish', 'french', 'german', 'chinese', 'japanese'].map((lang) => (
+              <button
+                key={lang}
+                className={`language-dropdown-item ${chatLanguage === lang ? 'active' : ''}`}
+                onClick={() => {
+                  setChatLanguage(lang);
+                  setShowLanguageMenu(false);
+                }}
+              >
+                {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                {chatLanguage === lang && <span style={{ marginLeft: '8px' }}>✓</span>}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="chatbot-messages-container">
+          {chatMessages.length === 0 ? (
+            <div className="chat-welcome-message">
+              <div className="ai-message-bubble">
+                <div className="ai-avatar">🤖</div>
+                <div className="message-content">
+                  <div className="message-header">AI Coach - {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                  <div className="message-text">
+                    Hello! I'm your AI Fitness Coach. Ask me anything about fitness, nutrition, or workout plans. Let's get started on your fitness journey!
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            chatMessages.map((msg, index) => (
+              <div key={index} className="message-group">
+                {/* AI Message */}
+                <div className="ai-message-bubble">
+                  <div className="ai-avatar">🤖</div>
+                  <div className="message-content">
+                    <div className="message-header">AI Coach - {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div className="message-text">{msg.assistant_message || '...'}</div>
+                  </div>
+                </div>
+                
+                {/* User Message */}
+                {msg.user_message && (
+                  <div className="user-message-bubble">
+                    <div className="message-content">
+                      <div className="message-header">You - {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                      <div className="message-text">{msg.user_message}</div>
+                    </div>
+                    <div className="user-avatar">
+                      {user?.profile_picture ? (
+                        <img src={user.profile_picture} alt="User" />
+                      ) : (
+                        '👤'
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+          {isChatLoading && (
+            <div className="ai-message-bubble">
+              <div className="ai-avatar">🤖</div>
+              <div className="message-content">
+                <div className="message-text typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="chatbot-input-section">
+          {/* Quick Suggestions */}
+          <div className="quick-suggestions">
+            {quickSuggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                className="suggestion-btn"
+                onClick={() => {
+                  setChatInput(suggestion);
+                }}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+
+          {/* Chat Input */}
+          <div className="chat-input-wrapper">
+            <input
+              type="text"
+              className="chat-input-field"
+              placeholder="Type your message..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && !isChatLoading && chatInput.trim() && sendChatMessage()}
+              disabled={isChatLoading}
+            />
+            <button 
+              className="chat-send-button"
+              onClick={sendChatMessage}
+              disabled={isChatLoading || !chatInput.trim()}
+            >
+              <span style={{ fontSize: '20px', transform: 'rotate(-45deg)', display: 'inline-block' }}>➤</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Render Workout Page
   const renderWorkout = () => (
     <div className="workout-container">
