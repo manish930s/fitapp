@@ -2144,6 +2144,7 @@ input:checked + .toggle-slider:before {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
+  padding-top: 80px;
   padding-bottom: 200px;
   display: flex;
   flex-direction: column;
