@@ -1673,6 +1673,7 @@ function App() {
                         color: '#fff'
                       }}
                     >
+                      <option value="1">1 Day</option>
                       <option value="3">3 Days</option>
                       <option value="7">7 Days (1 Week)</option>
                       <option value="14">14 Days (2 Weeks)</option>
