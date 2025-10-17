@@ -77,3 +77,13 @@ PyYAML
 jinja2
 tiktoken
 tokenizers
+multidict
+attrs
+yarl
+propcache
+aiohappyeyeballs
+aiosignal
+frozenlist
+distro
+markupsafe
+httpcore
