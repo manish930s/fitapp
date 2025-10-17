@@ -72,6 +72,10 @@ function App() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [chatLanguage, setChatLanguage] = useState('english');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const chatMessagesContainerRef = useRef(null);
+  
+  // Manual meal plan single-day entry state
+  const [currentManualDay, setCurrentManualDay] = useState(0);
   
   // Camera refs
   const videoRef = useRef(null);
