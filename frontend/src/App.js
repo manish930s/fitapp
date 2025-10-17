@@ -980,114 +980,14 @@ function App() {
         </div>
       )}
 
-      {/* AI Fitness Coach Chatbot */}
-      <div className="chatbot-section">
-        <div className="chatbot-header">
-          <div className="chatbot-title" onClick={() => setShowChat(!showChat)}>
-            <span className="chatbot-icon">🤖</span>
-            <h3>AI Fitness Coach</h3>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button 
-              className="language-btn" 
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowLanguageModal(true);
-              }}
-              title="Select Language"
-            >
-              🌐
-            </button>
-            <span className="chatbot-toggle" onClick={() => setShowChat(!showChat)}>{showChat ? '▼' : '▲'}</span>
-          </div>
-        </div>
-        
-        {showChat && (
-          <div className="chatbot-content">
-            <div className="language-indicator" style={{ fontSize: '12px', color: '#888', padding: '8px', textAlign: 'center' }}>
-              Language: {chatLanguage.charAt(0).toUpperCase() + chatLanguage.slice(1)}
-            </div>
-            <div className="chat-messages">
-              {chatMessages.length === 0 ? (
-                <div className="chat-welcome">
-                  <p>👋 Hi! I'm your AI Fitness Coach.</p>
-                  <p>Ask me about workouts, nutrition, or fitness goals!</p>
-                </div>
-              ) : (
-                chatMessages.map((msg, index) => (
-                  <div key={index} className="chat-message-group">
-                    <div className="chat-message user-message">
-                      <span className="message-icon">
-                        {user?.profile_picture ? (
-                          <img src={user.profile_picture} alt="User" style={{ width: '24px', height: '24px', objectFit: 'cover', borderRadius: '50%' }} />
-                        ) : (
-                          '👤'
-                        )}
-                      </span>
-                      <p>{msg.user_message}</p>
-                    </div>
-                    {msg.assistant_message && (
-                      <div className="chat-message assistant-message">
-                        <span className="message-icon">🤖</span>
-                        <p>{msg.assistant_message}</p>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-              {isChatLoading && (
-                <div className="chat-message assistant-message">
-                  <span className="message-icon">🤖</span>
-                  <p className="typing-indicator">Thinking...</p>
-                </div>
-              )}
-            </div>
-            
-            <div className="chat-input-container">
-              <input
-                type="text"
-                className="chat-input"
-                placeholder="Ask your fitness coach..."
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
-                disabled={isChatLoading}
-              />
-              <button 
-                className="chat-send-btn"
-                onClick={sendChatMessage}
-                disabled={isChatLoading || !chatInput.trim()}
-              >
-                ➤
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Language Modal */}
-        {showLanguageModal && (
-          <div className="modal-overlay" onClick={() => setShowLanguageModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>Select Language</h3>
-              <div className="language-options">
-                {['english', 'hindi', 'marathi', 'spanish', 'french', 'german', 'chinese', 'japanese'].map((lang) => (
-                  <button
-                    key={lang}
-                    className={`language-option ${chatLanguage === lang ? 'active' : ''}`}
-                    onClick={() => {
-                      setChatLanguage(lang);
-                      setShowLanguageModal(false);
-                    }}
-                  >
-                    {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                  </button>
-                ))}
-              </div>
-              <button className="modal-close" onClick={() => setShowLanguageModal(false)}>Close</button>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Floating Chatbot Button */}
+      <button 
+        className="floating-chat-btn"
+        onClick={() => setCurrentPage('chatbot')}
+        title="Chat with AI Fitness Coach"
+      >
+        <span style={{ fontSize: '28px' }}>💬</span>
+      </button>
     </div>
   );
 
