@@ -2545,8 +2545,9 @@ function App() {
                 {currentPage === 'workout' && renderWorkout()}
                 {currentPage === 'mealplan' && renderMealPlan()}
                 {currentPage === 'profile' && renderProfile()}
+                {currentPage === 'chatbot' && renderChatbot()}
               </div>
-              {renderBottomNav()}
+              {currentPage !== 'chatbot' && renderBottomNav()}
             </>
           )}
         </>
