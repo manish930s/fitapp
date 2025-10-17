@@ -423,9 +423,9 @@ frontend:
   
   - task: "Meal Plan Feature - AI Generated & Manual"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/App.js, /app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -450,6 +450,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "🎉 MANUAL MEAL PLAN TESTING COMPLETE: Comprehensive testing of POST /api/mealplan/create endpoint - ALL CRITICAL SCENARIOS PASSED (83.3% success rate). Test Results with test@fitflow.com credentials: ✅ Login & Authentication: JWT token received and working correctly, ✅ Manual Meal Plan Creation - Basic: Successfully created 3-day plan with exact data structure from review request (plan_id: UUID format, name: 'My Manual Meal Plan', duration: 3, start_date: '2025-02-01'), ✅ Manual Meal Plan Creation - 7 Days: Created 7-day plan with 3+ meals per day, verified UUID format and type='manual', ✅ Retrieve Manual Meal Plans: GET /api/mealplan/list returns manual plans with correct type 'manual' (✍️ icon), found 4 manual plans total, ✅ Get Manual Meal Plan Details: GET /api/mealplan/{plan_id} returns complete plan with all days, meals, and nutritional data, daily totals calculated correctly, ✅ Data Persistence: All meal names, calories, protein, carbs, fat, ingredients, and descriptions match submitted data exactly, ✅ Validation Testing: Missing required fields (name, duration, start_date) properly rejected with 422 status, edge cases handled appropriately. Manual meal plan creation is production-ready with complete data structure compliance, accurate daily totals calculation, proper type identification, and robust data persistence. Backend API fully functional for manual meal plan workflow."
+      - working: false
+        agent: "testing"
+        comment: "❌ MANUAL MEAL PLAN SINGLE-DAY ENTRY UI ISSUE: Frontend UI testing revealed critical problem with manual meal plan form. Issue: After clicking Manual button in create meal plan modal, the form briefly appears (showing 27 inputs and 1 select element) but then immediately disappears, reverting back to the modal selection screen. This suggests a JavaScript state management issue or event handling problem. The backend API is confirmed working (POST /api/mealplan/create tested successfully), but the frontend form is not stable. Users cannot access the single-day entry interface with day navigation (Previous/Next buttons), duration selector, or meal input fields as specified in requirements. CRITICAL: Manual meal plan creation feature is non-functional from UI perspective despite backend readiness."
 
 metadata:
   created_by: "main_agent"
