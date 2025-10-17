@@ -370,7 +370,7 @@ frontend:
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -381,6 +381,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "🎉 CRITICAL SUCCESS: AI Fitness Coach chatbot FULLY FUNCTIONAL with REAL AI responses! Tested with 2 messages: 'What exercises should I do for weight loss?' and 'How many calories should I burn daily?'. Both received comprehensive, personalized AI responses from OpenAI GPT-4o. Chat interface expands/collapses correctly, message history persists, language selection available. Integration with backend working perfectly. NO mocked responses - genuine AI functionality confirmed."
+      - working: "NA"
+        agent: "main"
+        comment: "MAJOR UI REDESIGN: Completely redesigned chatbot experience per user request. Changes implemented: 1) Removed collapsible chatbot section from home page, 2) Added floating chatbot icon button (WhatsApp-style) at bottom-right of home page with green background and shadow effects, 3) Created new dedicated full-screen chatbot page accessible by clicking floating button, 4) Chatbot page features: Back button (←) to return to home, 'AI Fitness Coach' centered title, Three-dot menu (⋮) on top-right for language selection, Language dropdown menu with 8 languages (English, Hindi, Marathi, Spanish, French, German, Chinese, Japanese), AI messages displayed in green bubbles on left with robot avatar, User messages in dark teal bubbles on right with user profile picture, Quick suggestion buttons ('Suggest a workout', 'What's a healthy snack?'), Message input field at bottom with pink/magenta send button, 5) Bottom navigation hidden on chatbot page, 6) Chat history fetches when entering chatbot page. Frontend restarted successfully. Ready for testing: floating button functionality, chatbot page navigation, language selection, message display styling, quick suggestions, send button interaction."
   
   - task: "Bottom Navigation"
     implemented: true
