@@ -628,7 +628,8 @@ function App() {
 
     try {
       const day = selectedMealPlan.days[dayIndex];
-      const dayNumber = day.day_number;
+      // Support both 'day' and 'day_number' field names
+      const dayNumber = day.day_number || day.day;
 
       // Send empty meal data to backend to clear the meal
       const emptyMealData = {
