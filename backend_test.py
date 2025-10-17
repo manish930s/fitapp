@@ -13,9 +13,9 @@ import os
 
 # Configuration
 BASE_URL = "https://meal-organizer-4.preview.emergentagent.com/api"
-TEST_USER_EMAIL = "fitflow.tester@example.com"
-TEST_USER_PASSWORD = "SecureTest123!"
-TEST_USER_NAME = "FitFlow Tester"
+TEST_USER_EMAIL = "test@fitflow.com"
+TEST_USER_PASSWORD = "Test123!"
+TEST_USER_NAME = "Test User"
 
 # Global variables for test state
 auth_token = None
