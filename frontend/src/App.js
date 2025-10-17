@@ -570,9 +570,10 @@ function App() {
 
     try {
       const day = selectedMealPlan.days[dayIndex];
-      const dayNumber = day.day_number;
+      // Support both 'day' and 'day_number' field names
+      const dayNumber = day.day_number || day.day;
 
-      console.log('Day number:', dayNumber); // Debug log
+      console.log('Day number:', dayNumber, 'Day object:', day); // Debug log
 
       // Prepare meal data to send to backend
       const mealData = {
