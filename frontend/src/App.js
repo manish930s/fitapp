@@ -456,13 +456,16 @@ function App() {
         return;
       }
 
-      // Check if at least one meal has content
-      const hasContent = manualMealPlanData.days.some(day => 
-        Object.values(day.meals).some(meal => meal.name.trim())
+      // Check if at least one meal type has at least one entry
+      const mealTypes = ['breakfast', 'morning_snack', 'lunch', 'afternoon_snack', 'dinner'];
+      const hasMealForAnyType = mealTypes.some(mealType => 
+        manualMealPlanData.days.some(day => 
+          day.meals[mealType]?.name?.trim()
+        )
       );
       
-      if (!hasContent) {
-        setError('Please add at least one meal to your plan');
+      if (!hasMealForAnyType) {
+        setError('Please add at least one meal (any type) to your plan');
         return;
       }
 
