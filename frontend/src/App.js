@@ -1610,6 +1610,7 @@ function App() {
                     className="secondary-btn"
                     onClick={() => {
                       setMealPlanType('manual');
+                      setCurrentManualDay(0);
                       initializeManualMealPlan(7);
                     }}
                     style={{ width: '100%', padding: '20px' }}
