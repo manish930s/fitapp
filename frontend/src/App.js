@@ -533,6 +533,174 @@ function App() {
     }
   };
 
+  // Meal management functions for editing meal plans
+  const openAddMealForm = (mealType, dayIndex) => {
+    setTempMealData({
+      name: '',
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0
+    });
+    setShowAddMealForm({ show: true, mealType, dayIndex });
+  };
+
+  const openEditMealForm = (mealType, dayIndex, meal) => {
+    setTempMealData({
+      name: meal.name || '',
+      calories: meal.calories || 0,
+      protein: meal.protein || 0,
+      carbs: meal.carbs || 0,
+      fat: meal.fat || 0
+    });
+    setEditingMeal({ show: true, mealType, dayIndex, meal });
+  };
+
+  const saveMealToSelectedPlan = async (mealType, dayIndex) => {
+    if (!tempMealData.name.trim()) {
+      setError('Please enter a meal name');
+      return;
+    }
+
+    try {
+      const updatedPlan = {...selectedMealPlan};
+      const day = updatedPlan.days[dayIndex];
+      
+      // For manual plans, we can have multiple entries but during creation only one
+      // After save, allow multiple entries by converting to array if needed
+      if (editingMeal.show) {
+        // Editing existing meal
+        day.meals[mealType] = tempMealData;
+      } else {
+        // Adding new meal - check if meal already exists
+        if (day.meals[mealType] && day.meals[mealType].name) {
+          // Create array structure for multiple meals of same type
+          if (!Array.isArray(day.meals[mealType])) {
+            day.meals[mealType] = [day.meals[mealType]];
+          }
+          day.meals[mealType].push(tempMealData);
+        } else {
+          day.meals[mealType] = tempMealData;
+        }
+      }
+
+      // Recalculate day totals
+      let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0;
+      Object.values(day.meals).forEach(meal => {
+        if (Array.isArray(meal)) {
+          meal.forEach(m => {
+            totalCalories += parseFloat(m.calories) || 0;
+            totalProtein += parseFloat(m.protein) || 0;
+            totalCarbs += parseFloat(m.carbs) || 0;
+            totalFat += parseFloat(m.fat) || 0;
+          });
+        } else if (meal && meal.name) {
+          totalCalories += parseFloat(meal.calories) || 0;
+          totalProtein += parseFloat(meal.protein) || 0;
+          totalCarbs += parseFloat(meal.carbs) || 0;
+          totalFat += parseFloat(meal.fat) || 0;
+        }
+      });
+
+      day.totals = {
+        calories: totalCalories,
+        protein: totalProtein,
+        carbs: totalCarbs,
+        fat: totalFat
+      };
+
+      // Update backend
+      const response = await fetch(`${BACKEND_URL}/api/mealplan/${selectedMealPlan.plan_id}/day/${day.day_number}/meal`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          meal_type: mealType,
+          meal_data: day.meals[mealType]
+        })
+      });
+
+      if (response.ok) {
+        setSelectedMealPlan(updatedPlan);
+        setSuccess(editingMeal.show ? 'Meal updated successfully' : 'Meal added successfully');
+        setShowAddMealForm({ show: false, mealType: '', dayIndex: 0 });
+        setEditingMeal({ show: false, mealType: '', dayIndex: 0, meal: null });
+        await fetchMealPlanDetails(selectedMealPlan.plan_id);
+      } else {
+        setError('Failed to save meal');
+      }
+    } catch (err) {
+      console.error('Error saving meal:', err);
+      setError('Failed to save meal');
+    }
+  };
+
+  const deleteMealFromPlan = async (mealType, dayIndex) => {
+    if (!window.confirm('Are you sure you want to delete this meal?')) {
+      return;
+    }
+
+    try {
+      const updatedPlan = {...selectedMealPlan};
+      const day = updatedPlan.days[dayIndex];
+      
+      // Remove meal
+      day.meals[mealType] = {
+        name: '',
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        description: '',
+        ingredients: []
+      };
+
+      // Recalculate day totals
+      let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0;
+      Object.values(day.meals).forEach(meal => {
+        if (meal && meal.name) {
+          totalCalories += parseFloat(meal.calories) || 0;
+          totalProtein += parseFloat(meal.protein) || 0;
+          totalCarbs += parseFloat(meal.carbs) || 0;
+          totalFat += parseFloat(meal.fat) || 0;
+        }
+      });
+
+      day.totals = {
+        calories: totalCalories,
+        protein: totalProtein,
+        carbs: totalCarbs,
+        fat: totalFat
+      };
+
+      // Update backend
+      const response = await fetch(`${BACKEND_URL}/api/mealplan/${selectedMealPlan.plan_id}/day/${day.day_number}/meal`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          meal_type: mealType,
+          meal_data: day.meals[mealType]
+        })
+      });
+
+      if (response.ok) {
+        setSuccess('Meal deleted successfully');
+        await fetchMealPlanDetails(selectedMealPlan.plan_id);
+      } else {
+        setError('Failed to delete meal');
+      }
+    } catch (err) {
+      console.error('Error deleting meal:', err);
+      setError('Failed to delete meal');
+    }
+  };
+
+
   const fetchFoodHistory = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/food/history?limit=10`, {
