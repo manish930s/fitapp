@@ -47,6 +47,12 @@ function App() {
     calorie_target: ''
   });
   const [generatingMealPlan, setGeneratingMealPlan] = useState(false);
+  const [manualMealPlanData, setManualMealPlanData] = useState({
+    name: '',
+    duration: 7,
+    start_date: new Date().toISOString().split('T')[0],
+    days: []
+  });
   const profilePictureInputRef = useRef(null);
   
   // Settings state
