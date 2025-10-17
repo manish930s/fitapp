@@ -411,11 +411,11 @@ frontend:
   
   - task: "Meal Plan Feature - AI Generated & Manual"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/App.js, /app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
