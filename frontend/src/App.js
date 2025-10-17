@@ -90,6 +90,9 @@ function App() {
       fetchGoals();
       fetchMeasurements();
     }
+    if (currentPage === 'mealplan' && token) {
+      fetchMealPlans();
+    }
   }, [currentPage, token]);
 
   useEffect(() => {
