@@ -1195,7 +1195,7 @@ function App() {
           </div>
         )}
 
-        <div className="chatbot-messages-container">
+        <div className="chatbot-messages-container" ref={chatMessagesContainerRef}>
           {chatMessages.length === 0 ? (
             <div className="chat-welcome-message">
               <div className="ai-message-bubble">
