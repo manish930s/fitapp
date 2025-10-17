@@ -70,9 +70,8 @@ function App() {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [isChatLoading, setIsChatLoading] = useState(false);
-  const [showChat, setShowChat] = useState(false);
   const [chatLanguage, setChatLanguage] = useState('english');
-  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   
   // Camera refs
   const videoRef = useRef(null);
