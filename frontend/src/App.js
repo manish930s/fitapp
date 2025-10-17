@@ -1639,6 +1639,184 @@ function App() {
                     </button>
                   </div>
                 </div>
+              ) : mealPlanType === 'manual' ? (
+                <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                  <div className="form-group">
+                    <label>Meal Plan Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., My Weekly Meal Plan"
+                      value={manualMealPlanData.name}
+                      onChange={(e) => setManualMealPlanData({...manualMealPlanData, name: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Duration (days)</label>
+                    <select
+                      value={manualMealPlanData.duration}
+                      onChange={(e) => {
+                        const duration = parseInt(e.target.value);
+                        setManualMealPlanData({...manualMealPlanData, duration});
+                        initializeManualMealPlan(duration);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        background: '#1a1a1a',
+                        border: '1px solid #333',
+                        borderRadius: '8px',
+                        color: '#fff'
+                      }}
+                    >
+                      <option value="3">3 Days</option>
+                      <option value="7">7 Days (1 Week)</option>
+                      <option value="14">14 Days (2 Weeks)</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Start Date</label>
+                    <input
+                      type="date"
+                      value={manualMealPlanData.start_date}
+                      onChange={(e) => setManualMealPlanData({...manualMealPlanData, start_date: e.target.value})}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        background: '#1a1a1a',
+                        border: '1px solid #333',
+                        borderRadius: '8px',
+                        color: '#fff'
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ marginTop: '20px', color: '#888', fontSize: '14px' }}>
+                    Add meals for each day (optional - you can fill in later):
+                  </div>
+
+                  {manualMealPlanData.days.map((day, dayIndex) => (
+                    <div key={dayIndex} style={{ marginTop: '24px', padding: '16px', background: '#1a1a1a', borderRadius: '8px', border: '1px solid #333' }}>
+                      <h4 style={{ color: '#22c55e', marginBottom: '16px' }}>Day {day.day}</h4>
+                      
+                      {['breakfast', 'morning_snack', 'lunch', 'afternoon_snack', 'dinner'].map(mealType => (
+                        <div key={mealType} style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #222' }}>
+                          <div style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', textTransform: 'capitalize' }}>
+                            {mealType.replace('_', ' ')}
+                          </div>
+                          
+                          <input
+                            type="text"
+                            placeholder="Meal name"
+                            value={day.meals[mealType].name}
+                            onChange={(e) => updateManualMeal(dayIndex, mealType, 'name', e.target.value)}
+                            style={{
+                              width: '100%',
+                              padding: '8px',
+                              marginBottom: '8px',
+                              background: '#0a0a0a',
+                              border: '1px solid #333',
+                              borderRadius: '4px',
+                              color: '#fff',
+                              fontSize: '14px'
+                            }}
+                          />
+                          
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
+                            <input
+                              type="number"
+                              placeholder="Cal"
+                              value={day.meals[mealType].calories || ''}
+                              onChange={(e) => updateManualMeal(dayIndex, mealType, 'calories', e.target.value)}
+                              style={{
+                                padding: '8px',
+                                background: '#0a0a0a',
+                                border: '1px solid #333',
+                                borderRadius: '4px',
+                                color: '#fff',
+                                fontSize: '12px'
+                              }}
+                            />
+                            <input
+                              type="number"
+                              placeholder="Protein"
+                              value={day.meals[mealType].protein || ''}
+                              onChange={(e) => updateManualMeal(dayIndex, mealType, 'protein', e.target.value)}
+                              style={{
+                                padding: '8px',
+                                background: '#0a0a0a',
+                                border: '1px solid #333',
+                                borderRadius: '4px',
+                                color: '#fff',
+                                fontSize: '12px'
+                              }}
+                            />
+                            <input
+                              type="number"
+                              placeholder="Carbs"
+                              value={day.meals[mealType].carbs || ''}
+                              onChange={(e) => updateManualMeal(dayIndex, mealType, 'carbs', e.target.value)}
+                              style={{
+                                padding: '8px',
+                                background: '#0a0a0a',
+                                border: '1px solid #333',
+                                borderRadius: '4px',
+                                color: '#fff',
+                                fontSize: '12px'
+                              }}
+                            />
+                            <input
+                              type="number"
+                              placeholder="Fat"
+                              value={day.meals[mealType].fat || ''}
+                              onChange={(e) => updateManualMeal(dayIndex, mealType, 'fat', e.target.value)}
+                              style={{
+                                padding: '8px',
+                                background: '#0a0a0a',
+                                border: '1px solid #333',
+                                borderRadius: '4px',
+                                color: '#fff',
+                                fontSize: '12px'
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <div style={{ color: '#22c55e', fontSize: '14px', marginTop: '12px' }}>
+                        Daily Total: {Math.round(day.totals.calories)} cal | {Math.round(day.totals.protein)}g protein | {Math.round(day.totals.carbs)}g carbs | {Math.round(day.totals.fat)}g fat
+                      </div>
+                    </div>
+                  ))}
+
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '24px', position: 'sticky', bottom: 0, background: '#0a0a0a', padding: '16px 0' }}>
+                    <button
+                      className="secondary-btn"
+                      onClick={() => {
+                        setMealPlanType('');
+                        setManualMealPlanData({
+                          name: '',
+                          duration: 7,
+                          start_date: new Date().toISOString().split('T')[0],
+                          days: []
+                        });
+                      }}
+                      disabled={generatingMealPlan}
+                      style={{ flex: 1 }}
+                    >
+                      Back
+                    </button>
+                    <button
+                      className="primary-btn"
+                      onClick={createManualMealPlan}
+                      disabled={generatingMealPlan}
+                      style={{ flex: 1 }}
+                    >
+                      {generatingMealPlan ? 'Creating...' : 'Create Meal Plan'}
+                    </button>
+                  </div>
+                </div>
               ) : null}
             </div>
           </div>
