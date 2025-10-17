@@ -87,3 +87,4 @@ frozenlist
 distro
 markupsafe
 httpcore
+jiter
