@@ -1167,20 +1167,366 @@ function App() {
   );
 
   // Render Meal Plan Page
-  const renderMealPlan = () => (
-    <div className="meal-plan-container">
-      <div className="page-header">
-        <h2>Meal Plan</h2>
-        <button className="icon-btn">+</button>
-      </div>
+  const renderMealPlan = () => {
+    // Show meal plan details if selected
+    if (showMealPlanDetails && selectedMealPlan) {
+      return (
+        <div className="meal-plan-container">
+          <div className="page-header">
+            <button className="icon-btn" onClick={() => {
+              setShowMealPlanDetails(false);
+              setSelectedMealPlan(null);
+            }}>
+              ←
+            </button>
+            <h2>{selectedMealPlan.name}</h2>
+            <button 
+              className="icon-btn" 
+              style={{ color: '#ef4444' }}
+              onClick={() => deleteMealPlan(selectedMealPlan.plan_id)}
+            >
+              🗑️
+            </button>
+          </div>
 
-      <div className="coming-soon">
-        <h3>🍽️</h3>
-        <p>Meal planning feature coming soon!</p>
-        <p className="subtitle">Create weekly meal plans with AI-recommended recipes</p>
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ 
+              background: 'rgba(34, 197, 94, 0.1)', 
+              padding: '16px', 
+              borderRadius: '12px',
+              marginBottom: '16px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ color: '#888' }}>Duration:</span>
+                <span style={{ color: '#22c55e', fontWeight: 'bold' }}>{selectedMealPlan.duration} days</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ color: '#888' }}>Type:</span>
+                <span style={{ color: '#fff' }}>
+                  {selectedMealPlan.type === 'ai_generated' ? '🤖 AI Generated' : '✍️ Manual'}
+                </span>
+              </div>
+              {selectedMealPlan.calorie_target && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#888' }}>Daily Target:</span>
+                  <span style={{ color: '#22c55e', fontWeight: 'bold' }}>
+                    {selectedMealPlan.calorie_target} kcal
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Days List */}
+          <div>
+            {selectedMealPlan.days?.map((day, index) => (
+              <div 
+                key={index}
+                style={{
+                  background: '#1a1a1a',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  marginBottom: '16px',
+                  border: '1px solid #333'
+                }}
+              >
+                <h3 style={{ color: '#22c55e', marginBottom: '16px', fontSize: '18px' }}>
+                  Day {day.day_number}
+                </h3>
+
+                {/* Daily Totals */}
+                {day.totals && (
+                  <div style={{
+                    background: 'rgba(34, 197, 94, 0.1)',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(4, 1fr)',
+                    gap: '12px',
+                    textAlign: 'center'
+                  }}>
+                    <div>
+                      <div style={{ color: '#888', fontSize: '12px' }}>Calories</div>
+                      <div style={{ color: '#22c55e', fontWeight: 'bold' }}>
+                        {Math.round(day.totals.calories)}
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ color: '#888', fontSize: '12px' }}>Protein</div>
+                      <div style={{ color: '#3b82f6', fontWeight: 'bold' }}>
+                        {Math.round(day.totals.protein)}g
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ color: '#888', fontSize: '12px' }}>Carbs</div>
+                      <div style={{ color: '#f59e0b', fontWeight: 'bold' }}>
+                        {Math.round(day.totals.carbs)}g
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ color: '#888', fontSize: '12px' }}>Fat</div>
+                      <div style={{ color: '#ef4444', fontWeight: 'bold' }}>
+                        {Math.round(day.totals.fat)}g
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Meals */}
+                {day.meals && Object.entries(day.meals).map(([mealType, meal]) => (
+                  <div 
+                    key={mealType}
+                    style={{
+                      background: '#0a0a0a',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      marginBottom: '12px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <h4 style={{ 
+                        color: '#fff', 
+                        textTransform: 'capitalize',
+                        fontSize: '16px',
+                        margin: 0
+                      }}>
+                        {mealType.replace('_', ' ')}
+                      </h4>
+                      <span style={{ color: '#22c55e', fontWeight: 'bold' }}>
+                        {meal.calories} kcal
+                      </span>
+                    </div>
+                    
+                    <div style={{ color: '#22c55e', fontWeight: '500', marginBottom: '6px' }}>
+                      {meal.name}
+                    </div>
+                    
+                    {meal.description && (
+                      <p style={{ color: '#888', fontSize: '14px', marginBottom: '8px' }}>
+                        {meal.description}
+                      </p>
+                    )}
+                    
+                    <div style={{ display: 'flex', gap: '16px', marginBottom: '8px', fontSize: '14px' }}>
+                      <span style={{ color: '#3b82f6' }}>P: {meal.protein}g</span>
+                      <span style={{ color: '#f59e0b' }}>C: {meal.carbs}g</span>
+                      <span style={{ color: '#ef4444' }}>F: {meal.fat}g</span>
+                    </div>
+                    
+                    {meal.ingredients && meal.ingredients.length > 0 && (
+                      <div style={{ marginTop: '8px' }}>
+                        <div style={{ color: '#888', fontSize: '12px', marginBottom: '4px' }}>
+                          Ingredients:
+                        </div>
+                        <div style={{ color: '#ccc', fontSize: '13px' }}>
+                          {meal.ingredients.join(', ')}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Show meal plans list
+    return (
+      <div className="meal-plan-container">
+        <div className="page-header">
+          <h2>Meal Plans</h2>
+          <button 
+            className="icon-btn"
+            onClick={() => setShowCreateMealPlanModal(true)}
+          >
+            +
+          </button>
+        </div>
+
+        {mealPlans.length === 0 ? (
+          <div className="coming-soon">
+            <h3>🍽️</h3>
+            <p>No meal plans yet</p>
+            <p className="subtitle">Create your first meal plan with AI or manually</p>
+            <button 
+              className="primary-btn"
+              onClick={() => setShowCreateMealPlanModal(true)}
+              style={{ marginTop: '20px' }}
+            >
+              Create Meal Plan
+            </button>
+          </div>
+        ) : (
+          <div>
+            {mealPlans.map(plan => (
+              <div 
+                key={plan.plan_id}
+                onClick={() => fetchMealPlanDetails(plan.plan_id)}
+                style={{
+                  background: '#1a1a1a',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  marginBottom: '16px',
+                  cursor: 'pointer',
+                  border: '1px solid #333',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = '#22c55e'}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = '#333'}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h3 style={{ color: '#fff', margin: 0, fontSize: '18px' }}>{plan.name}</h3>
+                  <span style={{ color: '#888', fontSize: '14px' }}>
+                    {plan.type === 'ai_generated' ? '🤖' : '✍️'}
+                  </span>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '20px', color: '#888', fontSize: '14px' }}>
+                  <div>
+                    <span style={{ color: '#22c55e' }}>{plan.duration}</span> days
+                  </div>
+                  {plan.calorie_target && (
+                    <div>
+                      <span style={{ color: '#22c55e' }}>{plan.calorie_target}</span> kcal/day
+                    </div>
+                  )}
+                  <div style={{ marginLeft: 'auto', color: '#666' }}>
+                    {new Date(plan.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Create Meal Plan Modal */}
+        {showCreateMealPlanModal && (
+          <div className="modal-overlay" onClick={() => setShowCreateMealPlanModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h2 style={{ marginBottom: '24px' }}>Create Meal Plan</h2>
+
+              {!mealPlanType ? (
+                <div>
+                  <p style={{ color: '#888', marginBottom: '24px' }}>
+                    Choose how you want to create your meal plan:
+                  </p>
+                  
+                  <button
+                    className="primary-btn"
+                    onClick={() => setMealPlanType('ai')}
+                    style={{ width: '100%', marginBottom: '16px', padding: '20px' }}
+                  >
+                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>🤖</div>
+                    <div style={{ fontSize: '16px', fontWeight: 'bold' }}>AI Generated</div>
+                    <div style={{ fontSize: '14px', color: '#ccc', marginTop: '4px' }}>
+                      Let AI create a personalized meal plan for you
+                    </div>
+                  </button>
+
+                  <button
+                    className="secondary-btn"
+                    onClick={() => {
+                      setError('Manual meal plan builder coming soon!');
+                      setTimeout(() => setError(''), 3000);
+                    }}
+                    style={{ width: '100%', padding: '20px' }}
+                  >
+                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>✍️</div>
+                    <div style={{ fontSize: '16px', fontWeight: 'bold' }}>Manual</div>
+                    <div style={{ fontSize: '14px', color: '#ccc', marginTop: '4px' }}>
+                      Build your meal plan from scratch
+                    </div>
+                  </button>
+                </div>
+              ) : mealPlanType === 'ai' ? (
+                <div>
+                  <div className="form-group">
+                    <label>Duration (days)</label>
+                    <select
+                      value={aiMealPlanData.duration}
+                      onChange={(e) => setAiMealPlanData({...aiMealPlanData, duration: e.target.value})}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        background: '#1a1a1a',
+                        border: '1px solid #333',
+                        borderRadius: '8px',
+                        color: '#fff'
+                      }}
+                    >
+                      <option value="3">3 Days</option>
+                      <option value="7">7 Days (1 Week)</option>
+                      <option value="14">14 Days (2 Weeks)</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Dietary Preferences (optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Vegetarian, Vegan, Keto, Low-carb"
+                      value={aiMealPlanData.dietary_preferences}
+                      onChange={(e) => setAiMealPlanData({...aiMealPlanData, dietary_preferences: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Allergies (optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Nuts, Dairy, Gluten"
+                      value={aiMealPlanData.allergies}
+                      onChange={(e) => setAiMealPlanData({...aiMealPlanData, allergies: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Daily Calorie Target (optional)</label>
+                    <input
+                      type="number"
+                      placeholder="Leave empty to use your profile's calorie target"
+                      value={aiMealPlanData.calorie_target}
+                      onChange={(e) => setAiMealPlanData({...aiMealPlanData, calorie_target: e.target.value})}
+                    />
+                    {user?.daily_calories && (
+                      <div style={{ color: '#888', fontSize: '14px', marginTop: '8px' }}>
+                        Your profile target: {Math.round(user.daily_calories)} kcal/day
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                    <button
+                      className="secondary-btn"
+                      onClick={() => {
+                        setMealPlanType('');
+                        setAiMealPlanData({ duration: 7, dietary_preferences: '', allergies: '', calorie_target: '' });
+                      }}
+                      disabled={generatingMealPlan}
+                      style={{ flex: 1 }}
+                    >
+                      Back
+                    </button>
+                    <button
+                      className="primary-btn"
+                      onClick={generateAIMealPlan}
+                      disabled={generatingMealPlan}
+                      style={{ flex: 1 }}
+                    >
+                      {generatingMealPlan ? 'Generating...' : 'Generate Meal Plan'}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   // Render Profile Page
   const renderProfile = () => {
