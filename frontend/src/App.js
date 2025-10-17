@@ -1548,8 +1548,8 @@ function App() {
                   <button
                     className="secondary-btn"
                     onClick={() => {
-                      setError('Manual meal plan builder coming soon!');
-                      setTimeout(() => setError(''), 3000);
+                      setMealPlanType('manual');
+                      initializeManualMealPlan(7);
                     }}
                     style={{ width: '100%', padding: '20px' }}
                   >
