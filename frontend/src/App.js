@@ -1720,6 +1720,7 @@ function App() {
                       onChange={(e) => {
                         const duration = parseInt(e.target.value);
                         setManualMealPlanData({...manualMealPlanData, duration});
+                        setCurrentManualDay(0);
                         initializeManualMealPlan(duration);
                       }}
                       style={{
