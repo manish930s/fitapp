@@ -444,7 +444,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Meal Plan Feature - AI Generated & Manual"
+    - "Meal Plan Feature - AI Generated & Manual (Manual Entry)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
