@@ -1,80 +1,110 @@
 {
   "Health Check": {
-    "success": true,
-    "message": "Service is healthy: FitFlow API",
+    "success": false,
+    "message": "Status code: 502",
     "details": null,
-    "timestamp": "2025-10-16T06:26:08.521724"
+    "timestamp": "2025-10-17T06:29:10.713884"
   },
   "User Registration": {
-    "success": true,
-    "message": "User already exists (expected for repeated tests)",
+    "success": false,
+    "message": "Status: 502, Response: ",
     "details": null,
-    "timestamp": "2025-10-16T06:26:09.061651"
+    "timestamp": "2025-10-17T06:29:11.253560"
   },
   "User Login": {
-    "success": true,
-    "message": "Login successful, token received",
+    "success": false,
+    "message": "Status: 502, Response: ",
     "details": null,
-    "timestamp": "2025-10-16T06:26:10.131361"
+    "timestamp": "2025-10-17T06:29:11.790666"
   },
   "Get User Profile": {
-    "success": true,
-    "message": "Profile retrieved. Daily target: 2047.81 calories",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:10.671165"
+    "timestamp": "2025-10-17T06:29:12.291197"
   },
   "Update User Profile": {
-    "success": true,
-    "message": "Profile updated successfully",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:11.211728"
+    "timestamp": "2025-10-17T06:29:12.791306"
   },
   "AI Food Scan": {
-    "success": true,
-    "message": "Food analyzed: unknown, Calories: 0.0, Portion: unknown (AI integration working)",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:15.473761"
+    "timestamp": "2025-10-17T06:29:13.291415"
   },
   "Food History": {
-    "success": true,
-    "message": "Retrieved 1 food scan records",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:16.035435"
+    "timestamp": "2025-10-17T06:29:13.791514"
   },
   "Today Food Summary": {
-    "success": true,
-    "message": "Today's totals - Calories: 0.0, Meals: 1",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:16.573987"
+    "timestamp": "2025-10-17T06:29:14.291616"
   },
   "Daily Stats": {
-    "success": true,
-    "message": "Stats updated and retrieved successfully",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:17.151485"
+    "timestamp": "2025-10-17T06:29:14.791728"
   },
   "Streak Calculation": {
-    "success": true,
-    "message": "Current streak: 1 days",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:17.689495"
+    "timestamp": "2025-10-17T06:29:15.291835"
   },
   "Goals Management": {
-    "success": true,
-    "message": "Goal created, retrieved, and updated successfully. Goal ID: a88af670-13a1-40bc-814d-1888102152bc",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:18.304007"
+    "timestamp": "2025-10-17T06:29:15.791936"
   },
   "Measurements Tracking": {
-    "success": true,
-    "message": "Measurement added, latest retrieved, and history retrieved successfully. History count: 2",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:18.914870"
+    "timestamp": "2025-10-17T06:29:16.292043"
   },
   "AI Fitness Coach": {
-    "success": true,
-    "message": "AI coach responded successfully. Chat history: 5 messages. Sample response: To help you reach your goal of 67.0 kg, a balanced mix of cardio and strength training is optimal. H...",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-16T06:26:27.167962"
+    "timestamp": "2025-10-17T06:29:16.792145"
+  },
+  "AI Meal Plan Generation": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-17T06:29:17.292243"
+  },
+  "Meal Plan List": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-17T06:29:17.792346"
+  },
+  "Meal Plan Details": {
+    "success": false,
+    "message": "No auth token or meal plans available",
+    "details": null,
+    "timestamp": "2025-10-17T06:29:18.292453"
+  },
+  "Meal Plan Delete": {
+    "success": false,
+    "message": "No auth token or meal plans available",
+    "details": null,
+    "timestamp": "2025-10-17T06:29:18.792553"
+  },
+  "Meal Plan Error Cases": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-17T06:29:19.292654"
   }
 }
