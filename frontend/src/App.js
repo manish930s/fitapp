@@ -1193,16 +1193,7 @@ function App() {
           ) : (
             chatMessages.map((msg, index) => (
               <div key={index} className="message-group">
-                {/* AI Message */}
-                <div className="ai-message-bubble">
-                  <div className="ai-avatar">🤖</div>
-                  <div className="message-content">
-                    <div className="message-header">AI Coach - {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                    <div className="message-text">{msg.assistant_message || '...'}</div>
-                  </div>
-                </div>
-                
-                {/* User Message */}
+                {/* User Message - Display FIRST */}
                 {msg.user_message && (
                   <div className="user-message-bubble">
                     <div className="message-content">
@@ -1215,6 +1206,17 @@ function App() {
                       ) : (
                         '👤'
                       )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* AI Message - Display SECOND */}
+                {msg.assistant_message && (
+                  <div className="ai-message-bubble">
+                    <div className="ai-avatar">🤖</div>
+                    <div className="message-content">
+                      <div className="message-header">AI Coach - {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                      <div className="message-text">{msg.assistant_message}</div>
                     </div>
                   </div>
                 )}
