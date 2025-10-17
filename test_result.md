@@ -408,6 +408,18 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Implemented comprehensive Settings page accessible via settings icon (⚙️) in Profile page. Backend: Added PUT /api/user/password endpoint for password changes with current password verification, Added DELETE /api/user/account endpoint for account deletion with cascade delete across all collections. Frontend: Created Settings page with 3 sections: 1) Notifications (Workout Reminders toggle, App Updates toggle), 2) Privacy (Connected Apps - placeholder page), 3) Account (Change Password with validation, Delete Account with confirmation dialog, Help Center & FAQ with sample FAQs, Contact Support form). Features: Dark theme UI matching app design, Back navigation for sub-pages, Form validation for password changes, Confirmation dialog for account deletion, Success/error message handling. Profile page General settings section kept as requested. Ready for frontend and backend testing."
+  
+  - task: "Meal Plan Feature - AI Generated & Manual"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented comprehensive Meal Plan feature with both AI-generated and manual options. Backend: Added meal_plans_collection MongoDB collection, Created 6 endpoints: POST /api/mealplan/generate (AI-powered meal plan generation using GPT-4o with Emergent LLM Key), POST /api/mealplan/create (manual meal plan creation), GET /api/mealplan/list (fetch user's meal plans), GET /api/mealplan/{plan_id} (get detailed meal plan), DELETE /api/mealplan/{plan_id} (delete meal plan), PUT /api/mealplan/{plan_id}/day/{day}/meal (update specific meal). Features: Custom duration (3, 7, or 14 days), Extended meal categories (Breakfast, Morning Snack, Lunch, Afternoon Snack, Dinner), Dietary preferences & allergies support, Automatic calorie/macro calculation per day, AI generates complete meal plans with ingredients and descriptions. Frontend: Meal plans list view, AI generation modal with dietary preferences form, Meal plan detail view showing all days with nutritional totals, Daily calorie/protein/carbs/fat breakdown, Delete meal plan with confirmation, Responsive dark theme UI matching app design. Ready for comprehensive backend and frontend testing."
 
 metadata:
   created_by: "main_agent"
