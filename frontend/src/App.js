@@ -279,6 +279,107 @@ function App() {
     }
   };
 
+  // Meal Plan Functions
+  const fetchMealPlans = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/mealplan/list`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMealPlans(data.plans);
+      }
+    } catch (err) {
+      console.error('Error fetching meal plans:', err);
+    }
+  };
+
+  const fetchMealPlanDetails = async (planId) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${BACKEND_URL}/api/mealplan/${planId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedMealPlan(data);
+        setShowMealPlanDetails(true);
+      }
+    } catch (err) {
+      console.error('Error fetching meal plan details:', err);
+      setError('Failed to load meal plan details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateAIMealPlan = async () => {
+    try {
+      setGeneratingMealPlan(true);
+      setError('');
+      
+      const requestData = {
+        duration: parseInt(aiMealPlanData.duration),
+        dietary_preferences: aiMealPlanData.dietary_preferences || null,
+        allergies: aiMealPlanData.allergies || null,
+        calorie_target: aiMealPlanData.calorie_target ? parseInt(aiMealPlanData.calorie_target) : null
+      };
+
+      const response = await fetch(`${BACKEND_URL}/api/mealplan/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccess('AI Meal Plan generated successfully!');
+        setShowCreateMealPlanModal(false);
+        setAiMealPlanData({ duration: 7, dietary_preferences: '', allergies: '', calorie_target: '' });
+        await fetchMealPlans();
+        
+        // Show the newly created meal plan
+        await fetchMealPlanDetails(data.plan_id);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to generate meal plan');
+      }
+    } catch (err) {
+      console.error('Error generating meal plan:', err);
+      setError('Failed to generate meal plan. Please try again.');
+    } finally {
+      setGeneratingMealPlan(false);
+    }
+  };
+
+  const deleteMealPlan = async (planId) => {
+    if (!window.confirm('Are you sure you want to delete this meal plan?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/mealplan/${planId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        setSuccess('Meal plan deleted successfully');
+        setShowMealPlanDetails(false);
+        setSelectedMealPlan(null);
+        await fetchMealPlans();
+      } else {
+        setError('Failed to delete meal plan');
+      }
+    } catch (err) {
+      console.error('Error deleting meal plan:', err);
+      setError('Failed to delete meal plan');
+    }
+  };
+
   const fetchFoodHistory = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/food/history?limit=10`, {
