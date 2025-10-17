@@ -1756,13 +1756,49 @@ function App() {
                   </div>
 
                   <div style={{ marginTop: '20px', color: '#888', fontSize: '14px' }}>
-                    Add meals for each day (optional - you can fill in later):
+                    Add meals for Day {currentManualDay + 1}:
                   </div>
 
-                  {manualMealPlanData.days.map((day, dayIndex) => (
-                    <div key={dayIndex} style={{ marginTop: '24px', padding: '16px', background: '#1a1a1a', borderRadius: '8px', border: '1px solid #333' }}>
-                      <h4 style={{ color: '#22c55e', marginBottom: '16px' }}>Day {day.day}</h4>
-                      
+                  {/* Day Navigation */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', marginBottom: '16px', padding: '12px', background: '#1a1a1a', borderRadius: '8px' }}>
+                    <button
+                      onClick={() => setCurrentManualDay(Math.max(0, currentManualDay - 1))}
+                      disabled={currentManualDay === 0}
+                      style={{
+                        padding: '8px 16px',
+                        background: currentManualDay === 0 ? '#333' : '#22c55e',
+                        color: currentManualDay === 0 ? '#666' : '#000',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: currentManualDay === 0 ? 'not-allowed' : 'pointer',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      ← Previous
+                    </button>
+                    <div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '16px' }}>
+                      Day {currentManualDay + 1} of {manualMealPlanData.duration}
+                    </div>
+                    <button
+                      onClick={() => setCurrentManualDay(Math.min(manualMealPlanData.duration - 1, currentManualDay + 1))}
+                      disabled={currentManualDay >= manualMealPlanData.duration - 1}
+                      style={{
+                        padding: '8px 16px',
+                        background: currentManualDay >= manualMealPlanData.duration - 1 ? '#333' : '#22c55e',
+                        color: currentManualDay >= manualMealPlanData.duration - 1 ? '#666' : '#000',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: currentManualDay >= manualMealPlanData.duration - 1 ? 'not-allowed' : 'pointer',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      Next →
+                    </button>
+                  </div>
+
+                  {/* Single Day Meal Entry */}
+                  {manualMealPlanData.days.length > 0 && manualMealPlanData.days[currentManualDay] && (
+                    <div style={{ marginTop: '16px', padding: '16px', background: '#1a1a1a', borderRadius: '8px', border: '1px solid #333' }}>
                       {['breakfast', 'morning_snack', 'lunch', 'afternoon_snack', 'dinner'].map(mealType => (
                         <div key={mealType} style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #222' }}>
                           <div style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', textTransform: 'capitalize' }}>
@@ -1772,8 +1808,8 @@ function App() {
                           <input
                             type="text"
                             placeholder="Meal name"
-                            value={day.meals[mealType].name}
-                            onChange={(e) => updateManualMeal(dayIndex, mealType, 'name', e.target.value)}
+                            value={manualMealPlanData.days[currentManualDay].meals[mealType].name}
+                            onChange={(e) => updateManualMeal(currentManualDay, mealType, 'name', e.target.value)}
                             style={{
                               width: '100%',
                               padding: '8px',
@@ -1790,8 +1826,8 @@ function App() {
                             <input
                               type="number"
                               placeholder="Cal"
-                              value={day.meals[mealType].calories || ''}
-                              onChange={(e) => updateManualMeal(dayIndex, mealType, 'calories', e.target.value)}
+                              value={manualMealPlanData.days[currentManualDay].meals[mealType].calories || ''}
+                              onChange={(e) => updateManualMeal(currentManualDay, mealType, 'calories', e.target.value)}
                               style={{
                                 padding: '8px',
                                 background: '#0a0a0a',
@@ -1804,8 +1840,8 @@ function App() {
                             <input
                               type="number"
                               placeholder="Protein"
-                              value={day.meals[mealType].protein || ''}
-                              onChange={(e) => updateManualMeal(dayIndex, mealType, 'protein', e.target.value)}
+                              value={manualMealPlanData.days[currentManualDay].meals[mealType].protein || ''}
+                              onChange={(e) => updateManualMeal(currentManualDay, mealType, 'protein', e.target.value)}
                               style={{
                                 padding: '8px',
                                 background: '#0a0a0a',
@@ -1818,8 +1854,8 @@ function App() {
                             <input
                               type="number"
                               placeholder="Carbs"
-                              value={day.meals[mealType].carbs || ''}
-                              onChange={(e) => updateManualMeal(dayIndex, mealType, 'carbs', e.target.value)}
+                              value={manualMealPlanData.days[currentManualDay].meals[mealType].carbs || ''}
+                              onChange={(e) => updateManualMeal(currentManualDay, mealType, 'carbs', e.target.value)}
                               style={{
                                 padding: '8px',
                                 background: '#0a0a0a',
@@ -1832,8 +1868,8 @@ function App() {
                             <input
                               type="number"
                               placeholder="Fat"
-                              value={day.meals[mealType].fat || ''}
-                              onChange={(e) => updateManualMeal(dayIndex, mealType, 'fat', e.target.value)}
+                              value={manualMealPlanData.days[currentManualDay].meals[mealType].fat || ''}
+                              onChange={(e) => updateManualMeal(currentManualDay, mealType, 'fat', e.target.value)}
                               style={{
                                 padding: '8px',
                                 background: '#0a0a0a',
@@ -1848,16 +1884,17 @@ function App() {
                       ))}
                       
                       <div style={{ color: '#22c55e', fontSize: '14px', marginTop: '12px' }}>
-                        Daily Total: {Math.round(day.totals.calories)} cal | {Math.round(day.totals.protein)}g protein | {Math.round(day.totals.carbs)}g carbs | {Math.round(day.totals.fat)}g fat
+                        Daily Total: {Math.round(manualMealPlanData.days[currentManualDay].totals.calories)} cal | {Math.round(manualMealPlanData.days[currentManualDay].totals.protein)}g protein | {Math.round(manualMealPlanData.days[currentManualDay].totals.carbs)}g carbs | {Math.round(manualMealPlanData.days[currentManualDay].totals.fat)}g fat
                       </div>
                     </div>
-                  ))}
+                  )}
 
                   <div style={{ display: 'flex', gap: '12px', marginTop: '24px', position: 'sticky', bottom: 0, background: '#0a0a0a', padding: '16px 0' }}>
                     <button
                       className="secondary-btn"
                       onClick={() => {
                         setMealPlanType('');
+                        setCurrentManualDay(0);
                         setManualMealPlanData({
                           name: '',
                           duration: 7,
