@@ -89,6 +89,8 @@ function App() {
   useEffect(() => {
     if (currentPage === 'home' && token) {
       fetchDashboardData();
+    }
+    if ((currentPage === 'home' || currentPage === 'chatbot') && token) {
       fetchChatHistory();
     }
     if (currentPage === 'profile' && token) {
