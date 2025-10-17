@@ -387,6 +387,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "CRITICAL UI FIXES: Fixed two major issues reported by user: 1) MESSAGE ORDER FIXED: User message now displays FIRST, then AI response appears SECOND (chronologically correct order), 2) INPUT SECTION FIXED: Chat input section now uses position: fixed to stay at bottom of screen while scrolling through messages, added padding-bottom: 200px to messages container to prevent content hiding behind fixed input section. Both fixes applied and frontend restarted successfully. Ready for testing: correct message ordering, fixed input section at bottom, smooth scrolling experience."
+      - working: "NA"
+        agent: "main"
+        comment: "HEADER FIXED: Fixed chatbot page header to remain static at top during scrolling. Changes: 1) Changed .chatbot-page-header from position: sticky to position: fixed with left: 0, right: 0, 2) Increased z-index to 100 to ensure header stays on top, 3) Added padding-top: 80px to .chatbot-messages-container to prevent content hiding behind fixed header, 4) Updated .language-dropdown to position: fixed with z-index: 101. Now both header and input section are fixed, allowing only messages to scroll in between. Frontend restarted successfully."
   
   - task: "Bottom Navigation"
     implemented: true
