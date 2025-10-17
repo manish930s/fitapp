@@ -754,6 +754,298 @@ async def get_chat_history(limit: int = 20, current_user: dict = Depends(get_cur
     ).sort("timestamp", -1).limit(limit))
     return {"chats": list(reversed(chats))}
 
+# ===== MEAL PLAN ENDPOINTS =====
+
+@app.post("/api/mealplan/generate")
+async def generate_meal_plan(plan_request: MealPlanGenerate, current_user: dict = Depends(get_current_user)):
+    """Generate AI-powered meal plan"""
+    try:
+        user = users_collection.find_one({"user_id": current_user["user_id"]}, {"_id": 0})
+        
+        # Calculate calorie target if not provided
+        calorie_target = plan_request.calorie_target
+        if not calorie_target:
+            calorie_target = int(calculate_daily_calories(user))
+        
+        # Prepare AI prompt
+        prompt = f"""Create a {plan_request.duration}-day meal plan for a person with the following details:
+- Daily calorie target: {calorie_target} kcal
+- Dietary preferences: {plan_request.dietary_preferences or 'None'}
+- Allergies: {plan_request.allergies or 'None'}
+
+For each day, provide meals for these categories:
+1. Breakfast
+2. Morning Snack
+3. Lunch
+4. Afternoon Snack
+5. Dinner
+
+For each meal, include:
+- Meal name
+- Calories (kcal)
+- Protein (g)
+- Carbs (g)
+- Fat (g)
+- Brief description
+- Key ingredients (list)
+
+Return the response in this exact JSON format:
+{{
+  "days": [
+    {{
+      "day_number": 1,
+      "meals": {{
+        "breakfast": {{"name": "...", "calories": 350, "protein": 15, "carbs": 45, "fat": 10, "description": "...", "ingredients": ["..."]}}
+        "morning_snack": {{"name": "...", "calories": 150, "protein": 5, "carbs": 20, "fat": 5, "description": "...", "ingredients": ["..."]}},
+        "lunch": {{"name": "...", "calories": 450, "protein": 25, "carbs": 50, "fat": 15, "description": "...", "ingredients": ["..."]}},
+        "afternoon_snack": {{"name": "...", "calories": 150, "protein": 5, "carbs": 20, "fat": 5, "description": "...", "ingredients": ["..."]}},
+        "dinner": {{"name": "...", "calories": 400, "protein": 30, "carbs": 40, "fat": 12, "description": "...", "ingredients": ["..."]}}
+      }}
+    }}
+  ]
+}}
+
+Make sure the total daily calories are close to {calorie_target} kcal. Return ONLY the JSON, no additional text."""
+        
+        # Call AI using Emergent LLM
+        llm_chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY
+        ).with_model("openai", "gpt-4o")
+        
+        user_msg = UserMessage(text=prompt)
+        assistant_message = await llm_chat.send_message(user_msg)
+        
+        # Parse AI response
+        try:
+            # Try to extract JSON from response
+            response_text = assistant_message.strip()
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0].strip()
+            
+            meal_plan_data = json.loads(response_text)
+        except json.JSONDecodeError:
+            # Fallback: try to find JSON in the response
+            import re
+            json_match = re.search(r'\{[\s\S]*\}', assistant_message)
+            if json_match:
+                meal_plan_data = json.loads(json_match.group())
+            else:
+                raise HTTPException(status_code=500, detail="Failed to parse AI response")
+        
+        # Calculate daily totals for each day
+        for day in meal_plan_data["days"]:
+            meals = day["meals"]
+            day["totals"] = {
+                "calories": sum(meal["calories"] for meal in meals.values()),
+                "protein": sum(meal["protein"] for meal in meals.values()),
+                "carbs": sum(meal["carbs"] for meal in meals.values()),
+                "fat": sum(meal["fat"] for meal in meals.values())
+            }
+        
+        # Save meal plan to database
+        plan_id = str(uuid.uuid4())
+        start_date = datetime.utcnow().isoformat()
+        
+        meal_plan = {
+            "plan_id": plan_id,
+            "user_id": current_user["user_id"],
+            "name": f"{plan_request.duration}-Day AI Meal Plan",
+            "duration": plan_request.duration,
+            "start_date": start_date,
+            "created_at": datetime.utcnow().isoformat(),
+            "type": "ai_generated",
+            "dietary_preferences": plan_request.dietary_preferences,
+            "allergies": plan_request.allergies,
+            "calorie_target": calorie_target,
+            "days": meal_plan_data["days"]
+        }
+        
+        meal_plans_collection.insert_one(meal_plan)
+        
+        return {
+            "plan_id": plan_id,
+            "name": meal_plan["name"],
+            "duration": plan_request.duration,
+            "start_date": start_date,
+            "days": meal_plan_data["days"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Meal plan generation error: {str(e)}")
+
+@app.post("/api/mealplan/create")
+async def create_meal_plan(plan: MealPlanCreate, current_user: dict = Depends(get_current_user)):
+    """Create a manual meal plan"""
+    try:
+        plan_id = str(uuid.uuid4())
+        
+        # Calculate daily totals for each day
+        for day in plan.days:
+            if "meals" in day:
+                meals = day["meals"]
+                day["totals"] = {
+                    "calories": sum(meal.get("calories", 0) for meal in meals.values() if isinstance(meal, dict)),
+                    "protein": sum(meal.get("protein", 0) for meal in meals.values() if isinstance(meal, dict)),
+                    "carbs": sum(meal.get("carbs", 0) for meal in meals.values() if isinstance(meal, dict)),
+                    "fat": sum(meal.get("fat", 0) for meal in meals.values() if isinstance(meal, dict))
+                }
+        
+        meal_plan = {
+            "plan_id": plan_id,
+            "user_id": current_user["user_id"],
+            "name": plan.name,
+            "duration": plan.duration,
+            "start_date": plan.start_date,
+            "created_at": datetime.utcnow().isoformat(),
+            "type": "manual",
+            "days": plan.days
+        }
+        
+        meal_plans_collection.insert_one(meal_plan)
+        
+        return {
+            "plan_id": plan_id,
+            "name": plan.name,
+            "duration": plan.duration,
+            "start_date": plan.start_date,
+            "days": plan.days
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Meal plan creation error: {str(e)}")
+
+@app.get("/api/mealplan/list")
+async def get_meal_plans(current_user: dict = Depends(get_current_user)):
+    """Get all meal plans for user"""
+    try:
+        plans = list(meal_plans_collection.find(
+            {"user_id": current_user["user_id"]},
+            {"_id": 0}
+        ).sort("created_at", -1))
+        
+        # Return summary info only (without full day details)
+        plans_summary = []
+        for plan in plans:
+            plans_summary.append({
+                "plan_id": plan["plan_id"],
+                "name": plan["name"],
+                "duration": plan["duration"],
+                "start_date": plan["start_date"],
+                "created_at": plan["created_at"],
+                "type": plan.get("type", "manual"),
+                "calorie_target": plan.get("calorie_target")
+            })
+        
+        return {"plans": plans_summary}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching meal plans: {str(e)}")
+
+@app.get("/api/mealplan/{plan_id}")
+async def get_meal_plan(plan_id: str, current_user: dict = Depends(get_current_user)):
+    """Get specific meal plan with full details"""
+    try:
+        plan = meal_plans_collection.find_one(
+            {"plan_id": plan_id, "user_id": current_user["user_id"]},
+            {"_id": 0}
+        )
+        
+        if not plan:
+            raise HTTPException(status_code=404, detail="Meal plan not found")
+        
+        return plan
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching meal plan: {str(e)}")
+
+@app.delete("/api/mealplan/{plan_id}")
+async def delete_meal_plan(plan_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a meal plan"""
+    try:
+        result = meal_plans_collection.delete_one({
+            "plan_id": plan_id,
+            "user_id": current_user["user_id"]
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Meal plan not found")
+        
+        return {"message": "Meal plan deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting meal plan: {str(e)}")
+
+@app.put("/api/mealplan/{plan_id}/day/{day_number}/meal")
+async def update_meal(
+    plan_id: str, 
+    day_number: int, 
+    meal_category: str,
+    meal: MealUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update a specific meal in a meal plan"""
+    try:
+        # Validate meal category
+        valid_categories = ["breakfast", "morning_snack", "lunch", "afternoon_snack", "dinner"]
+        if meal_category not in valid_categories:
+            raise HTTPException(status_code=400, detail=f"Invalid meal category. Must be one of: {', '.join(valid_categories)}")
+        
+        # Find the meal plan
+        plan = meal_plans_collection.find_one(
+            {"plan_id": plan_id, "user_id": current_user["user_id"]},
+            {"_id": 0}
+        )
+        
+        if not plan:
+            raise HTTPException(status_code=404, detail="Meal plan not found")
+        
+        # Find the day and update the meal
+        day_found = False
+        for day in plan["days"]:
+            if day["day_number"] == day_number:
+                day_found = True
+                day["meals"][meal_category] = {
+                    "name": meal.name,
+                    "calories": meal.calories,
+                    "protein": meal.protein,
+                    "carbs": meal.carbs,
+                    "fat": meal.fat,
+                    "description": meal.description,
+                    "ingredients": meal.ingredients
+                }
+                
+                # Recalculate daily totals
+                meals = day["meals"]
+                day["totals"] = {
+                    "calories": sum(m.get("calories", 0) for m in meals.values() if isinstance(m, dict)),
+                    "protein": sum(m.get("protein", 0) for m in meals.values() if isinstance(m, dict)),
+                    "carbs": sum(m.get("carbs", 0) for m in meals.values() if isinstance(m, dict)),
+                    "fat": sum(m.get("fat", 0) for m in meals.values() if isinstance(m, dict))
+                }
+                break
+        
+        if not day_found:
+            raise HTTPException(status_code=404, detail=f"Day {day_number} not found in meal plan")
+        
+        # Update the meal plan in database
+        meal_plans_collection.update_one(
+            {"plan_id": plan_id, "user_id": current_user["user_id"]},
+            {"$set": {"days": plan["days"]}}
+        )
+        
+        return {"message": "Meal updated successfully", "day": day}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating meal: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
