@@ -1023,7 +1023,9 @@ async def update_meal(
         # Find the day and update the meal
         day_found = False
         for day in plan["days"]:
-            if day["day_number"] == day_number:
+            # Support both 'day' and 'day_number' field names for compatibility
+            current_day_num = day.get("day_number") or day.get("day")
+            if current_day_num == day_number:
                 day_found = True
                 day["meals"][meal_category] = {
                     "name": meal.name,
