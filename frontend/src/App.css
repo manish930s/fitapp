@@ -2270,10 +2270,15 @@ input:checked + .toggle-slider:before {
 
 /* Chatbot Input Section */
 .chatbot-input-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: var(--bg-card);
   border-top: 1px solid var(--border-light);
   padding: 16px 20px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 10;
 }
 
 .quick-suggestions {
