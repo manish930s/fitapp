@@ -765,7 +765,15 @@ async def generate_meal_plan(plan_request: MealPlanGenerate, current_user: dict 
         # Calculate calorie target if not provided
         calorie_target = plan_request.calorie_target
         if not calorie_target:
-            calorie_target = int(calculate_daily_calories(user))
+            if all([user.get('weight'), user.get('height'), user.get('age'), user.get('gender')]):
+                daily_calories = calculate_daily_calories(
+                    user['weight'], user['height'], user['age'],
+                    user['gender'], user.get('activity_level', 'moderate'),
+                    user.get('goal_weight')
+                )
+                calorie_target = int(daily_calories['daily_target'])
+            else:
+                calorie_target = 2000  # Default fallback
         
         # Prepare AI prompt
         prompt = f"""Create a {plan_request.duration}-day meal plan for a person with the following details:
