@@ -12,7 +12,7 @@ from datetime import datetime
 import os
 
 # Configuration
-BASE_URL = "https://ui-theme-changer.preview.emergentagent.com/api"
+BASE_URL = "https://meal-organizer-4.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "test@fitflow.com"
 TEST_USER_PASSWORD = "Test123!"
 
