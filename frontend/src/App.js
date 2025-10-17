@@ -33,6 +33,20 @@ function App() {
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [editProfileData, setEditProfileData] = useState({});
   const [profilePicturePreview, setProfilePicturePreview] = useState(null);
+  
+  // Meal Plan state
+  const [mealPlans, setMealPlans] = useState([]);
+  const [selectedMealPlan, setSelectedMealPlan] = useState(null);
+  const [showCreateMealPlanModal, setShowCreateMealPlanModal] = useState(false);
+  const [showMealPlanDetails, setShowMealPlanDetails] = useState(false);
+  const [mealPlanType, setMealPlanType] = useState(''); // 'ai' or 'manual'
+  const [aiMealPlanData, setAiMealPlanData] = useState({
+    duration: 7,
+    dietary_preferences: '',
+    allergies: '',
+    calorie_target: ''
+  });
+  const [generatingMealPlan, setGeneratingMealPlan] = useState(false);
   const profilePictureInputRef = useRef(null);
   
   // Settings state
