@@ -1609,9 +1609,44 @@ function App() {
                   <button
                     className="secondary-btn"
                     onClick={() => {
-                      setMealPlanType('manual');
+                      const duration = 7;
+                      const days = [];
+                      const mealCategories = ['breakfast', 'morning_snack', 'lunch', 'afternoon_snack', 'dinner'];
+                      
+                      for (let i = 1; i <= duration; i++) {
+                        const dayMeals = {};
+                        mealCategories.forEach(category => {
+                          dayMeals[category] = {
+                            name: '',
+                            calories: 0,
+                            protein: 0,
+                            carbs: 0,
+                            fat: 0,
+                            description: '',
+                            ingredients: []
+                          };
+                        });
+                        
+                        days.push({
+                          day: i,
+                          meals: dayMeals,
+                          totals: {
+                            calories: 0,
+                            protein: 0,
+                            carbs: 0,
+                            fat: 0
+                          }
+                        });
+                      }
+                      
+                      setManualMealPlanData({
+                        name: '',
+                        duration: duration,
+                        start_date: new Date().toISOString().split('T')[0],
+                        days: days
+                      });
                       setCurrentManualDay(0);
-                      initializeManualMealPlan(7);
+                      setMealPlanType('manual');
                     }}
                     style={{ width: '100%', padding: '20px' }}
                   >
