@@ -108,6 +108,27 @@ class ChatMessage(BaseModel):
     message: str
     language: Optional[str] = "english"  # Language for response (english, hindi, marathi, etc.)
 
+class MealPlanGenerate(BaseModel):
+    duration: int  # 3, 7, or 14 days
+    dietary_preferences: Optional[str] = None  # "vegetarian", "vegan", "keto", etc.
+    allergies: Optional[str] = None
+    calorie_target: Optional[int] = None  # If None, use user's daily target
+
+class MealPlanCreate(BaseModel):
+    name: str
+    duration: int
+    start_date: str  # ISO format date
+    days: List[dict]  # List of day objects with meals
+
+class MealUpdate(BaseModel):
+    name: str
+    calories: float
+    protein: float
+    carbs: float
+    fat: float
+    description: Optional[str] = None
+    ingredients: Optional[List[str]] = None
+
 # Helper Functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
