@@ -245,6 +245,20 @@ function App() {
     }
   };
 
+  // Auto-scroll chatbot to bottom
+  const scrollChatToBottom = () => {
+    if (chatMessagesContainerRef.current) {
+      setTimeout(() => {
+        chatMessagesContainerRef.current.scrollTop = chatMessagesContainerRef.current.scrollHeight;
+      }, 100);
+    }
+  };
+
+  // Auto-scroll when messages change
+  useEffect(() => {
+    scrollChatToBottom();
+  }, [chatMessages, isChatLoading]);
+
   const sendChatMessage = async () => {
     if (!chatInput.trim()) return;
     
