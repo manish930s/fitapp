@@ -76,6 +76,15 @@ function App() {
   
   // Manual meal plan single-day entry state
   const [currentManualDay, setCurrentManualDay] = useState(0);
+  const [showAddMealForm, setShowAddMealForm] = useState({ show: false, mealType: '', dayIndex: 0 });
+  const [editingMeal, setEditingMeal] = useState({ show: false, mealType: '', dayIndex: 0, meal: null });
+  const [tempMealData, setTempMealData] = useState({
+    name: '',
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0
+  });
   
   // Camera refs
   const videoRef = useRef(null);
