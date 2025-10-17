@@ -2038,7 +2038,7 @@ input:checked + .toggle-slider:before {
   background: var(--bg-primary);
   display: flex;
   flex-direction: column;
-  padding-bottom: 80px;
+  position: relative;
 }
 
 .chatbot-page-header {
@@ -2142,6 +2142,7 @@ input:checked + .toggle-slider:before {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
+  padding-bottom: 200px;
   display: flex;
   flex-direction: column;
   gap: 16px;
