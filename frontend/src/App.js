@@ -1748,6 +1748,156 @@ function App() {
               </div>
             ))}
           </div>
+
+          {/* Edit/Add Meal Modal for Meal Plan Details */}
+          {(showAddMealForm.show || editingMeal.show) && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1001
+            }}>
+              <div style={{
+                background: '#0a0a0a',
+                borderRadius: '16px',
+                padding: '24px',
+                maxWidth: '400px',
+                width: '90%',
+                border: '1px solid #333'
+              }}>
+                <h3 style={{ color: '#22c55e', marginBottom: '20px' }}>
+                  {editingMeal.show ? 'Edit' : 'Add'} {(showAddMealForm.mealType || editingMeal.mealType).replace('_', ' ')}
+                </h3>
+                
+                <input
+                  type="text"
+                  placeholder="Meal name"
+                  value={tempMealData.name}
+                  onChange={(e) => setTempMealData({...tempMealData, name: e.target.value})}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    marginBottom: '12px',
+                    background: '#1a1a1a',
+                    border: '1px solid #333',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    fontSize: '14px'
+                  }}
+                />
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                  <input
+                    type="number"
+                    placeholder="Calories"
+                    value={tempMealData.calories || ''}
+                    onChange={(e) => setTempMealData({...tempMealData, calories: e.target.value})}
+                    style={{
+                      padding: '12px',
+                      background: '#1a1a1a',
+                      border: '1px solid #333',
+                      borderRadius: '8px',
+                      color: '#fff',
+                      fontSize: '14px'
+                    }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Protein (g)"
+                    value={tempMealData.protein || ''}
+                    onChange={(e) => setTempMealData({...tempMealData, protein: e.target.value})}
+                    style={{
+                      padding: '12px',
+                      background: '#1a1a1a',
+                      border: '1px solid #333',
+                      borderRadius: '8px',
+                      color: '#fff',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+                  <input
+                    type="number"
+                    placeholder="Carbs (g)"
+                    value={tempMealData.carbs || ''}
+                    onChange={(e) => setTempMealData({...tempMealData, carbs: e.target.value})}
+                    style={{
+                      padding: '12px',
+                      background: '#1a1a1a',
+                      border: '1px solid #333',
+                      borderRadius: '8px',
+                      color: '#fff',
+                      fontSize: '14px'
+                    }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Fat (g)"
+                    value={tempMealData.fat || ''}
+                    onChange={(e) => setTempMealData({...tempMealData, fat: e.target.value})}
+                    style={{
+                      padding: '12px',
+                      background: '#1a1a1a',
+                      border: '1px solid #333',
+                      borderRadius: '8px',
+                      color: '#fff',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+                
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      setShowAddMealForm({ show: false, mealType: '', dayIndex: 0 });
+                      setEditingMeal({ show: false, mealType: '', dayIndex: 0, meal: null });
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      background: '#333',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      const mealType = showAddMealForm.show ? showAddMealForm.mealType : editingMeal.mealType;
+                      const dayIndex = showAddMealForm.show ? showAddMealForm.dayIndex : editingMeal.dayIndex;
+                      saveMealToSelectedPlan(mealType, dayIndex);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      background: '#22c55e',
+                      color: '#000',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {editingMeal.show ? 'Save Changes' : 'Add Meal'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
