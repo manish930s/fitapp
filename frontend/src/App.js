@@ -1754,9 +1754,41 @@ function App() {
                       value={manualMealPlanData.duration}
                       onChange={(e) => {
                         const duration = parseInt(e.target.value);
-                        setManualMealPlanData({...manualMealPlanData, duration});
+                        const days = [];
+                        const mealCategories = ['breakfast', 'morning_snack', 'lunch', 'afternoon_snack', 'dinner'];
+                        
+                        for (let i = 1; i <= duration; i++) {
+                          const dayMeals = {};
+                          mealCategories.forEach(category => {
+                            dayMeals[category] = {
+                              name: '',
+                              calories: 0,
+                              protein: 0,
+                              carbs: 0,
+                              fat: 0,
+                              description: '',
+                              ingredients: []
+                            };
+                          });
+                          
+                          days.push({
+                            day: i,
+                            meals: dayMeals,
+                            totals: {
+                              calories: 0,
+                              protein: 0,
+                              carbs: 0,
+                              fat: 0
+                            }
+                          });
+                        }
+                        
+                        setManualMealPlanData({
+                          ...manualMealPlanData,
+                          duration: duration,
+                          days: days
+                        });
                         setCurrentManualDay(0);
-                        initializeManualMealPlan(duration);
                       }}
                       style={{
                         width: '100%',
