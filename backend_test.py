@@ -1024,7 +1024,7 @@ def run_all_tests():
     print(f"📈 Success Rate: {(passed/(passed+failed)*100):.1f}%")
     
     # Show critical failures
-    critical_tests = ["AI Food Scan (CRITICAL)", "User Registration", "User Login", "AI Fitness Coach (NEW CRITICAL)"]
+    critical_tests = ["AI Food Scan (CRITICAL)", "User Registration", "User Login", "AI Fitness Coach (NEW CRITICAL)", "AI Meal Plan Generation (NEW CRITICAL)"]
     critical_failures = []
     
     for test_name in critical_tests:
