@@ -109,7 +109,7 @@ class ChatMessage(BaseModel):
     language: Optional[str] = "english"  # Language for response (english, hindi, marathi, etc.)
 
 class MealPlanGenerate(BaseModel):
-    duration: int  # 3, 7, or 14 days
+    duration: int  # 1, 3, 7, or 14 days
     dietary_preferences: Optional[str] = None  # "vegetarian", "vegan", "keto", etc.
     allergies: Optional[str] = None
     calorie_target: Optional[int] = None  # If None, use user's daily target
