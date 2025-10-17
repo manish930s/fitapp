@@ -825,14 +825,19 @@ Make sure the total daily calories are close to {calorie_target} kcal. Return ON
                 response_text = response_text.split("```")[1].split("```")[0].strip()
             
             meal_plan_data = json.loads(response_text)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             # Fallback: try to find JSON in the response
             import re
-            json_match = re.search(r'\{[\s\S]*\}', assistant_message)
+            json_match = re.search(r'\{[\s\S]*\}', response_text)
             if json_match:
-                meal_plan_data = json.loads(json_match.group())
+                try:
+                    meal_plan_data = json.loads(json_match.group())
+                except json.JSONDecodeError:
+                    print(f"Failed to parse AI response: {response_text[:500]}")
+                    raise HTTPException(status_code=500, detail=f"Failed to parse AI response as JSON: {str(e)}")
             else:
-                raise HTTPException(status_code=500, detail="Failed to parse AI response")
+                print(f"No JSON found in AI response: {response_text[:500]}")
+                raise HTTPException(status_code=500, detail="No JSON found in AI response")
         
         # Calculate daily totals for each day
         for day in meal_plan_data["days"]:
