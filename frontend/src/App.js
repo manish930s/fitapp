@@ -1634,58 +1634,117 @@ function App() {
                 )}
 
                 {/* Meals */}
-                {day.meals && Object.entries(day.meals).map(([mealType, meal]) => (
-                  <div 
-                    key={mealType}
-                    style={{
-                      background: '#0a0a0a',
-                      borderRadius: '12px',
-                      padding: '16px',
-                      marginBottom: '12px'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <h4 style={{ 
+                {day.meals && Object.entries(day.meals).map(([mealType, meal]) => {
+                  const hasMeal = meal && meal.name && meal.name.trim();
+                  
+                  return (
+                    <div key={mealType} style={{ marginBottom: '12px' }}>
+                      <div style={{ 
                         color: '#fff', 
                         textTransform: 'capitalize',
                         fontSize: '16px',
-                        margin: 0
+                        fontWeight: 'bold',
+                        marginBottom: '8px'
                       }}>
                         {mealType.replace('_', ' ')}
-                      </h4>
-                      <span style={{ color: '#22c55e', fontWeight: 'bold' }}>
-                        {meal.calories} kcal
-                      </span>
-                    </div>
-                    
-                    <div style={{ color: '#22c55e', fontWeight: '500', marginBottom: '6px' }}>
-                      {meal.name}
-                    </div>
-                    
-                    {meal.description && (
-                      <p style={{ color: '#888', fontSize: '14px', marginBottom: '8px' }}>
-                        {meal.description}
-                      </p>
-                    )}
-                    
-                    <div style={{ display: 'flex', gap: '16px', marginBottom: '8px', fontSize: '14px' }}>
-                      <span style={{ color: '#3b82f6' }}>P: {meal.protein}g</span>
-                      <span style={{ color: '#f59e0b' }}>C: {meal.carbs}g</span>
-                      <span style={{ color: '#ef4444' }}>F: {meal.fat}g</span>
-                    </div>
-                    
-                    {meal.ingredients && meal.ingredients.length > 0 && (
-                      <div style={{ marginTop: '8px' }}>
-                        <div style={{ color: '#888', fontSize: '12px', marginBottom: '4px' }}>
-                          Ingredients:
-                        </div>
-                        <div style={{ color: '#ccc', fontSize: '13px' }}>
-                          {meal.ingredients.join(', ')}
-                        </div>
                       </div>
-                    )}
-                  </div>
-                ))}
+                      
+                      {!hasMeal ? (
+                        <button
+                          onClick={() => openAddMealForm(mealType, index)}
+                          style={{
+                            width: '100%',
+                            padding: '14px',
+                            background: '#22c55e',
+                            color: '#000',
+                            border: 'none',
+                            borderRadius: '40px',
+                            fontSize: '15px',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          + Add {mealType.replace('_', ' ')}
+                        </button>
+                      ) : (
+                        <div style={{
+                          background: '#0a0a0a',
+                          borderRadius: '12px',
+                          padding: '16px'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                            <span style={{ color: '#22c55e', fontWeight: 'bold' }}>
+                              {meal.calories} kcal
+                            </span>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button
+                                onClick={() => openEditMealForm(mealType, index, meal)}
+                                style={{
+                                  padding: '6px 12px',
+                                  background: '#22c55e',
+                                  color: '#000',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  fontSize: '13px',
+                                  cursor: 'pointer',
+                                  fontWeight: 'bold'
+                                }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => deleteMealFromPlan(mealType, index)}
+                                style={{
+                                  padding: '6px 12px',
+                                  background: '#ef4444',
+                                  color: '#fff',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  fontSize: '13px',
+                                  cursor: 'pointer',
+                                  fontWeight: 'bold'
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <div style={{ color: '#22c55e', fontWeight: '500', marginBottom: '6px' }}>
+                            {meal.name}
+                          </div>
+                          
+                          {meal.description && (
+                            <p style={{ color: '#888', fontSize: '14px', marginBottom: '8px' }}>
+                              {meal.description}
+                            </p>
+                          )}
+                          
+                          <div style={{ display: 'flex', gap: '16px', marginBottom: '8px', fontSize: '14px' }}>
+                            <span style={{ color: '#3b82f6' }}>P: {meal.protein}g</span>
+                            <span style={{ color: '#f59e0b' }}>C: {meal.carbs}g</span>
+                            <span style={{ color: '#ef4444' }}>F: {meal.fat}g</span>
+                          </div>
+                          
+                          {meal.ingredients && meal.ingredients.length > 0 && (
+                            <div style={{ marginTop: '8px' }}>
+                              <div style={{ color: '#888', fontSize: '12px', marginBottom: '4px' }}>
+                                Ingredients:
+                              </div>
+                              <div style={{ color: '#ccc', fontSize: '13px' }}>
+                                {meal.ingredients.join(', ')}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </div>
