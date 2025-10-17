@@ -364,6 +364,119 @@ function App() {
     }
   };
 
+  const initializeManualMealPlan = (duration) => {
+    const days = [];
+    const mealCategories = ['breakfast', 'morning_snack', 'lunch', 'afternoon_snack', 'dinner'];
+    
+    for (let i = 1; i <= duration; i++) {
+      const dayMeals = {};
+      mealCategories.forEach(category => {
+        dayMeals[category] = {
+          name: '',
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          description: '',
+          ingredients: []
+        };
+      });
+      
+      days.push({
+        day: i,
+        meals: dayMeals,
+        totals: {
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0
+        }
+      });
+    }
+    
+    setManualMealPlanData({
+      ...manualMealPlanData,
+      duration: parseInt(duration),
+      days: days
+    });
+  };
+
+  const updateManualMeal = (dayIndex, mealType, field, value) => {
+    const updatedDays = [...manualMealPlanData.days];
+    updatedDays[dayIndex].meals[mealType][field] = field === 'ingredients' ? value : (field === 'name' || field === 'description' ? value : parseFloat(value) || 0);
+    
+    // Recalculate day totals
+    const meals = updatedDays[dayIndex].meals;
+    updatedDays[dayIndex].totals = {
+      calories: Object.values(meals).reduce((sum, meal) => sum + (meal.calories || 0), 0),
+      protein: Object.values(meals).reduce((sum, meal) => sum + (meal.protein || 0), 0),
+      carbs: Object.values(meals).reduce((sum, meal) => sum + (meal.carbs || 0), 0),
+      fat: Object.values(meals).reduce((sum, meal) => sum + (meal.fat || 0), 0)
+    };
+    
+    setManualMealPlanData({
+      ...manualMealPlanData,
+      days: updatedDays
+    });
+  };
+
+  const createManualMealPlan = async () => {
+    try {
+      // Validate
+      if (!manualMealPlanData.name.trim()) {
+        setError('Please enter a meal plan name');
+        return;
+      }
+
+      // Check if at least one meal has content
+      const hasContent = manualMealPlanData.days.some(day => 
+        Object.values(day.meals).some(meal => meal.name.trim())
+      );
+      
+      if (!hasContent) {
+        setError('Please add at least one meal to your plan');
+        return;
+      }
+
+      setGeneratingMealPlan(true);
+      setError('');
+      
+      const response = await fetch(`${BACKEND_URL}/api/mealplan/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(manualMealPlanData)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccess('Manual Meal Plan created successfully!');
+        setShowCreateMealPlanModal(false);
+        setMealPlanType('');
+        setManualMealPlanData({
+          name: '',
+          duration: 7,
+          start_date: new Date().toISOString().split('T')[0],
+          days: []
+        });
+        await fetchMealPlans();
+        
+        // Show the newly created meal plan
+        await fetchMealPlanDetails(data.plan_id);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to create meal plan');
+      }
+    } catch (err) {
+      console.error('Error creating meal plan:', err);
+      setError('Failed to create meal plan. Please try again.');
+    } finally {
+      setGeneratingMealPlan(false);
+    }
+  };
+
   const deleteMealPlan = async (planId) => {
     if (!window.confirm('Are you sure you want to delete this meal plan?')) {
       return;
