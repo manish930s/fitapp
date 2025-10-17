@@ -482,7 +482,7 @@ agent_communication:
   - agent: "testing"
     message: "✅ BACKEND TESTING COMPLETE: All 13 endpoints working perfectly. AI integrations verified with REAL responses - Fitness Coach chatbot tested with 4 different questions, all responses contextual and personalized. Food Scanner AI service integration confirmed. No mocked responses detected."
   - agent: "main"
-    message: "Starting frontend testing per user request. Please test: 1) Login/Registration flow, 2) Dashboard with stats display, 3) AI Fitness Coach chatbot UI and interaction, 4) Profile page with goals and measurements, 5) Navigation between pages. Focus on the AI chatbot integration as it's newly fixed. Backend URL: https://smart-meal-entry.preview.emergentagent.com/api"
+    message: "Starting frontend testing per user request. Please test: 1) Login/Registration flow, 2) Dashboard with stats display, 3) AI Fitness Coach chatbot UI and interaction, 4) Profile page with goals and measurements, 5) Navigation between pages. Focus on the AI chatbot integration as it's newly fixed. Backend URL: https://flex-diet-plan.preview.emergentagent.com/api"
   - agent: "testing"
     message: "🎉 AI INTEGRATION TESTING COMPLETE: Both AI features working with REAL responses! ✅ AI Fitness Coach: Fully operational with OpenAI GPT-4o via Emergent LLM Key - tested with multiple questions, all responses contextual and personalized (avg 1165 chars), chat history working, no mocked responses. ✅ AI Food Scanner: Integration working with real AI analysis - fixed JSON parsing issues, added robust error handling, endpoint processes images and calls real AI service. All backend APIs (13/13) passing with 100% success rate. Backend is production-ready with genuine AI capabilities."
   - agent: "testing"
