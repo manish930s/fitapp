@@ -817,7 +817,9 @@ Make sure the total daily calories are close to {calorie_target} kcal. Return ON
         
         # Call AI using Emergent LLM
         llm_chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"meal_plan_{uuid.uuid4()}",
+            system_message="You are a nutrition expert AI that creates detailed meal plans based on user requirements."
         ).with_model("openai", "gpt-4o")
         
         user_msg = UserMessage(text=prompt)
