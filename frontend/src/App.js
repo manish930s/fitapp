@@ -535,6 +535,7 @@ function App() {
 
   // Meal management functions for editing meal plans
   const openAddMealForm = (mealType, dayIndex) => {
+    console.log('Opening add meal form:', mealType, dayIndex); // Debug log
     setTempMealData({
       name: '',
       calories: 0,
@@ -542,10 +543,12 @@ function App() {
       carbs: 0,
       fat: 0
     });
+    setEditingMeal({ show: false, mealType: '', dayIndex: 0, meal: null });
     setShowAddMealForm({ show: true, mealType, dayIndex });
   };
 
   const openEditMealForm = (mealType, dayIndex, meal) => {
+    console.log('Opening edit meal form:', mealType, dayIndex, meal); // Debug log
     setTempMealData({
       name: meal.name || '',
       calories: meal.calories || 0,
@@ -553,10 +556,13 @@ function App() {
       carbs: meal.carbs || 0,
       fat: meal.fat || 0
     });
+    setShowAddMealForm({ show: false, mealType: '', dayIndex: 0 });
     setEditingMeal({ show: true, mealType, dayIndex, meal });
   };
 
   const saveMealToSelectedPlan = async (mealType, dayIndex) => {
+    console.log('Saving meal:', mealType, dayIndex, tempMealData); // Debug log
+    
     if (!tempMealData.name.trim()) {
       setError('Please enter a meal name');
       return;
@@ -566,9 +572,11 @@ function App() {
       const day = selectedMealPlan.days[dayIndex];
       const dayNumber = day.day_number;
 
+      console.log('Day number:', dayNumber); // Debug log
+
       // Prepare meal data to send to backend
       const mealData = {
-        name: tempMealData.name,
+        name: tempMealData.name.trim(),
         calories: parseFloat(tempMealData.calories) || 0,
         protein: parseFloat(tempMealData.protein) || 0,
         carbs: parseFloat(tempMealData.carbs) || 0,
@@ -577,32 +585,38 @@ function App() {
         ingredients: []
       };
 
+      console.log('Sending to backend:', mealData); // Debug log
+
       // Update backend using the correct API format
-      const response = await fetch(
-        `${BACKEND_URL}/api/mealplan/${selectedMealPlan.plan_id}/day/${dayNumber}/meal?meal_category=${mealType}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(mealData)
-        }
-      );
+      const url = `${BACKEND_URL}/api/mealplan/${selectedMealPlan.plan_id}/day/${dayNumber}/meal?meal_category=${mealType}`;
+      console.log('API URL:', url); // Debug log
+      
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(mealData)
+      });
+
+      console.log('Response status:', response.status); // Debug log
 
       if (response.ok) {
         setSuccess(editingMeal.show ? 'Meal updated successfully' : 'Meal added successfully');
         setShowAddMealForm({ show: false, mealType: '', dayIndex: 0 });
         setEditingMeal({ show: false, mealType: '', dayIndex: 0, meal: null });
+        setError('');
         // Refresh meal plan details
         await fetchMealPlanDetails(selectedMealPlan.plan_id);
       } else {
         const errorData = await response.json();
+        console.error('Error response:', errorData); // Debug log
         setError(errorData.detail || 'Failed to save meal');
       }
     } catch (err) {
       console.error('Error saving meal:', err);
-      setError('Failed to save meal');
+      setError('Failed to save meal: ' + err.message);
     }
   };
 
