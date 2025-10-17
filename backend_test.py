@@ -990,7 +990,12 @@ def run_all_tests():
         ("Streak Calculation", test_streak_calculation),
         ("Goals Management (NEW)", test_goals_management),
         ("Measurements Tracking (NEW)", test_measurements_tracking),
-        ("AI Fitness Coach (NEW CRITICAL)", test_ai_fitness_coach)
+        ("AI Fitness Coach (NEW CRITICAL)", test_ai_fitness_coach),
+        ("AI Meal Plan Generation (NEW CRITICAL)", test_ai_meal_plan_generation),
+        ("Meal Plan List", test_meal_plan_list),
+        ("Meal Plan Details", test_meal_plan_details),
+        ("Meal Plan Delete", test_meal_plan_delete),
+        ("Meal Plan Error Cases", test_meal_plan_error_cases)
     ]
     
     passed = 0
