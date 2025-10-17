@@ -612,11 +612,11 @@ function App() {
     }
 
     try {
-      const updatedPlan = {...selectedMealPlan};
-      const day = updatedPlan.days[dayIndex];
-      
-      // Remove meal
-      day.meals[mealType] = {
+      const day = selectedMealPlan.days[dayIndex];
+      const dayNumber = day.day_number;
+
+      // Send empty meal data to backend to clear the meal
+      const emptyMealData = {
         name: '',
         calories: 0,
         protein: 0,
@@ -626,42 +626,26 @@ function App() {
         ingredients: []
       };
 
-      // Recalculate day totals
-      let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0;
-      Object.values(day.meals).forEach(meal => {
-        if (meal && meal.name) {
-          totalCalories += parseFloat(meal.calories) || 0;
-          totalProtein += parseFloat(meal.protein) || 0;
-          totalCarbs += parseFloat(meal.carbs) || 0;
-          totalFat += parseFloat(meal.fat) || 0;
-        }
-      });
-
-      day.totals = {
-        calories: totalCalories,
-        protein: totalProtein,
-        carbs: totalCarbs,
-        fat: totalFat
-      };
-
       // Update backend
-      const response = await fetch(`${BACKEND_URL}/api/mealplan/${selectedMealPlan.plan_id}/day/${day.day_number}/meal`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          meal_type: mealType,
-          meal_data: day.meals[mealType]
-        })
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/api/mealplan/${selectedMealPlan.plan_id}/day/${dayNumber}/meal?meal_category=${mealType}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(emptyMealData)
+        }
+      );
 
       if (response.ok) {
         setSuccess('Meal deleted successfully');
+        // Refresh meal plan details
         await fetchMealPlanDetails(selectedMealPlan.plan_id);
       } else {
-        setError('Failed to delete meal');
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to delete meal');
       }
     } catch (err) {
       console.error('Error deleting meal:', err);
