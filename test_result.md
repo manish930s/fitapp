@@ -462,6 +462,12 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ 1-DAY OPTION TESTING COMPLETE: Comprehensive testing of the '1 Day' option in both AI and Manual meal plan forms - ALL REQUIREMENTS VERIFIED (100% success rate). Test Results: ✅ Login successful with test@fitflow.com/Test123!, ✅ Navigation to Meal Plan tab working correctly, ✅ Create Meal Plan modal opens with both AI Generated and Manual options, ✅ AI FORM TESTING: Duration dropdown contains ['1 Day', '3 Days', '7 Days (1 Week)', '14 Days (2 Weeks)'] with '1 Day' as FIRST option, form accepts dietary preferences and calorie targets, ✅ MANUAL FORM TESTING: Form loads properly with name input, duration dropdown, start date picker, '1 Day' is FIRST option in dropdown, day navigation updates correctly to 'Day 1 of 1' when 1 Day selected, ✅ SAMPLE DATA ENTRY: Successfully filled 'My 1-Day Test Plan' name, selected 1 Day duration, filled breakfast data (Oatmeal, 300 cal, 10g protein, 50g carbs, 5g fat), ✅ UI VERIFICATION: Forms are well-organized with clear sections, proper spacing and styling, all elements accessible and user-friendly, dark theme with green accents applied correctly. CRITICAL SUCCESS: Manual meal plan form is now stable and functional - previous UI disappearing issue has been resolved. Both AI and Manual forms fully support 1-day meal plans as requested."
+      - working: false
+        agent: "user"
+        comment: "User reported: AI Generated Meal Plan not responding. Chatbot also not working."
+      - working: "NA"
+        agent: "main"
+        comment: "CRITICAL ISSUE IDENTIFIED & FIXED: Root cause was Emergent LLM Key budget exceeded (cost: $0.41, max: $0.40) combined with stopped services. Issues found: 1) Backend and frontend services were stopped, 2) Missing craco dependency for frontend build, 3) Old Emergent LLM Key (sk-emergent-08711724d0c7c696cD) exceeded budget limit. Fixes applied: 1) Installed @craco/craco package for frontend, 2) Updated Emergent LLM Key to new key: sk-emergent-f94B9F4150dDe13D4C in backend/.env, 3) Restarted both backend and frontend services. Verification testing: ✅ Chatbot API tested - returning comprehensive AI responses (1500+ chars with workout plans), ✅ AI Meal Plan Generation tested - successfully generated 3-day vegetarian meal plan with complete nutritional data (plan_id: bbb55aaa-3803-484a-9be0-6fdfd5b239b9). Both features fully operational with real OpenAI GPT-4o responses."
 
 metadata:
   created_by: "main_agent"
