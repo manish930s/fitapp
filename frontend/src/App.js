@@ -263,10 +263,12 @@ function App() {
     }
   };
 
-  // Auto-scroll when messages change
+  // Auto-scroll when messages change or chatbot page opens
   useEffect(() => {
-    scrollChatToBottom();
-  }, [chatMessages, isChatLoading]);
+    if (currentPage === 'chatbot') {
+      scrollChatToBottom();
+    }
+  }, [chatMessages, isChatLoading, currentPage]);
 
   const sendChatMessage = async () => {
     if (!chatInput.trim()) return;
