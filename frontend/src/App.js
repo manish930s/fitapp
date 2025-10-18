@@ -248,6 +248,8 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         setChatMessages(data.chats);
+        // Scroll to bottom after loading chat history
+        setTimeout(() => scrollChatToBottom(), 200);
       }
     } catch (err) {
       console.error('Error fetching chat history:', err);
