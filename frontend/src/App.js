@@ -259,16 +259,22 @@ function App() {
   // Auto-scroll chatbot to bottom
   const scrollChatToBottom = () => {
     if (chatMessagesContainerRef.current) {
-      setTimeout(() => {
-        chatMessagesContainerRef.current.scrollTop = chatMessagesContainerRef.current.scrollHeight;
-      }, 100);
+      // Use requestAnimationFrame for smoother scrolling after DOM updates
+      requestAnimationFrame(() => {
+        if (chatMessagesContainerRef.current) {
+          chatMessagesContainerRef.current.scrollTop = chatMessagesContainerRef.current.scrollHeight;
+        }
+      });
     }
   };
 
   // Auto-scroll when messages change or chatbot page opens
   useEffect(() => {
     if (currentPage === 'chatbot') {
-      scrollChatToBottom();
+      // Delay to ensure DOM is fully rendered
+      setTimeout(() => {
+        scrollChatToBottom();
+      }, 150);
     }
   }, [chatMessages, isChatLoading, currentPage]);
 
