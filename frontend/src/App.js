@@ -297,6 +297,13 @@ function App() {
     };
     setChatMessages(prev => [...prev, tempUserMsg]);
     
+    // Scroll to bottom after adding user message
+    setTimeout(() => {
+      if (chatMessagesContainerRef.current) {
+        chatMessagesContainerRef.current.scrollTop = chatMessagesContainerRef.current.scrollHeight;
+      }
+    }, 100);
+    
     try {
       const response = await fetch(`${BACKEND_URL}/api/chat/fitness`, {
         method: 'POST',
@@ -322,6 +329,13 @@ function App() {
           };
           return newMessages;
         });
+        
+        // Scroll to bottom after receiving AI response
+        setTimeout(() => {
+          if (chatMessagesContainerRef.current) {
+            chatMessagesContainerRef.current.scrollTop = chatMessagesContainerRef.current.scrollHeight;
+          }
+        }, 100);
       }
     } catch (err) {
       console.error('Error sending chat message:', err);
