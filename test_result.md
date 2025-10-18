@@ -257,6 +257,12 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ COMPREHENSIVE TESTING COMPLETE: AI Fitness Coach working perfectly with REAL OpenAI GPT-4o responses via Emergent LLM Key (sk-emergent-08711724d0c7c696cD). Tested with multiple fitness questions - all responses are contextual, personalized, and relevant (avg 1165 chars). Chat history persistence working correctly. Session management functional. Multilingual support available. NO mocked responses detected. AI integration fully operational and production-ready."
+      - working: false
+        agent: "user"
+        comment: "User reported: Chatbot not working and not responding to messages."
+      - working: "NA"
+        agent: "main"
+        comment: "CRITICAL ISSUE IDENTIFIED: Emergent LLM Key budget exceeded. Error: 'Budget has been exceeded! Current cost: $0.41, Max budget: $0.40'. Old key: sk-emergent-08711724d0c7c696cD. Root cause: Both backend and frontend services were stopped, causing application downtime. Fixed missing craco dependency for frontend. Updated to new Emergent LLM Key: sk-emergent-f94B9F4150dDe13D4C. Restarted both services successfully. Tested chatbot API - now returning comprehensive AI responses (1500+ chars). Feature fully operational."
 
 frontend:
   - task: "Authentication UI (Login/Register)"
