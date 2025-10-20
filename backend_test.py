@@ -975,7 +975,7 @@ def test_meal_plan_error_cases():
 created_session_ids = []
 
 def test_workout_exercises_list():
-    """Test GET /api/workouts/exercises - Get all workout exercises"""
+    """Test GET /api/workouts/exercises - EXPANDED Exercise Library (35+ exercises)"""
     if not auth_token:
         log_test("Workout Exercises List", False, "No auth token available")
         return False
@@ -983,7 +983,7 @@ def test_workout_exercises_list():
     headers = {"Authorization": f"Bearer {auth_token}"}
     
     try:
-        # Test 1: Get all exercises
+        # Test 1: Get all exercises - Should now return 35+ exercises (expanded from 6)
         response = requests.get(f"{BASE_URL}/workouts/exercises", headers=headers, timeout=10)
         
         if response.status_code != 200:
@@ -994,10 +994,10 @@ def test_workout_exercises_list():
         data = response.json()
         exercises = data.get("exercises", [])
         
-        # Should return 6 exercises as mentioned in the review
-        if len(exercises) != 6:
-            log_test("Workout Exercises List - Count", False, 
-                    f"Expected 6 exercises, got {len(exercises)}")
+        # CRITICAL: Should return 35+ exercises (expanded library)
+        if len(exercises) < 35:
+            log_test("Workout Exercises List - Expanded Count", False, 
+                    f"Expected 35+ exercises (expanded library), got {len(exercises)}")
             return False
         
         # Verify exercise structure
