@@ -78,6 +78,7 @@ class UserProfile(BaseModel):
     goal_weight: Optional[float] = None
     theme: Optional[str] = "system"  # system, dark, light
     profile_picture: Optional[str] = None  # base64 encoded image
+    weight_unit: Optional[str] = None  # kg or lbs
 
 class FoodScanResult(BaseModel):
     food_name: str
