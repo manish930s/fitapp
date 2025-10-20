@@ -1760,9 +1760,22 @@ function App() {
           <div className="workout-detail-content">
             {/* Exercise Image/Video Placeholder */}
             <div className="exercise-media">
-              <div className="exercise-placeholder-large">
-                <span style={{ fontSize: '80px' }}>🏋️</span>
-              </div>
+              {selectedExercise.image_url ? (
+                <img 
+                  src={selectedExercise.image_url} 
+                  alt={selectedExercise.name}
+                  style={{
+                    width: '100%',
+                    height: '250px',
+                    objectFit: 'cover',
+                    borderRadius: '12px'
+                  }}
+                />
+              ) : (
+                <div className="exercise-placeholder-large">
+                  <span style={{ fontSize: '80px' }}>🏋️</span>
+                </div>
+              )}
             </div>
 
             {/* Proper Form Section */}
