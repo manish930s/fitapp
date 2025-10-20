@@ -1738,55 +1738,351 @@ function App() {
   };
 
   // Render Workout Page
-  const renderWorkout = () => (
-    <div className="workout-container">
-      <div className="page-header">
-        <h2>Exercise Library</h2>
-        <button className="icon-btn">🔍</button>
-      </div>
+  const renderWorkout = () => {
+    // Show workout detail page if an exercise is selected
+    if (showWorkoutDetail && selectedExercise) {
+      return (
+        <div className="workout-detail-container">
+          {/* Header */}
+          <div className="page-header">
+            <button className="icon-btn" onClick={() => {
+              setShowWorkoutDetail(false);
+              setSelectedExercise(null);
+              setCurrentWorkoutSets([]);
+              setWorkoutNotes('');
+            }}>
+              ←
+            </button>
+            <h2>{selectedExercise.name}</h2>
+            <button className="icon-btn">⋮</button>
+          </div>
 
-      <div className="filter-tabs">
-        <button className="filter-tab active">All</button>
-        <button className="filter-tab">Chest</button>
-        <button className="filter-tab">Back</button>
-        <button className="filter-tab">Legs</button>
-      </div>
+          <div className="workout-detail-content">
+            {/* Exercise Image/Video Placeholder */}
+            <div className="exercise-media">
+              <div className="exercise-placeholder-large">
+                <span style={{ fontSize: '80px' }}>🏋️</span>
+              </div>
+            </div>
 
-      <button className="btn-primary workout-cta">
-        Start Today's Workout
-      </button>
+            {/* Proper Form Section */}
+            <div className="workout-section">
+              <h3>✓ Proper Form</h3>
+              <div className="form-images">
+                <div className="form-image-placeholder">
+                  <span>📸 Position 1</span>
+                </div>
+                <div className="form-image-placeholder">
+                  <span>📸 Position 2</span>
+                </div>
+              </div>
+            </div>
 
-      <div className="exercise-grid">
-        <div className="exercise-card">
-          <div className="exercise-image" style={{backgroundColor: '#2a2a2a'}}>
-            <span className="exercise-placeholder">🏋️</span>
+            {/* Collapsible Sections */}
+            <div className="collapsible-section">
+              <div className="collapsible-header">
+                <h3>💪 Benefits</h3>
+                <span>›</span>
+              </div>
+              <div className="collapsible-content">
+                <p>{selectedExercise.description || 'Builds strength and muscle mass'}</p>
+                <p><strong>Target Muscles:</strong> {selectedExercise.target_muscles?.join(', ') || 'Primary muscle groups'}</p>
+              </div>
+            </div>
+
+            <div className="collapsible-section">
+              <div className="collapsible-header">
+                <h3>⚠️ Common Mistakes</h3>
+                <span>›</span>
+              </div>
+              <div className="collapsible-content">
+                <ul>
+                  {selectedExercise.safety_tips?.map((tip, index) => (
+                    <li key={index}>{tip}</li>
+                  )) || <li>Always warm up before starting</li>}
+                </ul>
+              </div>
+            </div>
+
+            <div className="collapsible-section">
+              <div className="collapsible-header">
+                <h3>📈 Progression Tips</h3>
+                <span>›</span>
+              </div>
+              <div className="collapsible-content">
+                <ul>
+                  {selectedExercise.instructions?.map((instruction, index) => (
+                    <li key={index}>{instruction}</li>
+                  )) || <li>Gradually increase weight over time</li>}
+                </ul>
+              </div>
+            </div>
+
+            {/* Track Your Session */}
+            <div className="workout-section">
+              <h3>📝 Track Your Session</h3>
+              
+              {/* Rest Timer */}
+              {restTimerActive && (
+                <div className="rest-timer-display">
+                  <div className="timer-circle">
+                    <span className="timer-value">{restTimer}s</span>
+                  </div>
+                  <button className="btn-secondary" onClick={() => {
+                    setRestTimerActive(false);
+                    setRestTimer(0);
+                  }}>
+                    Stop Timer
+                  </button>
+                </div>
+              )}
+
+              {/* Sets Input */}
+              {currentWorkoutSets.map((set, index) => (
+                <div key={index} className="set-input-row">
+                  <span className="set-number">Set {set.set_number}</span>
+                  
+                  <div className="input-group">
+                    <input
+                      type="number"
+                      value={set.reps}
+                      onChange={(e) => updateWorkoutSet(index, 'reps', e.target.value)}
+                      placeholder="Reps"
+                      min="1"
+                    />
+                    <label>reps</label>
+                  </div>
+
+                  <div className="input-group">
+                    <input
+                      type="number"
+                      value={set.weight}
+                      onChange={(e) => updateWorkoutSet(index, 'weight', e.target.value)}
+                      placeholder="Weight"
+                      min="0"
+                      step="0.5"
+                    />
+                    <label>{user?.weight_unit || 'kg'}</label>
+                  </div>
+
+                  <div className="input-group">
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={set.rpe}
+                      onChange={(e) => updateWorkoutSet(index, 'rpe', e.target.value)}
+                      className="rpe-slider"
+                    />
+                    <label>RPE {set.rpe}</label>
+                  </div>
+
+                  <button 
+                    className="icon-btn remove-set-btn"
+                    onClick={() => removeWorkoutSet(index)}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+
+              {/* Add Set & Voice Input */}
+              <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                <button className="btn-secondary" onClick={addWorkoutSet}>
+                  + Add Set
+                </button>
+                <button 
+                  className={`btn-secondary ${isListening ? 'listening' : ''}`}
+                  onClick={startVoiceInput}
+                  disabled={currentWorkoutSets.length === 0}
+                  title="Say something like '10 reps 50 kilos'"
+                >
+                  {isListening ? '🎤 Listening...' : '🎤 Voice Input'}
+                </button>
+              </div>
+
+              {/* Rest Timer Presets */}
+              {!restTimerActive && (
+                <div className="rest-timer-presets">
+                  <p>Rest Timer:</p>
+                  <button onClick={() => startRestTimer(60)}>60s</button>
+                  <button onClick={() => startRestTimer(90)}>90s</button>
+                  <button onClick={() => startRestTimer(120)}>120s</button>
+                  <button onClick={() => startRestTimer(180)}>3min</button>
+                </div>
+              )}
+
+              {/* Notes */}
+              <textarea
+                className="workout-notes"
+                placeholder="Add notes (optional)..."
+                value={workoutNotes}
+                onChange={(e) => setWorkoutNotes(e.target.value)}
+                rows="3"
+              />
+
+              {/* Save Button */}
+              <button 
+                className="btn-primary"
+                onClick={saveWorkoutSession}
+                disabled={loading || currentWorkoutSets.length === 0}
+                style={{ marginTop: '15px', width: '100%' }}
+              >
+                {loading ? 'Saving...' : '✓ Save Workout'}
+              </button>
+            </div>
+
+            {/* 1RM Calculator */}
+            {exerciseStats && (
+              <div className="workout-section">
+                <h3>💪 Exercise Stats</h3>
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <span className="stat-label">Personal Best</span>
+                    <span className="stat-value">{exerciseStats.personal_best}{user?.weight_unit || 'kg'}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Estimated 1RM</span>
+                    <span className="stat-value">{exerciseStats.estimated_1rm}{user?.weight_unit || 'kg'}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Total Sessions</span>
+                    <span className="stat-value">{exerciseStats.total_sessions}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Total Volume</span>
+                    <span className="stat-value">{exerciseStats.total_volume}{user?.weight_unit || 'kg'}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Performance History */}
+            {exerciseHistory && exerciseHistory.sessions && exerciseHistory.sessions.length > 0 && (
+              <div className="workout-section">
+                <h3>📊 Performance History</h3>
+                <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px' }}>
+                  Weight Lifted ({user?.weight_unit || 'kg'}) - Last 6 Months
+                </p>
+                <div className="performance-chart">
+                  {exerciseHistory.sessions.slice(0, 6).reverse().map((session, index) => {
+                    const maxWeight = Math.max(...exerciseHistory.sessions.map(s => s.max_weight || 0));
+                    const height = ((session.max_weight || 0) / maxWeight) * 100;
+                    const date = new Date(session.workout_date);
+                    const month = date.toLocaleDateString('en-US', { month: 'short' });
+                    
+                    return (
+                      <div key={index} className="chart-bar-container">
+                        <div 
+                          className="chart-bar"
+                          style={{ 
+                            height: `${height}%`,
+                            backgroundColor: index === exerciseHistory.sessions.length - 1 ? '#10b981' : '#2a2a2a'
+                          }}
+                        >
+                          <span className="bar-value">{session.max_weight}</span>
+                        </div>
+                        <span className="bar-label">{month}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
-          <h4>Bench Press</h4>
         </div>
-        
-        <div className="exercise-card">
-          <div className="exercise-image" style={{backgroundColor: '#f5f5f5'}}>
-            <span className="exercise-placeholder">🧘</span>
-          </div>
-          <h4>Squat</h4>
+      );
+    }
+
+    // Show exercise library
+    return (
+      <div className="workout-container">
+        <div className="page-header">
+          <h2>Exercise Library</h2>
+          <button className="icon-btn">🔍</button>
         </div>
-        
-        <div className="exercise-card">
-          <div className="exercise-image" style={{backgroundColor: '#2a2a2a'}}>
-            <span className="exercise-placeholder">💪</span>
-          </div>
-          <h4>Deadlift</h4>
+
+        <div className="filter-tabs">
+          <button 
+            className={`filter-tab ${selectedCategory === 'All' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('All')}
+          >
+            All
+          </button>
+          <button 
+            className={`filter-tab ${selectedCategory === 'Chest' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('Chest')}
+          >
+            Chest
+          </button>
+          <button 
+            className={`filter-tab ${selectedCategory === 'Back' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('Back')}
+          >
+            Back
+          </button>
+          <button 
+            className={`filter-tab ${selectedCategory === 'Legs' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('Legs')}
+          >
+            Legs
+          </button>
         </div>
-        
-        <div className="exercise-card">
-          <div className="exercise-image" style={{backgroundColor: '#f5f5f5'}}>
-            <span className="exercise-placeholder">🤸</span>
+
+        <button className="btn-primary workout-cta">
+          Start Today's Workout
+        </button>
+
+        {/* Workout Dashboard Stats */}
+        {workoutDashboardStats && (
+          <div className="workout-stats-banner">
+            <div className="workout-stat-item">
+              <span className="stat-value">{workoutDashboardStats.total_workouts}</span>
+              <span className="stat-label">Workouts</span>
+            </div>
+            <div className="workout-stat-item">
+              <span className="stat-value">{workoutDashboardStats.total_volume}{user?.weight_unit || 'kg'}</span>
+              <span className="stat-label">Total Volume</span>
+            </div>
+            {workoutDashboardStats.favorite_exercise && (
+              <div className="workout-stat-item">
+                <span className="stat-value">{workoutDashboardStats.favorite_exercise}</span>
+                <span className="stat-label">Favorite</span>
+              </div>
+            )}
           </div>
-          <h4>Overhead Press</h4>
+        )}
+
+        <div className="exercise-grid">
+          {exercises.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+              <p>No exercises found</p>
+            </div>
+          ) : (
+            exercises.map((exercise) => (
+              <div 
+                key={exercise.exercise_id} 
+                className="exercise-card"
+                onClick={() => fetchExerciseDetail(exercise.exercise_id)}
+              >
+                <div className="exercise-image" style={{backgroundColor: '#2a2a2a'}}>
+                  <span className="exercise-placeholder">
+                    {exercise.category === 'Chest' ? '🏋️' : 
+                     exercise.category === 'Legs' ? '🦵' :
+                     exercise.category === 'Back' ? '💪' : '🤸'}
+                  </span>
+                </div>
+                <h4>{exercise.name}</h4>
+                <p style={{ fontSize: '12px', color: '#888', marginTop: '5px' }}>
+                  {exercise.category}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Render Meal Plan Page
   const renderMealPlan = () => {
