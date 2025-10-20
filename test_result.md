@@ -282,11 +282,11 @@ frontend:
   
   - task: "Workout Tracking UI - Exercise Library & Detail Page"
     implemented: true
-    working: true
-    file: "/app/frontend/src/App.js, /app/frontend/src/App.css"
+    working: "NA"
+    file: "/app/frontend/src/App.js, /app/frontend/src/App.css, /app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -294,6 +294,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ BACKEND TESTING COMPLETE: All workout tracking backend APIs working perfectly (100% success rate). Comprehensive testing results: ✅ GET /api/workouts/exercises returns 6 exercises correctly (Bench Press, Squat, Deadlift, Overhead Press, Barbell Row, Pull Ups) with proper category filtering (All, Chest, Back, Legs), ✅ GET /api/workouts/exercises/bench-press returns complete exercise details with target muscles, instructions, tips, and safety information, ✅ GET /api/workouts/dashboard/stats returns accurate dashboard statistics (total workouts, volume lifted, weekly/monthly counts, favorite exercise), ✅ POST /api/workouts/sessions successfully creates workout sessions with accurate volume calculations (tested with 3 sets: 10x60kg, 8x70kg, 6x80kg = 1640kg total volume), ✅ Exercise stats calculation working correctly (Personal Best: 80kg, Estimated 1RM: 96kg using Epley formula), ✅ Workout session management (create, list, detail, delete) all functional, ✅ Exercise history tracking with proper max weight and volume calculations, ✅ Category filtering working for Chest, Back, Legs exercises, ✅ User weight unit preferences (kg/lbs) properly handled. All backend APIs are production-ready and support the complete workout tracking feature. Frontend testing not performed as per system limitations - backend integration confirmed working."
+      - working: "NA"
+        agent: "main"
+        comment: "MAJOR WORKOUT FEATURE EXPANSION: Comprehensive enhancements per user requirements for complete gym app experience. Backend Changes: 1) Expanded exercise database from 6 to 35+ exercises covering ALL muscle groups: Chest (5 exercises: Bench Press, Incline Bench, Dumbbell Fly, Push-ups, Cable Crossover), Back (6: Deadlift, Barbell Row, Pull Ups, Lat Pulldown, Seated Cable Row, T-Bar Row), Legs (7: Squat, Leg Press, Leg Curl, Leg Extension, Lunges, Bulgarian Split Squat, Calf Raises), Shoulders (5: Overhead Press, Lateral Raise, Front Raise, Rear Delt Fly, Shrugs), Arms (5: Bicep Curl, Hammer Curl, Tricep Pushdown, Dips, Skull Crushers), Core (5: Plank, Crunches, Russian Twists, Leg Raises, Cable Crunches), 2) All exercises now include real Unsplash images replacing placeholder emojis, 3) Added PUT /api/workouts/sessions/{session_id} endpoint for editing previous workout sessions with volume/stats recalculation, 4) Backend already supports delete, history, and stats tracking. Frontend Changes: 1) Added 4 new category filter tabs: Shoulders, Arms, Core (total 7 categories), 2) Exercise cards now display real exercise images from Unsplash with proper background sizing and fallback emojis, 3) Workout detail page displays large exercise image (250px height, cover fit, rounded corners), 4) Auto-suggest feature: Workout sets auto-populate from last session data - maps previous reps/weight/RPE to current session, if no previous session starts with 1 default set, 5) Progress indicators: Green banner shows last session stats (max weight, number of sets, total volume) before tracking section, 6) All existing features retained: RPE slider, rest timer, voice input, 1RM calculator, performance history chart, save/delete functionality. Backend restarted successfully to initialize new exercises. Ready for comprehensive backend testing of new endpoints and expanded exercise library."
   
   - task: "Food Scanner with Camera Capture"
     implemented: true
