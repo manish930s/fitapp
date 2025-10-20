@@ -1620,24 +1620,6 @@ async def get_workout_dashboard_stats(
         raise HTTPException(status_code=500, detail=f"Error fetching dashboard stats: {str(e)}")
 
 
-                break
-        
-        if not day_found:
-            raise HTTPException(status_code=404, detail=f"Day {day_number} not found in meal plan")
-        
-        # Update the meal plan in database
-        meal_plans_collection.update_one(
-            {"plan_id": plan_id, "user_id": current_user["user_id"]},
-            {"$set": {"days": plan["days"]}}
-        )
-        
-        return {"message": "Meal updated successfully", "day": day}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating meal: {str(e)}")
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
