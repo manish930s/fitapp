@@ -131,6 +131,26 @@ class MealUpdate(BaseModel):
     description: Optional[str] = None
     ingredients: Optional[List[str]] = None
 
+
+class WorkoutSet(BaseModel):
+    reps: int
+    weight: float
+    rpe: Optional[int] = None  # Rate of Perceived Exertion 1-10
+    rest_seconds: Optional[int] = None
+    notes: Optional[str] = None
+
+class WorkoutSessionCreate(BaseModel):
+    exercise_id: str
+    sets: List[WorkoutSet]
+    notes: Optional[str] = None
+
+class WorkoutSetUpdate(BaseModel):
+    reps: Optional[int] = None
+    weight: Optional[float] = None
+    rpe: Optional[int] = None
+    rest_seconds: Optional[int] = None
+    notes: Optional[str] = None
+
 # Helper Functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
