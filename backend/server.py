@@ -39,6 +39,8 @@ goals_collection = db['goals']
 measurements_collection = db['measurements']
 chat_history_collection = db['chat_history']
 meal_plans_collection = db['meal_plans']
+exercises_collection = db['exercises']
+workout_sessions_collection = db['workout_sessions']
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
