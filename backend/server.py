@@ -320,6 +320,7 @@ Provide realistic estimates based on the visible portion. Return ONLY valid JSON
 def initialize_exercises():
     """Initialize predefined workout exercises if not already present"""
     exercises = [
+        # CHEST EXERCISES
         {
             "exercise_id": "bench-press",
             "name": "Bench Press",
@@ -345,30 +346,103 @@ def initialize_exercises():
             "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop"
         },
         {
-            "exercise_id": "squat",
-            "name": "Squat",
-            "category": "Legs",
-            "description": "A fundamental lower body compound exercise targeting quads, hamstrings, and glutes",
-            "target_muscles": ["Quadriceps", "Hamstrings", "Glutes", "Core"],
+            "exercise_id": "incline-bench-press",
+            "name": "Incline Bench Press",
+            "category": "Chest",
+            "description": "Targets the upper chest with an angled pressing motion",
+            "target_muscles": ["Upper Chest", "Shoulders", "Triceps"],
             "instructions": [
-                "Stand with feet shoulder-width apart",
-                "Keep your chest up and core tight",
-                "Lower yourself by bending at the hips and knees",
-                "Descend until thighs are parallel to the ground",
-                "Push through your heels to return to standing"
+                "Set bench to 30-45 degree incline",
+                "Grip barbell slightly wider than shoulders",
+                "Lower bar to upper chest",
+                "Press back up to starting position"
             ],
             "tips": [
-                "Keep your knees tracking over your toes",
-                "Maintain a neutral spine throughout the movement",
-                "Drive through your heels, not your toes"
+                "Keep elbows at 45-degree angle",
+                "Press in slight arc toward face",
+                "Maintain tight core throughout"
             ],
             "safety_tips": [
-                "Never let your knees cave inward",
-                "Don't round your lower back",
-                "Use a weight appropriate for your strength level"
+                "Don't set incline too steep (max 45 degrees)",
+                "Keep feet flat on ground for stability",
+                "Use spotter for heavy sets"
             ],
-            "image_url": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=400&fit=crop"
+            "image_url": "https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400&h=400&fit=crop"
         },
+        {
+            "exercise_id": "dumbbell-fly",
+            "name": "Dumbbell Fly",
+            "category": "Chest",
+            "description": "Isolation exercise for chest with full stretch and contraction",
+            "target_muscles": ["Chest", "Shoulders"],
+            "instructions": [
+                "Lie on flat bench with dumbbells above chest",
+                "Lower weights out to sides in wide arc",
+                "Keep slight bend in elbows",
+                "Bring weights back together above chest"
+            ],
+            "tips": [
+                "Focus on chest stretch at bottom",
+                "Control the weight - don't drop arms",
+                "Squeeze chest at top of movement"
+            ],
+            "safety_tips": [
+                "Don't go too heavy - focus on form",
+                "Maintain slight elbow bend throughout",
+                "Stop if you feel shoulder pain"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "push-ups",
+            "name": "Push-Ups",
+            "category": "Chest",
+            "description": "Bodyweight exercise building chest, triceps, and core strength",
+            "target_muscles": ["Chest", "Triceps", "Shoulders", "Core"],
+            "instructions": [
+                "Start in plank position with hands shoulder-width",
+                "Lower body until chest nearly touches floor",
+                "Keep elbows at 45-degree angle",
+                "Push back up to starting position"
+            ],
+            "tips": [
+                "Keep body in straight line",
+                "Engage core throughout movement",
+                "Full range of motion for best results"
+            ],
+            "safety_tips": [
+                "Don't let hips sag",
+                "Keep neck neutral",
+                "Modify on knees if needed"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "cable-crossover",
+            "name": "Cable Crossover",
+            "category": "Chest",
+            "description": "Cable exercise for complete chest development and peak contraction",
+            "target_muscles": ["Chest", "Front Shoulders"],
+            "instructions": [
+                "Set pulleys to high position",
+                "Grab handles and step forward",
+                "Pull handles down and across body",
+                "Squeeze chest at center"
+            ],
+            "tips": [
+                "Lean forward slightly",
+                "Focus on squeezing chest at peak",
+                "Control the return motion"
+            ],
+            "safety_tips": [
+                "Start with lighter weight",
+                "Don't overstretch shoulders",
+                "Maintain stable stance"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop"
+        },
+        
+        # BACK EXERCISES
         {
             "exercise_id": "deadlift",
             "name": "Deadlift",
@@ -393,30 +467,6 @@ def initialize_exercises():
                 "Use proper form over heavy weight"
             ],
             "image_url": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=400&fit=crop"
-        },
-        {
-            "exercise_id": "overhead-press",
-            "name": "Overhead Press",
-            "category": "Shoulders",
-            "description": "A vertical pressing movement targeting the shoulders and triceps",
-            "target_muscles": ["Shoulders", "Triceps", "Upper Chest", "Core"],
-            "instructions": [
-                "Stand with feet shoulder-width apart",
-                "Hold the barbell at shoulder height",
-                "Press the bar overhead until arms are fully extended",
-                "Lower the bar back to shoulder height with control"
-            ],
-            "tips": [
-                "Keep your core tight and glutes engaged",
-                "Press the bar in a slight arc, not straight up",
-                "Don't lean back excessively"
-            ],
-            "safety_tips": [
-                "Avoid excessive lower back arching",
-                "Start with lighter weights to master form",
-                "Ensure full shoulder mobility before heavy pressing"
-            ],
-            "image_url": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=400&fit=crop"
         },
         {
             "exercise_id": "barbell-row",
@@ -466,6 +516,624 @@ def initialize_exercises():
                 "Use assistance bands if needed"
             ],
             "image_url": "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "lat-pulldown",
+            "name": "Lat Pulldown",
+            "category": "Back",
+            "description": "Machine exercise for building lat width and upper back strength",
+            "target_muscles": ["Lats", "Biceps", "Rear Delts", "Traps"],
+            "instructions": [
+                "Sit at lat pulldown machine with knees secured",
+                "Grab bar with wide overhand grip",
+                "Pull bar down to upper chest",
+                "Squeeze shoulder blades together",
+                "Return to starting position with control"
+            ],
+            "tips": [
+                "Lean back slightly during pull",
+                "Focus on pulling elbows down and back",
+                "Don't use momentum or body swing"
+            ],
+            "safety_tips": [
+                "Don't pull bar behind neck",
+                "Keep core engaged",
+                "Use weight you can control"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1584380931214-dbb5b72e7fd0?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "seated-cable-row",
+            "name": "Seated Cable Row",
+            "category": "Back",
+            "description": "Horizontal pulling exercise for mid-back development",
+            "target_muscles": ["Mid Back", "Lats", "Biceps", "Rear Delts"],
+            "instructions": [
+                "Sit at cable row machine with feet on platform",
+                "Grab handle with both hands",
+                "Pull handle to lower chest",
+                "Squeeze shoulder blades together",
+                "Return arms to extended position"
+            ],
+            "tips": [
+                "Keep torso upright and stable",
+                "Drive elbows back past body",
+                "Maintain neutral spine"
+            ],
+            "safety_tips": [
+                "Don't round lower back",
+                "Control the weight on return",
+                "Keep chest up throughout"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "t-bar-row",
+            "name": "T-Bar Row",
+            "category": "Back",
+            "description": "Angled rowing movement for overall back thickness",
+            "target_muscles": ["Mid Back", "Lats", "Traps", "Biceps"],
+            "instructions": [
+                "Straddle T-bar with bent knees",
+                "Grab handles with overhand grip",
+                "Pull weight toward chest",
+                "Squeeze back at top",
+                "Lower with control"
+            ],
+            "tips": [
+                "Keep back flat and chest up",
+                "Pull with elbows, not hands",
+                "Use full range of motion"
+            ],
+            "safety_tips": [
+                "Don't round spine",
+                "Start light to learn form",
+                "Brace core throughout"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop"
+        },
+        
+        # LEG EXERCISES
+        {
+            "exercise_id": "squat",
+            "name": "Squat",
+            "category": "Legs",
+            "description": "A fundamental lower body compound exercise targeting quads, hamstrings, and glutes",
+            "target_muscles": ["Quadriceps", "Hamstrings", "Glutes", "Core"],
+            "instructions": [
+                "Stand with feet shoulder-width apart",
+                "Keep your chest up and core tight",
+                "Lower yourself by bending at the hips and knees",
+                "Descend until thighs are parallel to the ground",
+                "Push through your heels to return to standing"
+            ],
+            "tips": [
+                "Keep your knees tracking over your toes",
+                "Maintain a neutral spine throughout the movement",
+                "Drive through your heels, not your toes"
+            ],
+            "safety_tips": [
+                "Never let your knees cave inward",
+                "Don't round your lower back",
+                "Use a weight appropriate for your strength level"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "leg-press",
+            "name": "Leg Press",
+            "category": "Legs",
+            "description": "Machine exercise for overall leg development with back support",
+            "target_muscles": ["Quadriceps", "Glutes", "Hamstrings"],
+            "instructions": [
+                "Sit in leg press machine with feet shoulder-width on platform",
+                "Release safety locks",
+                "Lower platform by bending knees to 90 degrees",
+                "Press back up to starting position",
+                "Don't lock knees at top"
+            ],
+            "tips": [
+                "Keep lower back pressed against pad",
+                "Push through entire foot, not just toes",
+                "Control descent for better results"
+            ],
+            "safety_tips": [
+                "Never lock knees fully",
+                "Don't let lower back lift off pad",
+                "Use appropriate weight"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "leg-curl",
+            "name": "Leg Curl",
+            "category": "Legs",
+            "description": "Isolation exercise targeting the hamstrings",
+            "target_muscles": ["Hamstrings", "Calves"],
+            "instructions": [
+                "Lie face down on leg curl machine",
+                "Place ankles under padded lever",
+                "Curl legs up toward glutes",
+                "Squeeze hamstrings at top",
+                "Lower with control"
+            ],
+            "tips": [
+                "Keep hips pressed down",
+                "Full range of motion",
+                "Don't use momentum"
+            ],
+            "safety_tips": [
+                "Don't hyperextend knees",
+                "Keep movement controlled",
+                "Adjust pad to fit properly"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "leg-extension",
+            "name": "Leg Extension",
+            "category": "Legs",
+            "description": "Isolation exercise for quadriceps development",
+            "target_muscles": ["Quadriceps"],
+            "instructions": [
+                "Sit in leg extension machine",
+                "Place ankles under padded lever",
+                "Extend legs until fully straight",
+                "Squeeze quads at top",
+                "Lower with control"
+            ],
+            "tips": [
+                "Keep back against pad",
+                "Control both up and down phases",
+                "Squeeze at full extension"
+            ],
+            "safety_tips": [
+                "Don't hyperextend knees",
+                "Use moderate weight",
+                "Stop if knee pain occurs"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "lunges",
+            "name": "Lunges",
+            "category": "Legs",
+            "description": "Unilateral leg exercise for balance and strength",
+            "target_muscles": ["Quadriceps", "Glutes", "Hamstrings"],
+            "instructions": [
+                "Stand with feet hip-width apart",
+                "Step forward with one leg",
+                "Lower hips until both knees at 90 degrees",
+                "Push back to starting position",
+                "Alternate legs"
+            ],
+            "tips": [
+                "Keep front knee over ankle",
+                "Maintain upright torso",
+                "Push through front heel"
+            ],
+            "safety_tips": [
+                "Don't let front knee pass toes",
+                "Keep core engaged",
+                "Start with bodyweight"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "bulgarian-split-squat",
+            "name": "Bulgarian Split Squat",
+            "category": "Legs",
+            "description": "Single-leg exercise for quad and glute development",
+            "target_muscles": ["Quadriceps", "Glutes", "Hamstrings"],
+            "instructions": [
+                "Place rear foot on bench behind you",
+                "Front foot forward in lunge position",
+                "Lower body by bending front knee",
+                "Push back up through front heel",
+                "Complete reps then switch legs"
+            ],
+            "tips": [
+                "Keep torso upright",
+                "Front knee tracks over toes",
+                "Control the descent"
+            ],
+            "safety_tips": [
+                "Start with bodyweight first",
+                "Use bench at knee height",
+                "Keep front knee stable"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "calf-raises",
+            "name": "Calf Raises",
+            "category": "Legs",
+            "description": "Isolation exercise for calf muscle development",
+            "target_muscles": ["Calves"],
+            "instructions": [
+                "Stand with balls of feet on raised surface",
+                "Lower heels below platform",
+                "Rise up onto toes as high as possible",
+                "Squeeze calves at top",
+                "Lower with control"
+            ],
+            "tips": [
+                "Full range of motion",
+                "Pause at top for squeeze",
+                "Keep knees slightly bent"
+            ],
+            "safety_tips": [
+                "Hold onto support for balance",
+                "Don't bounce at bottom",
+                "Control the movement"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=400&h=400&fit=crop"
+        },
+        
+        # SHOULDER EXERCISES
+        {
+            "exercise_id": "overhead-press",
+            "name": "Overhead Press",
+            "category": "Shoulders",
+            "description": "A vertical pressing movement targeting the shoulders and triceps",
+            "target_muscles": ["Shoulders", "Triceps", "Upper Chest", "Core"],
+            "instructions": [
+                "Stand with feet shoulder-width apart",
+                "Hold the barbell at shoulder height",
+                "Press the bar overhead until arms are fully extended",
+                "Lower the bar back to shoulder height with control"
+            ],
+            "tips": [
+                "Keep your core tight and glutes engaged",
+                "Press the bar in a slight arc, not straight up",
+                "Don't lean back excessively"
+            ],
+            "safety_tips": [
+                "Avoid excessive lower back arching",
+                "Start with lighter weights to master form",
+                "Ensure full shoulder mobility before heavy pressing"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "lateral-raise",
+            "name": "Lateral Raise",
+            "category": "Shoulders",
+            "description": "Isolation exercise for side deltoid development",
+            "target_muscles": ["Side Deltoids", "Traps"],
+            "instructions": [
+                "Stand with dumbbells at sides",
+                "Raise arms out to sides until shoulder height",
+                "Keep slight bend in elbows",
+                "Lower with control"
+            ],
+            "tips": [
+                "Lead with elbows, not hands",
+                "Don't swing or use momentum",
+                "Keep shoulders down"
+            ],
+            "safety_tips": [
+                "Use lighter weight for proper form",
+                "Don't raise above shoulder height",
+                "Control the descent"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "front-raise",
+            "name": "Front Raise",
+            "category": "Shoulders",
+            "description": "Isolation for front deltoid development",
+            "target_muscles": ["Front Deltoids", "Upper Chest"],
+            "instructions": [
+                "Stand with dumbbells in front of thighs",
+                "Raise arms straight in front to shoulder height",
+                "Keep slight bend in elbows",
+                "Lower back down with control"
+            ],
+            "tips": [
+                "Keep core tight",
+                "Don't swing weights up",
+                "Maintain neutral wrist position"
+            ],
+            "safety_tips": [
+                "Start light",
+                "Don't raise above shoulder level",
+                "Keep shoulders down"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "rear-delt-fly",
+            "name": "Rear Delt Fly",
+            "category": "Shoulders",
+            "description": "Isolation exercise for rear deltoid and upper back",
+            "target_muscles": ["Rear Deltoids", "Upper Back"],
+            "instructions": [
+                "Bend forward at hips with dumbbells",
+                "Raise arms out to sides in reverse fly motion",
+                "Squeeze shoulder blades together",
+                "Lower with control"
+            ],
+            "tips": [
+                "Keep back flat",
+                "Focus on rear delts, not traps",
+                "Don't use momentum"
+            ],
+            "safety_tips": [
+                "Maintain neutral spine",
+                "Use lighter weights",
+                "Keep slight elbow bend"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "shrugs",
+            "name": "Shrugs",
+            "category": "Shoulders",
+            "description": "Isolation exercise for trapezius development",
+            "target_muscles": ["Traps", "Upper Back"],
+            "instructions": [
+                "Stand holding dumbbells or barbell",
+                "Raise shoulders straight up toward ears",
+                "Hold briefly at top",
+                "Lower back down slowly"
+            ],
+            "tips": [
+                "Don't roll shoulders",
+                "Lift straight up and down",
+                "Squeeze traps at top"
+            ],
+            "safety_tips": [
+                "Don't use excessive weight",
+                "Keep arms straight",
+                "Control the movement"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=400&fit=crop"
+        },
+        
+        # ARM EXERCISES
+        {
+            "exercise_id": "bicep-curl",
+            "name": "Bicep Curl",
+            "category": "Arms",
+            "description": "Classic isolation exercise for biceps development",
+            "target_muscles": ["Biceps", "Forearms"],
+            "instructions": [
+                "Stand with dumbbells at sides, palms forward",
+                "Curl weights up toward shoulders",
+                "Keep elbows stationary at sides",
+                "Lower with control"
+            ],
+            "tips": [
+                "Don't swing or use momentum",
+                "Keep elbows pinned to sides",
+                "Squeeze biceps at top"
+            ],
+            "safety_tips": [
+                "Control the weight throughout",
+                "Don't arch lower back",
+                "Use full range of motion"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "hammer-curl",
+            "name": "Hammer Curl",
+            "category": "Arms",
+            "description": "Bicep curl variation targeting brachialis and forearms",
+            "target_muscles": ["Biceps", "Brachialis", "Forearms"],
+            "instructions": [
+                "Stand with dumbbells at sides, palms facing in",
+                "Curl weights up keeping neutral grip",
+                "Keep elbows at sides",
+                "Lower with control"
+            ],
+            "tips": [
+                "Maintain neutral wrist throughout",
+                "Don't swing weights",
+                "Focus on controlled movement"
+            ],
+            "safety_tips": [
+                "Keep elbows stationary",
+                "Use appropriate weight",
+                "Full range of motion"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "tricep-pushdown",
+            "name": "Tricep Pushdown",
+            "category": "Arms",
+            "description": "Cable isolation exercise for triceps development",
+            "target_muscles": ["Triceps"],
+            "instructions": [
+                "Stand at cable machine with rope or bar attachment",
+                "Start with elbows at 90 degrees",
+                "Push down until arms fully extended",
+                "Return to starting position with control"
+            ],
+            "tips": [
+                "Keep elbows pinned to sides",
+                "Squeeze triceps at bottom",
+                "Don't lean forward"
+            ],
+            "safety_tips": [
+                "Keep core engaged",
+                "Don't use too much weight",
+                "Control the return phase"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "dips",
+            "name": "Dips",
+            "category": "Arms",
+            "description": "Bodyweight or weighted exercise for triceps and chest",
+            "target_muscles": ["Triceps", "Chest", "Shoulders"],
+            "instructions": [
+                "Grip parallel bars with arms extended",
+                "Lower body by bending elbows",
+                "Descend until upper arms parallel to ground",
+                "Push back up to starting position"
+            ],
+            "tips": [
+                "Lean forward for more chest, upright for triceps",
+                "Keep shoulders down",
+                "Control the descent"
+            ],
+            "safety_tips": [
+                "Don't go too deep if shoulder hurts",
+                "Build up to weighted dips gradually",
+                "Warm up shoulders first"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "skull-crushers",
+            "name": "Skull Crushers",
+            "category": "Arms",
+            "description": "Lying tricep extension for mass building",
+            "target_muscles": ["Triceps"],
+            "instructions": [
+                "Lie on bench with barbell extended above chest",
+                "Lower bar toward forehead by bending elbows",
+                "Keep upper arms stationary",
+                "Extend arms back to starting position"
+            ],
+            "tips": [
+                "Keep elbows in, don't flare out",
+                "Lower slowly and controlled",
+                "Full extension at top"
+            ],
+            "safety_tips": [
+                "Use spotter for heavy weight",
+                "Don't go too heavy initially",
+                "Control the weight"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop"
+        },
+        
+        # CORE EXERCISES
+        {
+            "exercise_id": "plank",
+            "name": "Plank",
+            "category": "Core",
+            "description": "Isometric core strengthening exercise",
+            "target_muscles": ["Core", "Abs", "Lower Back"],
+            "instructions": [
+                "Start in forearm plank position",
+                "Keep body in straight line from head to heels",
+                "Hold position maintaining tight core",
+                "Breathe normally throughout"
+            ],
+            "tips": [
+                "Don't let hips sag",
+                "Keep shoulders over elbows",
+                "Squeeze glutes and core"
+            ],
+            "safety_tips": [
+                "Don't hold breath",
+                "Stop if lower back hurts",
+                "Build up time gradually"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "crunches",
+            "name": "Crunches",
+            "category": "Core",
+            "description": "Classic abdominal exercise for upper abs",
+            "target_muscles": ["Abs", "Core"],
+            "instructions": [
+                "Lie on back with knees bent, feet flat",
+                "Place hands behind head",
+                "Lift shoulders off ground using abs",
+                "Lower back down with control"
+            ],
+            "tips": [
+                "Focus on abs, not pulling neck",
+                "Exhale on the way up",
+                "Keep lower back on ground"
+            ],
+            "safety_tips": [
+                "Don't pull on neck",
+                "Keep chin away from chest",
+                "Control the movement"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "russian-twists",
+            "name": "Russian Twists",
+            "category": "Core",
+            "description": "Rotational core exercise for obliques",
+            "target_muscles": ["Obliques", "Abs", "Core"],
+            "instructions": [
+                "Sit with knees bent, feet off ground",
+                "Lean back slightly maintaining straight back",
+                "Rotate torso side to side",
+                "Touch ground on each side"
+            ],
+            "tips": [
+                "Keep core engaged throughout",
+                "Move with control, not momentum",
+                "Keep chest up"
+            ],
+            "safety_tips": [
+                "Don't round spine",
+                "Start without weight",
+                "Keep movements controlled"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "leg-raises",
+            "name": "Leg Raises",
+            "category": "Core",
+            "description": "Lower ab exercise for core strength",
+            "target_muscles": ["Lower Abs", "Hip Flexors"],
+            "instructions": [
+                "Lie flat on back with legs extended",
+                "Place hands under glutes for support",
+                "Raise legs up to 90 degrees",
+                "Lower with control without touching ground"
+            ],
+            "tips": [
+                "Keep lower back pressed to ground",
+                "Control the descent",
+                "Don't swing legs"
+            ],
+            "safety_tips": [
+                "Bend knees if too difficult",
+                "Keep core engaged",
+                "Don't arch lower back"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "cable-crunches",
+            "name": "Cable Crunches",
+            "category": "Core",
+            "description": "Weighted ab exercise using cable machine",
+            "target_muscles": ["Abs", "Core"],
+            "instructions": [
+                "Kneel at cable machine with rope attachment",
+                "Hold rope at head level",
+                "Crunch down bringing elbows toward knees",
+                "Return to starting position with control"
+            ],
+            "tips": [
+                "Focus on abs contracting",
+                "Keep hips stationary",
+                "Full range of motion"
+            ],
+            "safety_tips": [
+                "Don't use excessive weight",
+                "Keep movement controlled",
+                "Don't pull with arms"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop"
         }
     ]
     
