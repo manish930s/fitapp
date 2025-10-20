@@ -139,7 +139,7 @@ def test_expanded_exercise_library():
         new_exercises_to_check = {
             "Shoulders": ["Lateral Raise", "Front Raise", "Rear Delt Fly", "Shrugs"],
             "Arms": ["Bicep Curl", "Hammer Curl", "Tricep Pushdown", "Dips", "Skull Crushers"],
-            "Core": ["Plank", "Crunches", "Russian Twists", "Leg Raises", "Cable Crunches"]
+            "Core": ["Plank", "Crunches", "Russian Twists", "Leg Raises", "Cable Crunches", "Mountain Climbers"]
         }
         
         for category, exercise_names in new_exercises_to_check.items():
