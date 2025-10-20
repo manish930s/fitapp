@@ -1836,7 +1836,17 @@ def run_all_tests():
         ("Meal Plan List", test_meal_plan_list),
         ("Meal Plan Details", test_meal_plan_details),
         ("Meal Plan Delete", test_meal_plan_delete),
-        ("Meal Plan Error Cases", test_meal_plan_error_cases)
+        ("Meal Plan Error Cases", test_meal_plan_error_cases),
+        ("Workout Exercises List (NEW)", test_workout_exercises_list),
+        ("Workout Exercise Detail (NEW)", test_workout_exercise_detail),
+        ("Workout Session Create (NEW)", test_workout_session_create),
+        ("Workout Sessions List (NEW)", test_workout_sessions_list),
+        ("Workout Session Detail (NEW)", test_workout_session_detail),
+        ("Workout Exercise History (NEW)", test_workout_exercise_history),
+        ("Workout Exercise Stats (NEW)", test_workout_exercise_stats),
+        ("Workout Dashboard Stats (NEW)", test_workout_dashboard_stats),
+        ("Workout Session Delete (NEW)", test_workout_session_delete),
+        ("User Profile Weight Unit (NEW)", test_user_profile_weight_unit)
     ]
     
     passed = 0
