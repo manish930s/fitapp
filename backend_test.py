@@ -1000,25 +1000,33 @@ def test_workout_exercises_list():
                     f"Expected 35+ exercises (expanded library), got {len(exercises)}")
             return False
         
-        # Verify exercise structure
+        # Verify exercise structure includes new fields
         if exercises:
             first_exercise = exercises[0]
-            required_fields = ["exercise_id", "name", "category", "description", "target_muscles", "instructions", "tips", "safety_tips"]
+            required_fields = ["exercise_id", "name", "category", "description", "target_muscles", 
+                             "instructions", "tips", "safety_tips", "image_url"]
             missing_fields = [field for field in required_fields if field not in first_exercise]
             
             if missing_fields:
                 log_test("Workout Exercises List - Structure", False, 
                         f"Missing fields in exercise: {missing_fields}")
                 return False
+            
+            # Verify real Unsplash image URLs (not placeholders)
+            image_url = first_exercise.get("image_url", "")
+            if not image_url or "unsplash.com" not in image_url:
+                log_test("Workout Exercises List - Real Images", False, 
+                        f"Expected real Unsplash image URL, got: {image_url}")
+                return False
         
-        # Verify expected exercises exist
+        # Verify all original exercises still exist
         exercise_names = [ex["name"] for ex in exercises]
-        expected_exercises = ["Bench Press", "Squat", "Deadlift", "Overhead Press", "Barbell Row", "Pull Ups"]
-        missing_exercises = [ex for ex in expected_exercises if ex not in exercise_names]
+        original_exercises = ["Bench Press", "Squat", "Deadlift", "Overhead Press", "Barbell Row", "Pull Ups"]
+        missing_exercises = [ex for ex in original_exercises if ex not in exercise_names]
         
         if missing_exercises:
-            log_test("Workout Exercises List - Expected Exercises", False, 
-                    f"Missing expected exercises: {missing_exercises}")
+            log_test("Workout Exercises List - Original Exercises", False, 
+                    f"Missing original exercises: {missing_exercises}")
             return False
         
         # Test 2: Filter by category - Chest
