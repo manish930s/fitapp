@@ -314,6 +314,170 @@ Provide realistic estimates based on the visible portion. Return ONLY valid JSON
         print(f"Error analyzing food: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to analyze food image: {str(e)}")
 
+
+# Initialize workout exercises in database
+def initialize_exercises():
+    """Initialize predefined workout exercises if not already present"""
+    exercises = [
+        {
+            "exercise_id": "bench-press",
+            "name": "Bench Press",
+            "category": "Chest",
+            "description": "A compound exercise that targets the chest, triceps, and shoulders",
+            "target_muscles": ["Chest", "Triceps", "Shoulders"],
+            "instructions": [
+                "Lie flat on a bench with your feet firmly on the ground",
+                "Grip the barbell slightly wider than shoulder-width",
+                "Lower the bar to your mid-chest in a controlled manner",
+                "Press the bar back up to the starting position"
+            ],
+            "tips": [
+                "Keep your shoulder blades retracted and depressed",
+                "Maintain a slight arch in your lower back",
+                "Control the descent - don't bounce the bar off your chest"
+            ],
+            "safety_tips": [
+                "Always use a spotter for heavy weights",
+                "Warm up properly before lifting",
+                "Don't lock out your elbows completely at the top"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "squat",
+            "name": "Squat",
+            "category": "Legs",
+            "description": "A fundamental lower body compound exercise targeting quads, hamstrings, and glutes",
+            "target_muscles": ["Quadriceps", "Hamstrings", "Glutes", "Core"],
+            "instructions": [
+                "Stand with feet shoulder-width apart",
+                "Keep your chest up and core tight",
+                "Lower yourself by bending at the hips and knees",
+                "Descend until thighs are parallel to the ground",
+                "Push through your heels to return to standing"
+            ],
+            "tips": [
+                "Keep your knees tracking over your toes",
+                "Maintain a neutral spine throughout the movement",
+                "Drive through your heels, not your toes"
+            ],
+            "safety_tips": [
+                "Never let your knees cave inward",
+                "Don't round your lower back",
+                "Use a weight appropriate for your strength level"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "deadlift",
+            "name": "Deadlift",
+            "category": "Back",
+            "description": "A full-body compound exercise emphasizing the posterior chain",
+            "target_muscles": ["Lower Back", "Hamstrings", "Glutes", "Traps", "Forearms"],
+            "instructions": [
+                "Stand with feet hip-width apart, bar over mid-foot",
+                "Bend down and grip the bar just outside your legs",
+                "Keep your back straight and chest up",
+                "Drive through your heels and extend your hips",
+                "Stand up fully, then lower the bar with control"
+            ],
+            "tips": [
+                "Keep the bar close to your body throughout",
+                "Engage your lats to protect your lower back",
+                "Think about pushing the floor away, not pulling the bar up"
+            ],
+            "safety_tips": [
+                "Never round your lower back",
+                "Don't jerk the weight off the floor",
+                "Use proper form over heavy weight"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "overhead-press",
+            "name": "Overhead Press",
+            "category": "Shoulders",
+            "description": "A vertical pressing movement targeting the shoulders and triceps",
+            "target_muscles": ["Shoulders", "Triceps", "Upper Chest", "Core"],
+            "instructions": [
+                "Stand with feet shoulder-width apart",
+                "Hold the barbell at shoulder height",
+                "Press the bar overhead until arms are fully extended",
+                "Lower the bar back to shoulder height with control"
+            ],
+            "tips": [
+                "Keep your core tight and glutes engaged",
+                "Press the bar in a slight arc, not straight up",
+                "Don't lean back excessively"
+            ],
+            "safety_tips": [
+                "Avoid excessive lower back arching",
+                "Start with lighter weights to master form",
+                "Ensure full shoulder mobility before heavy pressing"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "barbell-row",
+            "name": "Barbell Row",
+            "category": "Back",
+            "description": "A horizontal pulling exercise that builds back thickness",
+            "target_muscles": ["Lats", "Rhomboids", "Traps", "Biceps"],
+            "instructions": [
+                "Bend forward at the hips with a flat back",
+                "Grip the barbell with hands shoulder-width apart",
+                "Pull the bar to your lower chest/upper abdomen",
+                "Squeeze your shoulder blades together at the top",
+                "Lower the bar with control"
+            ],
+            "tips": [
+                "Keep your torso at about 45 degrees",
+                "Lead with your elbows, not your hands",
+                "Don't use momentum - control the weight"
+            ],
+            "safety_tips": [
+                "Maintain a neutral spine throughout",
+                "Don't round your lower back",
+                "Avoid using too much body English"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "pull-ups",
+            "name": "Pull Ups",
+            "category": "Back",
+            "description": "A bodyweight exercise that builds back width and arm strength",
+            "target_muscles": ["Lats", "Biceps", "Upper Back", "Core"],
+            "instructions": [
+                "Hang from a pull-up bar with hands shoulder-width apart",
+                "Pull yourself up until your chin clears the bar",
+                "Lower yourself back down with control",
+                "Repeat for desired reps"
+            ],
+            "tips": [
+                "Engage your core to prevent swinging",
+                "Pull your elbows down and back",
+                "Focus on using your back, not just your arms"
+            ],
+            "safety_tips": [
+                "Don't kip or swing excessively",
+                "Lower yourself fully for complete range of motion",
+                "Use assistance bands if needed"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&h=400&fit=crop"
+        }
+    ]
+    
+    # Insert exercises if they don't exist
+    for exercise in exercises:
+        if not exercises_collection.find_one({"exercise_id": exercise["exercise_id"]}):
+            exercises_collection.insert_one(exercise)
+    
+    print(f"Initialized {len(exercises)} exercises in database")
+
+# Initialize exercises on startup
+initialize_exercises()
+
 # Routes
 @app.get("/api/health")
 async def health_check():
