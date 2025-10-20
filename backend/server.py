@@ -1134,6 +1134,56 @@ def initialize_exercises():
                 "Don't pull with arms"
             ],
             "image_url": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop"
+        },
+        
+        # ADDITIONAL EXERCISES TO REACH 35+
+        {
+            "exercise_id": "chest-press",
+            "name": "Chest Press",
+            "category": "Chest",
+            "description": "Machine-based chest exercise for controlled pressing motion",
+            "target_muscles": ["Chest", "Triceps", "Shoulders"],
+            "instructions": [
+                "Sit at chest press machine with back against pad",
+                "Grip handles at chest level",
+                "Press handles forward until arms extended",
+                "Return to starting position with control"
+            ],
+            "tips": [
+                "Keep back pressed against pad",
+                "Don't lock elbows completely",
+                "Control both pressing and return phases"
+            ],
+            "safety_tips": [
+                "Adjust seat height properly",
+                "Use appropriate weight",
+                "Keep core engaged"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop"
+        },
+        {
+            "exercise_id": "mountain-climbers",
+            "name": "Mountain Climbers",
+            "category": "Core",
+            "description": "Dynamic core and cardio exercise with alternating leg movements",
+            "target_muscles": ["Core", "Shoulders", "Legs"],
+            "instructions": [
+                "Start in plank position with hands under shoulders",
+                "Bring one knee toward chest",
+                "Quickly switch legs in running motion",
+                "Maintain plank position throughout"
+            ],
+            "tips": [
+                "Keep hips level",
+                "Maintain steady rhythm",
+                "Keep core tight throughout"
+            ],
+            "safety_tips": [
+                "Don't let hips sag",
+                "Keep hands firmly planted",
+                "Start slow and build speed"
+            ],
+            "image_url": "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&h=400&fit=crop"
         }
     ]
     
