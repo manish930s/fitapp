@@ -2096,6 +2096,71 @@ async def delete_workout_session(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting session: {str(e)}")
 
+
+@app.put("/api/workouts/sessions/{session_id}")
+async def update_workout_session(
+    session_id: str,
+    session_data: WorkoutSessionCreate,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Update an existing workout session"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        # Verify session exists and belongs to user
+        existing_session = workout_sessions_collection.find_one({
+            "session_id": session_id,
+            "user_id": current_user["user_id"]
+        })
+        
+        if not existing_session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        # Verify exercise exists
+        exercise = exercises_collection.find_one({"exercise_id": session_data.exercise_id})
+        if not exercise:
+            raise HTTPException(status_code=404, detail="Exercise not found")
+        
+        # Get user's weight unit preference
+        user = users_collection.find_one({"user_id": current_user["user_id"]})
+        weight_unit = user.get("weight_unit", "kg") if user else "kg"
+        
+        # Calculate total volume
+        total_volume = sum(s.weight * s.reps for s in session_data.sets)
+        
+        # Find max weight
+        max_weight = max((s.weight for s in session_data.sets), default=0)
+        
+        # Update session
+        update_data = {
+            "exercise_id": session_data.exercise_id,
+            "exercise_name": exercise["name"],
+            "sets": [s.dict() for s in session_data.sets],
+            "total_volume": total_volume,
+            "max_weight": max_weight,
+            "weight_unit": weight_unit,
+            "notes": session_data.notes,
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        workout_sessions_collection.update_one(
+            {"session_id": session_id, "user_id": current_user["user_id"]},
+            {"$set": update_data}
+        )
+        
+        # Return updated session
+        updated_session = workout_sessions_collection.find_one(
+            {"session_id": session_id},
+            {"_id": 0}
+        )
+        
+        return updated_session
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating workout session: {str(e)}")
+
 @app.get("/api/workouts/exercises/{exercise_id}/history")
 async def get_exercise_history(
     exercise_id: str,
