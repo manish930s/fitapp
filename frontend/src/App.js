@@ -86,6 +86,22 @@ function App() {
     fat: 0
   });
   
+  // Workout state
+  const [exercises, setExercises] = useState([]);
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [workoutSessions, setWorkoutSessions] = useState([]);
+  const [currentWorkoutSets, setCurrentWorkoutSets] = useState([]);
+  const [exerciseHistory, setExerciseHistory] = useState(null);
+  const [exerciseStats, setExerciseStats] = useState(null);
+  const [workoutDashboardStats, setWorkoutDashboardStats] = useState(null);
+  const [showWorkoutDetail, setShowWorkoutDetail] = useState(false);
+  const [workoutNotes, setWorkoutNotes] = useState('');
+  const [restTimer, setRestTimer] = useState(0);
+  const [restTimerActive, setRestTimerActive] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const restTimerIntervalRef = useRef(null);
+  
   // Camera refs
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
