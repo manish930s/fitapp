@@ -1,110 +1,170 @@
 {
   "Health Check": {
-    "success": true,
-    "message": "Service is healthy: FitFlow API",
+    "success": false,
+    "message": "Status code: 502",
     "details": null,
-    "timestamp": "2025-10-17T06:33:22.004252"
+    "timestamp": "2025-10-20T08:10:38.650599"
   },
   "User Registration": {
-    "success": true,
-    "message": "User registered successfully. Daily calories: {'bmr': 1648.75, 'tdee': 2555.56, 'daily_target': 2055.56}",
+    "success": false,
+    "message": "Status: 502, Response: ",
     "details": null,
-    "timestamp": "2025-10-17T06:33:22.799338"
+    "timestamp": "2025-10-20T08:10:39.186308"
   },
   "User Login": {
-    "success": true,
-    "message": "Login successful, token received",
+    "success": false,
+    "message": "Status: 502, Response: ",
     "details": null,
-    "timestamp": "2025-10-17T06:33:23.569165"
+    "timestamp": "2025-10-20T08:10:39.726825"
   },
   "Get User Profile": {
-    "success": true,
-    "message": "Profile retrieved. Daily target: 2055.56 calories",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:24.122397"
+    "timestamp": "2025-10-20T08:10:40.227408"
   },
   "Update User Profile": {
-    "success": true,
-    "message": "Profile updated successfully",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:24.662322"
+    "timestamp": "2025-10-20T08:10:40.727520"
   },
   "AI Food Scan": {
     "success": false,
-    "message": "Status: 500, Response: {\"detail\":\"500: Failed to analyze food image: Failed to generate chat completion: litellm.InternalServerError: InternalServerError: OpenAIException - No module named 'jiter'\"}",
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:25.362844"
+    "timestamp": "2025-10-20T08:10:41.227629"
   },
   "Food History": {
-    "success": true,
-    "message": "Retrieved 0 food scan records",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:25.902552"
+    "timestamp": "2025-10-20T08:10:41.727742"
   },
   "Today Food Summary": {
-    "success": true,
-    "message": "Today's totals - Calories: 0, Meals: 0",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:26.442140"
+    "timestamp": "2025-10-20T08:10:42.227855"
   },
   "Daily Stats": {
-    "success": true,
-    "message": "Stats updated and retrieved successfully",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:27.064780"
+    "timestamp": "2025-10-20T08:10:42.727964"
   },
   "Streak Calculation": {
-    "success": true,
-    "message": "Current streak: 1 days",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:27.608702"
+    "timestamp": "2025-10-20T08:10:43.228077"
   },
   "Goals Management": {
-    "success": true,
-    "message": "Goal created, retrieved, and updated successfully. Goal ID: 66c18185-391c-4817-b6c3-1d4cbd01d14f",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:28.253466"
+    "timestamp": "2025-10-20T08:10:43.728142"
   },
   "Measurements Tracking": {
-    "success": true,
-    "message": "Measurement added, latest retrieved, and history retrieved successfully. History count: 1",
-    "details": null,
-    "timestamp": "2025-10-17T06:33:28.896177"
-  },
-  "AI Fitness Coach - Chat": {
     "success": false,
-    "message": "Chat failed - Status: 500, Response: {\"detail\":\"Chat error: Failed to generate chat completion: litellm.InternalServerError: InternalServerError: OpenAIException - No module named 'jiter'\"}",
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:29.442548"
+    "timestamp": "2025-10-20T08:10:44.228254"
   },
-  "AI Meal Plan Generation - 7 days": {
+  "AI Fitness Coach": {
     "success": false,
-    "message": "Failed - Status: 500, Response: {\"detail\":\"Meal plan generation error: LlmChat.__init__() missing 2 required positional arguments: 'session_id' and 'system_message'\"}",
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:29.981935"
+    "timestamp": "2025-10-20T08:10:44.728363"
+  },
+  "AI Meal Plan Generation": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:45.228475"
   },
   "Meal Plan List": {
-    "success": true,
-    "message": "Retrieved 0 meal plans with correct summary format",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:30.520901"
+    "timestamp": "2025-10-20T08:10:45.728585"
   },
   "Meal Plan Details": {
     "success": false,
     "message": "No auth token or meal plans available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:31.021431"
+    "timestamp": "2025-10-20T08:10:46.228696"
   },
   "Meal Plan Delete": {
     "success": false,
     "message": "No auth token or meal plans available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:31.521527"
+    "timestamp": "2025-10-20T08:10:46.728802"
   },
   "Meal Plan Error Cases": {
-    "success": true,
-    "message": "Error cases handled correctly: 404 for invalid IDs, proper user isolation",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-17T06:33:32.149688"
+    "timestamp": "2025-10-20T08:10:47.228908"
+  },
+  "Workout Exercises List": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:47.729016"
+  },
+  "Workout Exercise Detail": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:48.229130"
+  },
+  "Workout Session Create": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:48.729242"
+  },
+  "Workout Sessions List": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:49.229354"
+  },
+  "Workout Session Detail": {
+    "success": false,
+    "message": "No auth token or session IDs available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:49.729465"
+  },
+  "Workout Exercise History": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:50.229574"
+  },
+  "Workout Exercise Stats": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:50.729682"
+  },
+  "Workout Dashboard Stats": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:51.229794"
+  },
+  "Workout Session Delete": {
+    "success": false,
+    "message": "No auth token or session IDs available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:51.729900"
+  },
+  "User Profile Weight Unit": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-20T08:10:52.230012"
   }
 }
