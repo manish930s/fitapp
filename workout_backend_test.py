@@ -94,12 +94,12 @@ def test_expanded_exercise_library():
         # Test 2: Test ALL 7 categories (including NEW ones: Shoulders, Arms, Core)
         categories_to_test = {
             "All": 35,  # Should return all 35+ exercises
-            "Chest": 5,  # Should return 5 exercises
+            "Chest": 6,  # Should return 6 exercises (includes Chest Press)
             "Back": 6,   # Should return 6 exercises  
             "Legs": 7,   # Should return 7 exercises
             "Shoulders": 5,  # NEW - Should return 5 exercises
             "Arms": 5,       # NEW - Should return 5 exercises
-            "Core": 5        # NEW - Should return 5 exercises
+            "Core": 6        # NEW - Should return 6 exercises (includes Mountain Climbers)
         }
         
         category_results = {}
