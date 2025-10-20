@@ -971,6 +971,847 @@ def test_meal_plan_error_cases():
         log_test("Meal Plan Error Cases", False, f"Error: {str(e)}")
         return False
 
+# Global variables for workout testing
+created_session_ids = []
+
+def test_workout_exercises_list():
+    """Test GET /api/workouts/exercises - Get all workout exercises"""
+    if not auth_token:
+        log_test("Workout Exercises List", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test 1: Get all exercises
+        response = requests.get(f"{BASE_URL}/workouts/exercises", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Exercises List - All", False, 
+                    f"Failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        data = response.json()
+        exercises = data.get("exercises", [])
+        
+        # Should return 6 exercises as mentioned in the review
+        if len(exercises) != 6:
+            log_test("Workout Exercises List - Count", False, 
+                    f"Expected 6 exercises, got {len(exercises)}")
+            return False
+        
+        # Verify exercise structure
+        if exercises:
+            first_exercise = exercises[0]
+            required_fields = ["exercise_id", "name", "category", "description", "target_muscles", "instructions", "tips", "safety_tips"]
+            missing_fields = [field for field in required_fields if field not in first_exercise]
+            
+            if missing_fields:
+                log_test("Workout Exercises List - Structure", False, 
+                        f"Missing fields in exercise: {missing_fields}")
+                return False
+        
+        # Verify expected exercises exist
+        exercise_names = [ex["name"] for ex in exercises]
+        expected_exercises = ["Bench Press", "Squat", "Deadlift", "Overhead Press", "Barbell Row", "Pull Ups"]
+        missing_exercises = [ex for ex in expected_exercises if ex not in exercise_names]
+        
+        if missing_exercises:
+            log_test("Workout Exercises List - Expected Exercises", False, 
+                    f"Missing expected exercises: {missing_exercises}")
+            return False
+        
+        # Test 2: Filter by category - Chest
+        response = requests.get(f"{BASE_URL}/workouts/exercises?category=Chest", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Exercises List - Chest Filter", False, 
+                    f"Chest filter failed - Status: {response.status_code}")
+            return False
+        
+        chest_data = response.json()
+        chest_exercises = chest_data.get("exercises", [])
+        
+        # Should have at least Bench Press
+        chest_names = [ex["name"] for ex in chest_exercises]
+        if "Bench Press" not in chest_names:
+            log_test("Workout Exercises List - Chest Filter", False, 
+                    "Bench Press not found in Chest category")
+            return False
+        
+        # Test 3: Filter by category - Back
+        response = requests.get(f"{BASE_URL}/workouts/exercises?category=Back", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Exercises List - Back Filter", False, 
+                    f"Back filter failed - Status: {response.status_code}")
+            return False
+        
+        back_data = response.json()
+        back_exercises = back_data.get("exercises", [])
+        
+        # Should have Deadlift, Barbell Row, Pull Ups
+        back_names = [ex["name"] for ex in back_exercises]
+        expected_back = ["Deadlift", "Barbell Row", "Pull Ups"]
+        missing_back = [ex for ex in expected_back if ex not in back_names]
+        
+        if missing_back:
+            log_test("Workout Exercises List - Back Filter", False, 
+                    f"Missing back exercises: {missing_back}")
+            return False
+        
+        # Test 4: Filter by category - Legs
+        response = requests.get(f"{BASE_URL}/workouts/exercises?category=Legs", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Exercises List - Legs Filter", False, 
+                    f"Legs filter failed - Status: {response.status_code}")
+            return False
+        
+        legs_data = response.json()
+        legs_exercises = legs_data.get("exercises", [])
+        
+        # Should have Squat
+        legs_names = [ex["name"] for ex in legs_exercises]
+        if "Squat" not in legs_names:
+            log_test("Workout Exercises List - Legs Filter", False, 
+                    "Squat not found in Legs category")
+            return False
+        
+        log_test("Workout Exercises List", True, 
+                f"Retrieved {len(exercises)} exercises with category filtering working correctly")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Exercises List", False, f"Error: {str(e)}")
+        return False
+
+def test_workout_exercise_detail():
+    """Test GET /api/workouts/exercises/{exercise_id} - Get exercise detail"""
+    if not auth_token:
+        log_test("Workout Exercise Detail", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test exercise details for bench-press, squat, deadlift
+        test_exercises = ["bench-press", "squat", "deadlift"]
+        
+        for exercise_id in test_exercises:
+            response = requests.get(f"{BASE_URL}/workouts/exercises/{exercise_id}", headers=headers, timeout=10)
+            
+            if response.status_code != 200:
+                log_test("Workout Exercise Detail", False, 
+                        f"Failed for {exercise_id} - Status: {response.status_code}, Response: {response.text}")
+                return False
+            
+            exercise = response.json()
+            
+            # Verify detailed structure
+            required_fields = ["exercise_id", "name", "category", "description", "target_muscles", 
+                             "instructions", "tips", "safety_tips", "image_url"]
+            missing_fields = [field for field in required_fields if field not in exercise]
+            
+            if missing_fields:
+                log_test("Workout Exercise Detail", False, 
+                        f"Missing fields for {exercise_id}: {missing_fields}")
+                return False
+            
+            # Verify exercise_id matches
+            if exercise.get("exercise_id") != exercise_id:
+                log_test("Workout Exercise Detail", False, 
+                        f"Exercise ID mismatch for {exercise_id}")
+                return False
+            
+            # Verify arrays are not empty
+            if not exercise.get("target_muscles") or not exercise.get("instructions"):
+                log_test("Workout Exercise Detail", False, 
+                        f"Empty target_muscles or instructions for {exercise_id}")
+                return False
+        
+        # Test invalid exercise ID
+        response = requests.get(f"{BASE_URL}/workouts/exercises/invalid-exercise", headers=headers, timeout=10)
+        
+        if response.status_code != 404:
+            log_test("Workout Exercise Detail - Invalid ID", False, 
+                    f"Expected 404 for invalid exercise, got {response.status_code}")
+            return False
+        
+        log_test("Workout Exercise Detail", True, 
+                f"Successfully retrieved details for {len(test_exercises)} exercises with complete information")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Exercise Detail", False, f"Error: {str(e)}")
+        return False
+
+def test_workout_session_create():
+    """Test POST /api/workouts/sessions - Create a workout session"""
+    if not auth_token:
+        log_test("Workout Session Create", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Create a workout session for bench-press as specified in review
+        session_data = {
+            "exercise_id": "bench-press",
+            "sets": [
+                {"reps": 10, "weight": 60, "rpe": 7},
+                {"reps": 8, "weight": 70, "rpe": 8},
+                {"reps": 6, "weight": 80, "rpe": 9}
+            ],
+            "notes": "Good workout today!"
+        }
+        
+        response = requests.post(f"{BASE_URL}/workouts/sessions", 
+                               headers=headers, json=session_data, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Session Create", False, 
+                    f"Failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        result = response.json()
+        
+        # Verify response structure
+        required_fields = ["session_id", "total_volume", "total_sets"]
+        missing_fields = [field for field in required_fields if field not in result]
+        
+        if missing_fields:
+            log_test("Workout Session Create", False, 
+                    f"Missing fields in response: {missing_fields}")
+            return False
+        
+        session_id = result.get("session_id")
+        total_volume = result.get("total_volume")
+        total_sets = result.get("total_sets")
+        
+        # Verify calculations
+        expected_volume = (10 * 60) + (8 * 70) + (6 * 80)  # 600 + 560 + 480 = 1640
+        expected_sets = 3
+        
+        if total_volume != expected_volume:
+            log_test("Workout Session Create - Volume", False, 
+                    f"Volume calculation incorrect. Expected: {expected_volume}, Got: {total_volume}")
+            return False
+        
+        if total_sets != expected_sets:
+            log_test("Workout Session Create - Sets", False, 
+                    f"Sets count incorrect. Expected: {expected_sets}, Got: {total_sets}")
+            return False
+        
+        # Store session ID for later tests
+        created_session_ids.append(session_id)
+        
+        # Test creating another session for different exercise
+        session_data_2 = {
+            "exercise_id": "squat",
+            "sets": [
+                {"reps": 12, "weight": 100, "rpe": 6},
+                {"reps": 10, "weight": 110, "rpe": 7},
+                {"reps": 8, "weight": 120, "rpe": 8}
+            ],
+            "notes": "Leg day!"
+        }
+        
+        response = requests.post(f"{BASE_URL}/workouts/sessions", 
+                               headers=headers, json=session_data_2, timeout=10)
+        
+        if response.status_code == 200:
+            result_2 = response.json()
+            session_id_2 = result_2.get("session_id")
+            if session_id_2:
+                created_session_ids.append(session_id_2)
+        
+        # Test invalid exercise_id
+        invalid_session_data = {
+            "exercise_id": "invalid-exercise",
+            "sets": [{"reps": 10, "weight": 60, "rpe": 7}],
+            "notes": "Test"
+        }
+        
+        response = requests.post(f"{BASE_URL}/workouts/sessions", 
+                               headers=headers, json=invalid_session_data, timeout=10)
+        
+        if response.status_code != 404:
+            log_test("Workout Session Create - Invalid Exercise", False, 
+                    f"Expected 404 for invalid exercise, got {response.status_code}")
+            return False
+        
+        log_test("Workout Session Create", True, 
+                f"Successfully created workout sessions with correct volume calculation ({expected_volume})")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Session Create", False, f"Error: {str(e)}")
+        return False
+
+def test_workout_sessions_list():
+    """Test GET /api/workouts/sessions - Get user's workout sessions"""
+    if not auth_token:
+        log_test("Workout Sessions List", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test 1: Get all sessions
+        response = requests.get(f"{BASE_URL}/workouts/sessions", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Sessions List - All", False, 
+                    f"Failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        data = response.json()
+        sessions = data.get("sessions", [])
+        count = data.get("count", 0)
+        
+        # Should have at least the sessions we created
+        if len(sessions) < len(created_session_ids):
+            log_test("Workout Sessions List - Count", False, 
+                    f"Expected at least {len(created_session_ids)} sessions, got {len(sessions)}")
+            return False
+        
+        if count != len(sessions):
+            log_test("Workout Sessions List - Count Mismatch", False, 
+                    f"Count field ({count}) doesn't match sessions length ({len(sessions)})")
+            return False
+        
+        # Verify session structure
+        if sessions:
+            first_session = sessions[0]
+            required_fields = ["session_id", "user_id", "exercise_id", "exercise_name", 
+                             "sets", "total_sets", "total_volume", "created_at"]
+            missing_fields = [field for field in required_fields if field not in first_session]
+            
+            if missing_fields:
+                log_test("Workout Sessions List - Structure", False, 
+                        f"Missing fields in session: {missing_fields}")
+                return False
+        
+        # Test 2: Filter by exercise_id
+        response = requests.get(f"{BASE_URL}/workouts/sessions?exercise_id=bench-press", 
+                              headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Sessions List - Filter", False, 
+                    f"Filter failed - Status: {response.status_code}")
+            return False
+        
+        filtered_data = response.json()
+        filtered_sessions = filtered_data.get("sessions", [])
+        
+        # All sessions should be for bench-press
+        for session in filtered_sessions:
+            if session.get("exercise_id") != "bench-press":
+                log_test("Workout Sessions List - Filter", False, 
+                        f"Filter failed: found session for {session.get('exercise_id')}")
+                return False
+        
+        # Should have at least one bench-press session
+        if len(filtered_sessions) == 0:
+            log_test("Workout Sessions List - Filter", False, 
+                    "No bench-press sessions found after filtering")
+            return False
+        
+        log_test("Workout Sessions List", True, 
+                f"Retrieved {len(sessions)} total sessions, {len(filtered_sessions)} bench-press sessions")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Sessions List", False, f"Error: {str(e)}")
+        return False
+
+def test_workout_session_detail():
+    """Test GET /api/workouts/sessions/{session_id} - Get session detail"""
+    if not auth_token or not created_session_ids:
+        log_test("Workout Session Detail", False, "No auth token or session IDs available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test getting details for the first created session
+        session_id = created_session_ids[0]
+        response = requests.get(f"{BASE_URL}/workouts/sessions/{session_id}", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Session Detail", False, 
+                    f"Failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        session = response.json()
+        
+        # Verify complete session structure
+        required_fields = ["session_id", "user_id", "exercise_id", "exercise_name", 
+                         "sets", "total_sets", "total_volume", "weight_unit", "notes", "created_at"]
+        missing_fields = [field for field in required_fields if field not in session]
+        
+        if missing_fields:
+            log_test("Workout Session Detail", False, 
+                    f"Missing fields: {missing_fields}")
+            return False
+        
+        # Verify session_id matches
+        if session.get("session_id") != session_id:
+            log_test("Workout Session Detail", False, 
+                    "Session ID mismatch in response")
+            return False
+        
+        # Verify sets structure
+        sets = session.get("sets", [])
+        if not sets:
+            log_test("Workout Session Detail", False, "No sets data in session")
+            return False
+        
+        # Verify set structure
+        first_set = sets[0]
+        set_fields = ["reps", "weight", "rpe"]
+        missing_set_fields = [field for field in set_fields if field not in first_set]
+        
+        if missing_set_fields:
+            log_test("Workout Session Detail", False, 
+                    f"Missing set fields: {missing_set_fields}")
+            return False
+        
+        # Verify calculations match what we sent
+        if session.get("exercise_id") == "bench-press":
+            expected_volume = (10 * 60) + (8 * 70) + (6 * 80)  # 1640
+            if session.get("total_volume") != expected_volume:
+                log_test("Workout Session Detail", False, 
+                        f"Volume mismatch. Expected: {expected_volume}, Got: {session.get('total_volume')}")
+                return False
+        
+        # Test invalid session ID
+        response = requests.get(f"{BASE_URL}/workouts/sessions/invalid-session-id", 
+                              headers=headers, timeout=10)
+        
+        if response.status_code != 404:
+            log_test("Workout Session Detail - Invalid ID", False, 
+                    f"Expected 404 for invalid session, got {response.status_code}")
+            return False
+        
+        log_test("Workout Session Detail", True, 
+                f"Retrieved complete session details with {len(sets)} sets and accurate calculations")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Session Detail", False, f"Error: {str(e)}")
+        return False
+
+def test_workout_exercise_history():
+    """Test GET /api/workouts/exercises/{exercise_id}/history - Get exercise history"""
+    if not auth_token:
+        log_test("Workout Exercise History", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test history for bench-press
+        response = requests.get(f"{BASE_URL}/workouts/exercises/bench-press/history", 
+                              headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Exercise History", False, 
+                    f"Failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        data = response.json()
+        history = data.get("history", [])
+        count = data.get("count", 0)
+        
+        # Should have at least one session for bench-press
+        if len(history) == 0:
+            log_test("Workout Exercise History", False, "No history found for bench-press")
+            return False
+        
+        if count != len(history):
+            log_test("Workout Exercise History - Count", False, 
+                    f"Count mismatch: {count} vs {len(history)}")
+            return False
+        
+        # Verify history structure
+        first_entry = history[0]
+        required_fields = ["date", "total_sets", "total_volume", "max_weight", "weight_unit"]
+        missing_fields = [field for field in required_fields if field not in first_entry]
+        
+        if missing_fields:
+            log_test("Workout Exercise History", False, 
+                    f"Missing fields in history entry: {missing_fields}")
+            return False
+        
+        # Verify data makes sense
+        max_weight = first_entry.get("max_weight")
+        total_volume = first_entry.get("total_volume")
+        
+        if max_weight <= 0 or total_volume <= 0:
+            log_test("Workout Exercise History", False, 
+                    f"Invalid values: max_weight={max_weight}, total_volume={total_volume}")
+            return False
+        
+        # For bench-press, max weight should be 80 (from our test data)
+        if max_weight != 80:
+            log_test("Workout Exercise History - Max Weight", False, 
+                    f"Expected max weight 80, got {max_weight}")
+            return False
+        
+        # Test history for exercise with no sessions
+        response = requests.get(f"{BASE_URL}/workouts/exercises/overhead-press/history", 
+                              headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            empty_data = response.json()
+            empty_history = empty_data.get("history", [])
+            empty_count = empty_data.get("count", 0)
+            
+            if len(empty_history) != 0 or empty_count != 0:
+                log_test("Workout Exercise History - Empty", False, 
+                        f"Expected empty history for overhead-press, got {len(empty_history)} entries")
+                return False
+        
+        log_test("Workout Exercise History", True, 
+                f"Retrieved {len(history)} history entries with correct max weight ({max_weight})")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Exercise History", False, f"Error: {str(e)}")
+        return False
+
+def test_workout_exercise_stats():
+    """Test GET /api/workouts/exercises/{exercise_id}/stats - Get exercise stats"""
+    if not auth_token:
+        log_test("Workout Exercise Stats", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test stats for bench-press
+        response = requests.get(f"{BASE_URL}/workouts/exercises/bench-press/stats", 
+                              headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Exercise Stats", False, 
+                    f"Failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        stats = response.json()
+        
+        # Verify stats structure
+        required_fields = ["personal_best", "estimated_1rm", "total_sessions", "total_volume", 
+                         "avg_volume_per_session", "weight_unit"]
+        missing_fields = [field for field in required_fields if field not in stats]
+        
+        if missing_fields:
+            log_test("Workout Exercise Stats", False, 
+                    f"Missing fields: {missing_fields}")
+            return False
+        
+        personal_best = stats.get("personal_best")
+        estimated_1rm = stats.get("estimated_1rm")
+        total_sessions = stats.get("total_sessions")
+        total_volume = stats.get("total_volume")
+        
+        # Verify personal best (should be 80 from our test data)
+        if personal_best != 80:
+            log_test("Workout Exercise Stats - Personal Best", False, 
+                    f"Expected personal best 80, got {personal_best}")
+            return False
+        
+        # Verify 1RM calculation using Epley formula: weight * (1 + reps/30)
+        # Best set was 6 reps at 80kg: 80 * (1 + 6/30) = 80 * 1.2 = 96
+        expected_1rm = 80 * (1 + 6/30)
+        if abs(estimated_1rm - expected_1rm) > 0.1:
+            log_test("Workout Exercise Stats - 1RM Calculation", False, 
+                    f"Expected 1RM ~{expected_1rm:.1f}, got {estimated_1rm}")
+            return False
+        
+        # Verify session count (should be at least 1)
+        if total_sessions < 1:
+            log_test("Workout Exercise Stats - Sessions", False, 
+                    f"Expected at least 1 session, got {total_sessions}")
+            return False
+        
+        # Verify total volume (should be 1640 from our test data)
+        expected_volume = 1640
+        if total_volume != expected_volume:
+            log_test("Workout Exercise Stats - Volume", False, 
+                    f"Expected volume {expected_volume}, got {total_volume}")
+            return False
+        
+        # Test stats for exercise with no sessions
+        response = requests.get(f"{BASE_URL}/workouts/exercises/overhead-press/stats", 
+                              headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            empty_stats = response.json()
+            
+            # Should return null/zero values for empty exercise
+            if (empty_stats.get("personal_best") is not None or 
+                empty_stats.get("estimated_1rm") is not None or
+                empty_stats.get("total_sessions") != 0):
+                log_test("Workout Exercise Stats - Empty", False, 
+                        f"Expected null/zero stats for overhead-press, got {empty_stats}")
+                return False
+        
+        log_test("Workout Exercise Stats", True, 
+                f"Stats calculated correctly: PB={personal_best}kg, 1RM={estimated_1rm:.1f}kg, "
+                f"Sessions={total_sessions}, Volume={total_volume}")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Exercise Stats", False, f"Error: {str(e)}")
+        return False
+
+def test_workout_dashboard_stats():
+    """Test GET /api/workouts/dashboard/stats - Get overall workout stats"""
+    if not auth_token:
+        log_test("Workout Dashboard Stats", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        response = requests.get(f"{BASE_URL}/workouts/dashboard/stats", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Dashboard Stats", False, 
+                    f"Failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        stats = response.json()
+        
+        # Verify stats structure
+        required_fields = ["total_workouts", "total_volume_lifted", "workouts_this_week", 
+                         "workouts_this_month", "favorite_exercise", "weight_unit"]
+        missing_fields = [field for field in required_fields if field not in stats]
+        
+        if missing_fields:
+            log_test("Workout Dashboard Stats", False, 
+                    f"Missing fields: {missing_fields}")
+            return False
+        
+        total_workouts = stats.get("total_workouts")
+        total_volume = stats.get("total_volume_lifted")
+        workouts_week = stats.get("workouts_this_week")
+        workouts_month = stats.get("workouts_this_month")
+        favorite_exercise = stats.get("favorite_exercise")
+        
+        # Should have at least the sessions we created
+        if total_workouts < len(created_session_ids):
+            log_test("Workout Dashboard Stats - Total Workouts", False, 
+                    f"Expected at least {len(created_session_ids)} workouts, got {total_workouts}")
+            return False
+        
+        # Should have positive volume
+        if total_volume <= 0:
+            log_test("Workout Dashboard Stats - Volume", False, 
+                    f"Expected positive volume, got {total_volume}")
+            return False
+        
+        # Week and month counts should be reasonable
+        if workouts_week > total_workouts or workouts_month > total_workouts:
+            log_test("Workout Dashboard Stats - Time Periods", False, 
+                    f"Week ({workouts_week}) or month ({workouts_month}) > total ({total_workouts})")
+            return False
+        
+        # Favorite exercise should exist if we have workouts
+        if total_workouts > 0 and not favorite_exercise:
+            log_test("Workout Dashboard Stats - Favorite Exercise", False, 
+                    "No favorite exercise despite having workouts")
+            return False
+        
+        # If favorite exercise exists, verify structure
+        if favorite_exercise:
+            fav_fields = ["exercise_id", "name", "count"]
+            missing_fav_fields = [field for field in fav_fields if field not in favorite_exercise]
+            
+            if missing_fav_fields:
+                log_test("Workout Dashboard Stats - Favorite Structure", False, 
+                        f"Missing favorite exercise fields: {missing_fav_fields}")
+                return False
+            
+            if favorite_exercise.get("count") <= 0:
+                log_test("Workout Dashboard Stats - Favorite Count", False, 
+                        f"Invalid favorite exercise count: {favorite_exercise.get('count')}")
+                return False
+        
+        log_test("Workout Dashboard Stats", True, 
+                f"Dashboard stats: {total_workouts} workouts, {total_volume}kg total volume, "
+                f"favorite: {favorite_exercise.get('name') if favorite_exercise else 'None'}")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Dashboard Stats", False, f"Error: {str(e)}")
+        return False
+
+def test_workout_session_delete():
+    """Test DELETE /api/workouts/sessions/{session_id} - Delete a session"""
+    if not auth_token or not created_session_ids:
+        log_test("Workout Session Delete", False, "No auth token or session IDs available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Delete the last created session
+        session_id_to_delete = created_session_ids[-1]
+        
+        # First verify it exists
+        response = requests.get(f"{BASE_URL}/workouts/sessions/{session_id_to_delete}", 
+                              headers=headers, timeout=10)
+        if response.status_code != 200:
+            log_test("Workout Session Delete - Pre-check", False, "Session to delete not found")
+            return False
+        
+        # Delete the session
+        response = requests.delete(f"{BASE_URL}/workouts/sessions/{session_id_to_delete}", 
+                                 headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("Workout Session Delete", False, 
+                    f"Delete failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        delete_response = response.json()
+        if "message" not in delete_response:
+            log_test("Workout Session Delete", False, "No confirmation message in delete response")
+            return False
+        
+        # Verify it's removed - should get 404
+        response = requests.get(f"{BASE_URL}/workouts/sessions/{session_id_to_delete}", 
+                              headers=headers, timeout=10)
+        if response.status_code != 404:
+            log_test("Workout Session Delete - 404 Check", False, 
+                    f"Expected 404 for deleted session, got {response.status_code}")
+            return False
+        
+        # Verify it's removed from the list
+        response = requests.get(f"{BASE_URL}/workouts/sessions", headers=headers, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            sessions = data.get("sessions", [])
+            deleted_session_exists = any(session["session_id"] == session_id_to_delete for session in sessions)
+            
+            if deleted_session_exists:
+                log_test("Workout Session Delete - List Check", False, "Deleted session still appears in list")
+                return False
+        
+        # Remove from our tracking list
+        created_session_ids.remove(session_id_to_delete)
+        
+        # Test deleting non-existent session
+        response = requests.delete(f"{BASE_URL}/workouts/sessions/invalid-session-id", 
+                                 headers=headers, timeout=10)
+        if response.status_code != 404:
+            log_test("Workout Session Delete - Invalid ID", False, 
+                    f"Expected 404 for invalid session, got {response.status_code}")
+            return False
+        
+        log_test("Workout Session Delete", True, 
+                f"Successfully deleted session {session_id_to_delete[:8]}... and verified removal")
+        return True
+        
+    except Exception as e:
+        log_test("Workout Session Delete", False, f"Error: {str(e)}")
+        return False
+
+def test_user_profile_weight_unit():
+    """Test weight_unit field in user profile"""
+    if not auth_token:
+        log_test("User Profile Weight Unit", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Test 1: Get current profile and check weight_unit field
+        response = requests.get(f"{BASE_URL}/user/profile", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("User Profile Weight Unit - Get", False, 
+                    f"Failed to get profile - Status: {response.status_code}")
+            return False
+        
+        profile = response.json()
+        
+        # Should include weight_unit field (default: "kg")
+        if "weight_unit" not in profile:
+            log_test("User Profile Weight Unit - Field Missing", False, 
+                    "weight_unit field not found in profile")
+            return False
+        
+        current_weight_unit = profile.get("weight_unit")
+        if current_weight_unit not in ["kg", "lbs"]:
+            log_test("User Profile Weight Unit - Invalid Value", False, 
+                    f"Invalid weight_unit value: {current_weight_unit}")
+            return False
+        
+        # Test 2: Update weight_unit to "lbs"
+        update_data = {"weight_unit": "lbs"}
+        response = requests.put(f"{BASE_URL}/user/profile", 
+                              headers=headers, json=update_data, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("User Profile Weight Unit - Update", False, 
+                    f"Failed to update - Status: {response.status_code}, Response: {response.text}")
+            return False
+        
+        # Test 3: Verify weight_unit was updated
+        response = requests.get(f"{BASE_URL}/user/profile", headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("User Profile Weight Unit - Verify", False, 
+                    f"Failed to verify update - Status: {response.status_code}")
+            return False
+        
+        updated_profile = response.json()
+        updated_weight_unit = updated_profile.get("weight_unit")
+        
+        if updated_weight_unit != "lbs":
+            log_test("User Profile Weight Unit - Update Verification", False, 
+                    f"Expected 'lbs', got '{updated_weight_unit}'")
+            return False
+        
+        # Test 4: Update back to "kg"
+        update_data = {"weight_unit": "kg"}
+        response = requests.put(f"{BASE_URL}/user/profile", 
+                              headers=headers, json=update_data, timeout=10)
+        
+        if response.status_code != 200:
+            log_test("User Profile Weight Unit - Revert", False, 
+                    f"Failed to revert - Status: {response.status_code}")
+            return False
+        
+        # Test 5: Test invalid weight_unit value
+        invalid_update = {"weight_unit": "invalid_unit"}
+        response = requests.put(f"{BASE_URL}/user/profile", 
+                              headers=headers, json=invalid_update, timeout=10)
+        
+        # Should either accept it (and handle gracefully) or reject it
+        # We'll check that it doesn't break the system
+        if response.status_code == 200:
+            # If accepted, verify the profile still works
+            response = requests.get(f"{BASE_URL}/user/profile", headers=headers, timeout=10)
+            if response.status_code != 200:
+                log_test("User Profile Weight Unit - Invalid Handling", False, 
+                        "Invalid weight_unit broke profile endpoint")
+                return False
+        
+        log_test("User Profile Weight Unit", True, 
+                f"Weight unit field working correctly: default='{current_weight_unit}', "
+                f"updated to 'lbs', reverted to 'kg'")
+        return True
+        
+    except Exception as e:
+        log_test("User Profile Weight Unit", False, f"Error: {str(e)}")
+        return False
+
 def run_all_tests():
     """Run all backend tests in order"""
     print("🚀 Starting FitFlow Backend API Tests")
