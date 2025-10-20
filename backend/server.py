@@ -1231,6 +1231,377 @@ async def update_meal(
                     "carbs": sum(m.get("carbs", 0) for m in meals.values() if isinstance(m, dict)),
                     "fat": sum(m.get("fat", 0) for m in meals.values() if isinstance(m, dict))
                 }
+
+
+# ===== WORKOUT TRACKING ENDPOINTS =====
+
+@app.get("/api/workouts/exercises")
+async def get_exercises(
+    category: Optional[str] = None,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get all workout exercises, optionally filtered by category"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        # Build query
+        query = {}
+        if category and category.lower() != 'all':
+            query["category"] = {"$regex": f"^{category}$", "$options": "i"}
+        
+        exercises = list(exercises_collection.find(query, {"_id": 0}))
+        return {"exercises": exercises}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching exercises: {str(e)}")
+
+@app.get("/api/workouts/exercises/{exercise_id}")
+async def get_exercise_detail(
+    exercise_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get detailed information about a specific exercise"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        exercise = exercises_collection.find_one({"exercise_id": exercise_id}, {"_id": 0})
+        if not exercise:
+            raise HTTPException(status_code=404, detail="Exercise not found")
+        
+        # Get user's last workout for this exercise
+        last_session = workout_sessions_collection.find_one(
+            {"user_id": current_user["user_id"], "exercise_id": exercise_id},
+            {"_id": 0},
+            sort=[("created_at", -1)]
+        )
+        
+        exercise["last_session"] = last_session
+        return exercise
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching exercise: {str(e)}")
+
+@app.post("/api/workouts/sessions")
+async def create_workout_session(
+    session_data: WorkoutSessionCreate,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Create a new workout session with sets"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        # Verify exercise exists
+        exercise = exercises_collection.find_one({"exercise_id": session_data.exercise_id})
+        if not exercise:
+            raise HTTPException(status_code=404, detail="Exercise not found")
+        
+        # Get user's weight unit preference
+        user = users_collection.find_one({"user_id": current_user["user_id"]})
+        weight_unit = user.get("weight_unit", "kg") if user else "kg"
+        
+        # Calculate total volume (weight * reps * sets)
+        total_volume = sum(s.weight * s.reps for s in session_data.sets)
+        
+        # Create session
+        session_id = str(uuid.uuid4())
+        session = {
+            "session_id": session_id,
+            "user_id": current_user["user_id"],
+            "exercise_id": session_data.exercise_id,
+            "exercise_name": exercise["name"],
+            "sets": [s.dict() for s in session_data.sets],
+            "total_sets": len(session_data.sets),
+            "total_volume": total_volume,
+            "weight_unit": weight_unit,
+            "notes": session_data.notes,
+            "created_at": datetime.utcnow().isoformat(),
+            "completed": True
+        }
+        
+        workout_sessions_collection.insert_one(session)
+        
+        return {
+            "message": "Workout session created successfully",
+            "session_id": session_id,
+            "total_volume": total_volume,
+            "total_sets": len(session_data.sets)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating workout session: {str(e)}")
+
+@app.get("/api/workouts/sessions")
+async def get_workout_sessions(
+    exercise_id: Optional[str] = None,
+    limit: int = 20,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get user's workout sessions, optionally filtered by exercise"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        query = {"user_id": current_user["user_id"]}
+        if exercise_id:
+            query["exercise_id"] = exercise_id
+        
+        sessions = list(workout_sessions_collection.find(
+            query,
+            {"_id": 0}
+        ).sort("created_at", -1).limit(limit))
+        
+        return {"sessions": sessions, "count": len(sessions)}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching sessions: {str(e)}")
+
+@app.get("/api/workouts/sessions/{session_id}")
+async def get_session_detail(
+    session_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get detailed information about a specific workout session"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        session = workout_sessions_collection.find_one(
+            {"session_id": session_id, "user_id": current_user["user_id"]},
+            {"_id": 0}
+        )
+        
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        return session
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching session: {str(e)}")
+
+@app.delete("/api/workouts/sessions/{session_id}")
+async def delete_workout_session(
+    session_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Delete a workout session"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        result = workout_sessions_collection.delete_one({
+            "session_id": session_id,
+            "user_id": current_user["user_id"]
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        return {"message": "Workout session deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting session: {str(e)}")
+
+@app.get("/api/workouts/exercises/{exercise_id}/history")
+async def get_exercise_history(
+    exercise_id: str,
+    limit: int = 10,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get workout history for a specific exercise"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        sessions = list(workout_sessions_collection.find(
+            {"user_id": current_user["user_id"], "exercise_id": exercise_id},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(limit))
+        
+        if not sessions:
+            return {"history": [], "count": 0}
+        
+        # Calculate progress data
+        history = []
+        for session in sessions:
+            # Find max weight used in this session
+            max_weight = max((s["weight"] for s in session["sets"]), default=0)
+            
+            history.append({
+                "date": session["created_at"],
+                "total_sets": session["total_sets"],
+                "total_volume": session["total_volume"],
+                "max_weight": max_weight,
+                "weight_unit": session.get("weight_unit", "kg")
+            })
+        
+        return {"history": history, "count": len(history)}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching exercise history: {str(e)}")
+
+@app.get("/api/workouts/exercises/{exercise_id}/stats")
+async def get_exercise_stats(
+    exercise_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get statistics for a specific exercise (PB, 1RM estimate, etc.)"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        # Get all sessions for this exercise
+        sessions = list(workout_sessions_collection.find(
+            {"user_id": current_user["user_id"], "exercise_id": exercise_id},
+            {"_id": 0}
+        ).sort("created_at", -1))
+        
+        if not sessions:
+            return {
+                "personal_best": None,
+                "estimated_1rm": None,
+                "total_sessions": 0,
+                "total_volume": 0,
+                "avg_volume_per_session": 0
+            }
+        
+        # Calculate personal best (highest weight used)
+        all_weights = []
+        all_sets = []
+        for session in sessions:
+            for set_data in session["sets"]:
+                all_weights.append(set_data["weight"])
+                all_sets.append(set_data)
+        
+        personal_best = max(all_weights) if all_weights else 0
+        
+        # Estimate 1RM using Epley formula: weight * (1 + reps/30)
+        # Find the set with highest estimated 1RM
+        estimated_1rm = 0
+        for set_data in all_sets:
+            set_1rm = set_data["weight"] * (1 + set_data["reps"] / 30)
+            if set_1rm > estimated_1rm:
+                estimated_1rm = set_1rm
+        
+        # Calculate total volume across all sessions
+        total_volume = sum(session["total_volume"] for session in sessions)
+        avg_volume = total_volume / len(sessions) if sessions else 0
+        
+        # Get last session data
+        last_session = sessions[0] if sessions else None
+        
+        # Check if there's progress (compare last session to session before)
+        progress = None
+        if len(sessions) >= 2:
+            last_volume = sessions[0]["total_volume"]
+            prev_volume = sessions[1]["total_volume"]
+            volume_diff = last_volume - prev_volume
+            progress = {
+                "volume_change": volume_diff,
+                "percent_change": (volume_diff / prev_volume * 100) if prev_volume > 0 else 0
+            }
+        
+        weight_unit = sessions[0].get("weight_unit", "kg") if sessions else "kg"
+        
+        return {
+            "personal_best": personal_best,
+            "estimated_1rm": round(estimated_1rm, 1),
+            "total_sessions": len(sessions),
+            "total_volume": round(total_volume, 1),
+            "avg_volume_per_session": round(avg_volume, 1),
+            "last_session": last_session,
+            "progress": progress,
+            "weight_unit": weight_unit
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error calculating stats: {str(e)}")
+
+@app.get("/api/workouts/dashboard/stats")
+async def get_workout_dashboard_stats(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get overall workout statistics for dashboard"""
+    try:
+        current_user = decode_jwt_token(credentials.credentials)
+        
+        # Get all user's workout sessions
+        all_sessions = list(workout_sessions_collection.find(
+            {"user_id": current_user["user_id"]},
+            {"_id": 0}
+        ))
+        
+        if not all_sessions:
+            return {
+                "total_workouts": 0,
+                "total_volume_lifted": 0,
+                "workouts_this_week": 0,
+                "workouts_this_month": 0,
+                "favorite_exercise": None
+            }
+        
+        # Calculate total volume
+        total_volume = sum(session["total_volume"] for session in all_sessions)
+        
+        # Get workouts this week
+        week_ago = datetime.utcnow() - timedelta(days=7)
+        workouts_this_week = sum(
+            1 for session in all_sessions
+            if datetime.fromisoformat(session["created_at"]) >= week_ago
+        )
+        
+        # Get workouts this month
+        month_ago = datetime.utcnow() - timedelta(days=30)
+        workouts_this_month = sum(
+            1 for session in all_sessions
+            if datetime.fromisoformat(session["created_at"]) >= month_ago
+        )
+        
+        # Find favorite exercise (most frequent)
+        exercise_counts = {}
+        for session in all_sessions:
+            exercise_id = session["exercise_id"]
+            exercise_name = session["exercise_name"]
+            if exercise_id not in exercise_counts:
+                exercise_counts[exercise_id] = {"name": exercise_name, "count": 0}
+            exercise_counts[exercise_id]["count"] += 1
+        
+        favorite_exercise = None
+        if exercise_counts:
+            fav_id = max(exercise_counts, key=lambda k: exercise_counts[k]["count"])
+            favorite_exercise = {
+                "exercise_id": fav_id,
+                "name": exercise_counts[fav_id]["name"],
+                "count": exercise_counts[fav_id]["count"]
+            }
+        
+        weight_unit = all_sessions[0].get("weight_unit", "kg") if all_sessions else "kg"
+        
+        return {
+            "total_workouts": len(all_sessions),
+            "total_volume_lifted": round(total_volume, 1),
+            "workouts_this_week": workouts_this_week,
+            "workouts_this_month": workouts_this_month,
+            "favorite_exercise": favorite_exercise,
+            "weight_unit": weight_unit
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching dashboard stats: {str(e)}")
+
+
                 break
         
         if not day_found:
