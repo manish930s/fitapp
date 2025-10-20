@@ -744,6 +744,251 @@ function App() {
     }
   };
 
+  // Workout functions
+  const fetchExercises = async (category = null) => {
+    try {
+      let url = `${BACKEND_URL}/api/workouts/exercises`;
+      if (category && category !== 'All') {
+        url += `?category=${category}`;
+      }
+      
+      const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setExercises(data.exercises || []);
+      }
+    } catch (err) {
+      console.error('Error fetching exercises:', err);
+    }
+  };
+
+  const fetchExerciseDetail = async (exerciseId) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/workouts/exercises/${exerciseId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedExercise(data);
+        setShowWorkoutDetail(true);
+        // Fetch history and stats for this exercise
+        await fetchExerciseHistory(exerciseId);
+        await fetchExerciseStats(exerciseId);
+      }
+    } catch (err) {
+      console.error('Error fetching exercise detail:', err);
+    }
+  };
+
+  const fetchExerciseHistory = async (exerciseId) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/workouts/exercises/${exerciseId}/history`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setExerciseHistory(data);
+      }
+    } catch (err) {
+      console.error('Error fetching exercise history:', err);
+    }
+  };
+
+  const fetchExerciseStats = async (exerciseId) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/workouts/exercises/${exerciseId}/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setExerciseStats(data);
+      }
+    } catch (err) {
+      console.error('Error fetching exercise stats:', err);
+    }
+  };
+
+  const fetchWorkoutDashboardStats = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/workouts/dashboard/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setWorkoutDashboardStats(data);
+      }
+    } catch (err) {
+      console.error('Error fetching workout dashboard stats:', err);
+    }
+  };
+
+  const addWorkoutSet = () => {
+    const lastSet = currentWorkoutSets[currentWorkoutSets.length - 1];
+    const newSet = {
+      set_number: currentWorkoutSets.length + 1,
+      reps: lastSet ? lastSet.reps : 10,
+      weight: lastSet ? lastSet.weight : 0,
+      rpe: lastSet ? lastSet.rpe : 5
+    };
+    setCurrentWorkoutSets([...currentWorkoutSets, newSet]);
+  };
+
+  const updateWorkoutSet = (index, field, value) => {
+    const updatedSets = [...currentWorkoutSets];
+    updatedSets[index][field] = parseFloat(value) || 0;
+    setCurrentWorkoutSets(updatedSets);
+  };
+
+  const removeWorkoutSet = (index) => {
+    const updatedSets = currentWorkoutSets.filter((_, i) => i !== index);
+    // Renumber sets
+    const renumberedSets = updatedSets.map((set, i) => ({ ...set, set_number: i + 1 }));
+    setCurrentWorkoutSets(renumberedSets);
+  };
+
+  const saveWorkoutSession = async () => {
+    if (!selectedExercise || currentWorkoutSets.length === 0) {
+      setError('Please add at least one set to save the workout');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/workouts/sessions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          exercise_id: selectedExercise.exercise_id,
+          sets: currentWorkoutSets,
+          notes: workoutNotes
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSuccess('Workout saved successfully!');
+        setCurrentWorkoutSets([]);
+        setWorkoutNotes('');
+        // Refresh data
+        await fetchExerciseHistory(selectedExercise.exercise_id);
+        await fetchExerciseStats(selectedExercise.exercise_id);
+        await fetchWorkoutDashboardStats();
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        const error = await response.json();
+        setError(error.detail || 'Failed to save workout');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startRestTimer = (seconds) => {
+    setRestTimer(seconds);
+    setRestTimerActive(true);
+  };
+
+  useEffect(() => {
+    if (restTimerActive && restTimer > 0) {
+      restTimerIntervalRef.current = setInterval(() => {
+        setRestTimer(prev => {
+          if (prev <= 1) {
+            setRestTimerActive(false);
+            clearInterval(restTimerIntervalRef.current);
+            // Play sound or vibration
+            if ('vibrate' in navigator) {
+              navigator.vibrate(500);
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else if (!restTimerActive && restTimerIntervalRef.current) {
+      clearInterval(restTimerIntervalRef.current);
+    }
+
+    return () => {
+      if (restTimerIntervalRef.current) {
+        clearInterval(restTimerIntervalRef.current);
+      }
+    };
+  }, [restTimerActive, restTimer]);
+
+  const startVoiceInput = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      setError('Voice input is not supported in your browser');
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.toLowerCase();
+      // Parse voice input for reps and weight
+      // Example: "10 reps 50 kilos" or "8 reps 100 pounds"
+      const repsMatch = transcript.match(/(\d+)\s*(rep|reps)/i);
+      const weightMatch = transcript.match(/(\d+)\s*(kg|kilo|kilos|pound|pounds|lb|lbs)/i);
+      
+      if (repsMatch || weightMatch) {
+        const lastIndex = currentWorkoutSets.length - 1;
+        if (lastIndex >= 0) {
+          const updatedSets = [...currentWorkoutSets];
+          if (repsMatch) {
+            updatedSets[lastIndex].reps = parseInt(repsMatch[1]);
+          }
+          if (weightMatch) {
+            updatedSets[lastIndex].weight = parseFloat(weightMatch[1]);
+          }
+          setCurrentWorkoutSets(updatedSets);
+          setSuccess('Voice input captured!');
+          setTimeout(() => setSuccess(''), 2000);
+        }
+      } else {
+        setError('Could not understand. Try saying "10 reps 50 kilos"');
+        setTimeout(() => setError(''), 3000);
+      }
+    };
+
+    recognition.onerror = (event) => {
+      setIsListening(false);
+      setError('Voice input error: ' + event.error);
+      setTimeout(() => setError(''), 3000);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
+
+  const calculate1RM = (weight, reps) => {
+    if (!weight || !reps || reps === 0) return 0;
+    // Epley formula: 1RM = weight × (1 + reps/30)
+    return Math.round(weight * (1 + reps / 30));
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
