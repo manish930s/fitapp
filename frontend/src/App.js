@@ -779,6 +779,26 @@ function App() {
         const data = await response.json();
         setSelectedExercise(data);
         setShowWorkoutDetail(true);
+        
+        // Auto-populate workout sets from last session if available
+        if (data.last_session && data.last_session.sets && data.last_session.sets.length > 0) {
+          const lastSets = data.last_session.sets.map((set, index) => ({
+            set_number: index + 1,
+            reps: set.reps || 10,
+            weight: set.weight || 0,
+            rpe: set.rpe || 5
+          }));
+          setCurrentWorkoutSets(lastSets);
+        } else {
+          // Start with one empty set
+          setCurrentWorkoutSets([{
+            set_number: 1,
+            reps: 10,
+            weight: 0,
+            rpe: 5
+          }]);
+        }
+        
         // Fetch history and stats for this exercise
         await fetchExerciseHistory(exerciseId);
         await fetchExerciseStats(exerciseId);
