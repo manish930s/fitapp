@@ -1855,6 +1855,25 @@ function App() {
             <div className="workout-section">
               <h3>📝 Track Your Session</h3>
               
+              {/* Progress indicator from last session */}
+              {selectedExercise.last_session && selectedExercise.last_session.max_weight > 0 && (
+                <div style={{
+                  backgroundColor: '#1a3a2a',
+                  border: '1px solid #10b981',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  marginBottom: '15px',
+                  fontSize: '14px',
+                  color: '#10b981'
+                }}>
+                  <strong>💪 Last Session:</strong> {selectedExercise.last_session.max_weight}{user?.weight_unit || 'kg'} × {selectedExercise.last_session.sets?.length || 0} sets
+                  <br />
+                  <small style={{color: '#888'}}>
+                    Total Volume: {selectedExercise.last_session.total_volume}{user?.weight_unit || 'kg'}
+                  </small>
+                </div>
+              )}
+              
               {/* Rest Timer */}
               {restTimerActive && (
                 <div className="rest-timer-display">
