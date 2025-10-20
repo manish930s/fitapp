@@ -1233,7 +1233,23 @@ async def update_meal(
                     "carbs": sum(m.get("carbs", 0) for m in meals.values() if isinstance(m, dict)),
                     "fat": sum(m.get("fat", 0) for m in meals.values() if isinstance(m, dict))
                 }
-
+                break
+        
+        if not day_found:
+            raise HTTPException(status_code=404, detail=f"Day {day_number} not found in meal plan")
+        
+        # Update the meal plan in database
+        meal_plans_collection.update_one(
+            {"plan_id": plan_id, "user_id": current_user["user_id"]},
+            {"$set": {"days": plan["days"]}}
+        )
+        
+        return {"message": "Meal updated successfully", "day": day}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating meal: {str(e)}")
 
 # ===== WORKOUT TRACKING ENDPOINTS =====
 
