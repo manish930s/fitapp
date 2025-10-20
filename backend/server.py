@@ -1956,12 +1956,27 @@ async def get_exercise_detail(
         if not exercise:
             raise HTTPException(status_code=404, detail="Exercise not found")
         
-        # Get user's last workout for this exercise
-        last_session = workout_sessions_collection.find_one(
+        # Get user's last workout for this exercise (auto-suggestion feature)
+        last_session_raw = workout_sessions_collection.find_one(
             {"user_id": current_user["user_id"], "exercise_id": exercise_id},
             {"_id": 0},
             sort=[("created_at", -1)]
         )
+        
+        # Format last_session for auto-suggestion (simplified structure)
+        if last_session_raw:
+            # Calculate max_weight from sets
+            sets = last_session_raw.get("sets", [])
+            max_weight = max([s.get("weight", 0) for s in sets]) if sets else 0
+            
+            last_session = {
+                "exercise_id": last_session_raw.get("exercise_id"),
+                "sets": last_session_raw.get("sets", []),
+                "total_volume": last_session_raw.get("total_volume", 0),
+                "max_weight": max_weight
+            }
+        else:
+            last_session = None
         
         exercise["last_session"] = last_session
         return exercise
