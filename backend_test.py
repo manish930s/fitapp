@@ -1089,7 +1089,7 @@ def test_workout_exercises_list():
         return False
 
 def test_workout_exercise_detail():
-    """Test GET /api/workouts/exercises/{exercise_id} - Get exercise detail"""
+    """Test GET /api/workouts/exercises/{exercise_id} - Exercise Detail with Auto-Suggestion"""
     if not auth_token:
         log_test("Workout Exercise Detail", False, "No auth token available")
         return False
@@ -1097,8 +1097,8 @@ def test_workout_exercise_detail():
     headers = {"Authorization": f"Bearer {auth_token}"}
     
     try:
-        # Test exercise details for bench-press, squat, deadlift
-        test_exercises = ["bench-press", "squat", "deadlift"]
+        # Test exercise details for multiple exercises including new ones
+        test_exercises = ["bench-press", "squat", "lateral-raise", "bicep-curl", "plank"]
         
         for exercise_id in test_exercises:
             response = requests.get(f"{BASE_URL}/workouts/exercises/{exercise_id}", headers=headers, timeout=10)
@@ -1110,9 +1110,9 @@ def test_workout_exercise_detail():
             
             exercise = response.json()
             
-            # Verify detailed structure
+            # Verify detailed structure including new auto-suggestion field
             required_fields = ["exercise_id", "name", "category", "description", "target_muscles", 
-                             "instructions", "tips", "safety_tips", "image_url"]
+                             "instructions", "tips", "safety_tips", "image_url", "last_session"]
             missing_fields = [field for field in required_fields if field not in exercise]
             
             if missing_fields:
@@ -1130,6 +1130,22 @@ def test_workout_exercise_detail():
             if not exercise.get("target_muscles") or not exercise.get("instructions"):
                 log_test("Workout Exercise Detail", False, 
                         f"Empty target_muscles or instructions for {exercise_id}")
+                return False
+            
+            # CRITICAL: Verify last_session field for auto-suggestion
+            last_session = exercise.get("last_session")
+            if last_session is not None:
+                # If user has workout history, verify structure
+                if "sets" not in last_session or "max_weight" not in last_session or "total_volume" not in last_session:
+                    log_test("Workout Exercise Detail - Auto-Suggestion", False, 
+                            f"Invalid last_session structure for {exercise_id}: {last_session}")
+                    return False
+            
+            # Verify real Unsplash image URL
+            image_url = exercise.get("image_url", "")
+            if not image_url or "unsplash.com" not in image_url:
+                log_test("Workout Exercise Detail - Real Images", False, 
+                        f"Expected real Unsplash image for {exercise_id}, got: {image_url}")
                 return False
         
         # Test invalid exercise ID
