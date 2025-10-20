@@ -2027,6 +2027,24 @@ function App() {
           >
             Legs
           </button>
+          <button 
+            className={`filter-tab ${selectedCategory === 'Shoulders' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('Shoulders')}
+          >
+            Shoulders
+          </button>
+          <button 
+            className={`filter-tab ${selectedCategory === 'Arms' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('Arms')}
+          >
+            Arms
+          </button>
+          <button 
+            className={`filter-tab ${selectedCategory === 'Core' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('Core')}
+          >
+            Core
+          </button>
         </div>
 
         <button className="btn-primary workout-cta">
