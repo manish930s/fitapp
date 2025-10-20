@@ -2083,12 +2083,22 @@ function App() {
                 className="exercise-card"
                 onClick={() => fetchExerciseDetail(exercise.exercise_id)}
               >
-                <div className="exercise-image" style={{backgroundColor: '#2a2a2a'}}>
-                  <span className="exercise-placeholder">
-                    {exercise.category === 'Chest' ? '🏋️' : 
-                     exercise.category === 'Legs' ? '🦵' :
-                     exercise.category === 'Back' ? '💪' : '🤸'}
-                  </span>
+                <div className="exercise-image" style={{
+                  backgroundImage: exercise.image_url ? `url(${exercise.image_url})` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundColor: exercise.image_url ? 'transparent' : '#2a2a2a'
+                }}>
+                  {!exercise.image_url && (
+                    <span className="exercise-placeholder">
+                      {exercise.category === 'Chest' ? '🏋️' : 
+                       exercise.category === 'Legs' ? '🦵' :
+                       exercise.category === 'Back' ? '💪' : 
+                       exercise.category === 'Shoulders' ? '🤸' :
+                       exercise.category === 'Arms' ? '💪' :
+                       exercise.category === 'Core' ? '🧘' : '🏋️'}
+                    </span>
+                  )}
                 </div>
                 <h4>{exercise.name}</h4>
                 <p style={{ fontSize: '12px', color: '#888', marginTop: '5px' }}>
