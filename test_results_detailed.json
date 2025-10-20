@@ -3,168 +3,168 @@
     "success": true,
     "message": "Service is healthy: FitFlow API",
     "details": null,
-    "timestamp": "2025-10-20T08:12:04.358555"
+    "timestamp": "2025-10-20T08:48:36.757847"
   },
   "User Registration": {
     "success": true,
     "message": "User registered successfully. Daily calories: {'bmr': 1648.75, 'tdee': 2555.56, 'daily_target': 2055.56}",
     "details": null,
-    "timestamp": "2025-10-20T08:12:05.188233"
+    "timestamp": "2025-10-20T08:48:37.525026"
   },
   "User Login": {
     "success": true,
     "message": "Login successful, token received",
     "details": null,
-    "timestamp": "2025-10-20T08:12:05.954671"
+    "timestamp": "2025-10-20T08:48:38.297617"
   },
   "Get User Profile": {
     "success": true,
     "message": "Profile retrieved. Daily target: 2055.56 calories",
     "details": null,
-    "timestamp": "2025-10-20T08:12:06.499327"
+    "timestamp": "2025-10-20T08:48:38.842763"
   },
   "Update User Profile": {
     "success": true,
     "message": "Profile updated successfully",
     "details": null,
-    "timestamp": "2025-10-20T08:12:07.041125"
+    "timestamp": "2025-10-20T08:48:39.390359"
   },
   "AI Food Scan": {
     "success": true,
     "message": "Food analyzed: Food Item, Calories: 100.0, Portion: 1 serving (AI integration working)",
     "details": null,
-    "timestamp": "2025-10-20T08:12:09.604529"
+    "timestamp": "2025-10-20T08:48:41.330525"
   },
   "Food History": {
     "success": true,
     "message": "Retrieved 1 food scan records",
     "details": null,
-    "timestamp": "2025-10-20T08:12:10.168975"
+    "timestamp": "2025-10-20T08:48:41.889442"
   },
   "Today Food Summary": {
     "success": true,
     "message": "Today's totals - Calories: 100.0, Meals: 1",
     "details": null,
-    "timestamp": "2025-10-20T08:12:10.708018"
+    "timestamp": "2025-10-20T08:48:42.426164"
   },
   "Daily Stats": {
     "success": true,
     "message": "Stats updated and retrieved successfully",
     "details": null,
-    "timestamp": "2025-10-20T08:12:11.308336"
+    "timestamp": "2025-10-20T08:48:43.024928"
   },
   "Streak Calculation": {
     "success": true,
     "message": "Current streak: 1 days",
     "details": null,
-    "timestamp": "2025-10-20T08:12:11.845398"
+    "timestamp": "2025-10-20T08:48:43.564735"
   },
   "Goals Management": {
     "success": true,
-    "message": "Goal created, retrieved, and updated successfully. Goal ID: ddc3fb9c-3730-466d-8735-d78025c4f41a",
+    "message": "Goal created, retrieved, and updated successfully. Goal ID: 3e579a7b-5ed7-44a2-8863-7f8dea1e5971",
     "details": null,
-    "timestamp": "2025-10-20T08:12:12.463845"
+    "timestamp": "2025-10-20T08:48:44.201395"
   },
   "Measurements Tracking": {
     "success": true,
     "message": "Measurement added, latest retrieved, and history retrieved successfully. History count: 1",
     "details": null,
-    "timestamp": "2025-10-20T08:12:13.097668"
+    "timestamp": "2025-10-20T08:48:44.839226"
   },
   "AI Fitness Coach": {
     "success": true,
-    "message": "AI coach responded successfully. Chat history: 2 messages. Sample response: To achieve weight loss while maintaining your muscle mass, a combination of cardio and strength trai...",
+    "message": "AI coach responded successfully. Chat history: 2 messages. Sample response: To achieve your weight loss goal efficiently, it\u2019s essential to balance cardio, strength training, a...",
     "details": null,
-    "timestamp": "2025-10-20T08:12:24.066929"
+    "timestamp": "2025-10-20T08:48:53.474430"
   },
   "AI Meal Plan Generation - 14 days vegan": {
     "success": false,
-    "message": "Invalid response. Plan ID: 2754bc5d-2bd7-47ae-979a-7cd34366ecae, Days: 2",
+    "message": "Invalid response. Plan ID: 95ea4970-e66a-499b-bed5-3a55e2ffef12, Days: 2",
     "details": null,
-    "timestamp": "2025-10-20T08:13:24.945127"
+    "timestamp": "2025-10-20T08:49:52.439704"
   },
   "Meal Plan List": {
     "success": true,
     "message": "Retrieved 3 meal plans with correct summary format",
     "details": null,
-    "timestamp": "2025-10-20T08:13:25.507418"
+    "timestamp": "2025-10-20T08:49:52.998976"
   },
   "Meal Plan Details": {
     "success": true,
     "message": "Retrieved complete meal plan details with 7 days and accurate totals",
     "details": null,
-    "timestamp": "2025-10-20T08:13:26.046253"
+    "timestamp": "2025-10-20T08:49:53.539774"
   },
   "Meal Plan Delete": {
     "success": true,
-    "message": "Successfully deleted meal plan 7242a6c6... and verified removal",
+    "message": "Successfully deleted meal plan 232214e6... and verified removal",
     "details": null,
-    "timestamp": "2025-10-20T08:13:26.695099"
+    "timestamp": "2025-10-20T08:49:54.196220"
   },
   "Meal Plan Error Cases - Invalid Duration": {
     "success": false,
     "message": "API accepted invalid duration of 0",
     "details": null,
-    "timestamp": "2025-10-20T08:13:33.546848"
+    "timestamp": "2025-10-20T08:50:04.583320"
   },
   "Workout Exercises List": {
     "success": true,
     "message": "Retrieved 6 exercises with category filtering working correctly",
     "details": null,
-    "timestamp": "2025-10-20T08:13:34.235857"
+    "timestamp": "2025-10-20T08:50:05.271566"
   },
   "Workout Exercise Detail": {
     "success": true,
     "message": "Successfully retrieved details for 3 exercises with complete information",
     "details": null,
-    "timestamp": "2025-10-20T08:13:34.925331"
+    "timestamp": "2025-10-20T08:50:05.921049"
   },
   "Workout Session Create": {
     "success": true,
     "message": "Successfully created workout sessions with correct volume calculation (1640)",
     "details": null,
-    "timestamp": "2025-10-20T08:13:35.547422"
+    "timestamp": "2025-10-20T08:50:06.558919"
   },
   "Workout Sessions List": {
     "success": true,
     "message": "Retrieved 2 total sessions, 1 bench-press sessions",
     "details": null,
-    "timestamp": "2025-10-20T08:13:36.121945"
+    "timestamp": "2025-10-20T08:50:07.134072"
   },
   "Workout Session Detail": {
     "success": true,
     "message": "Retrieved complete session details with 3 sets and accurate calculations",
     "details": null,
-    "timestamp": "2025-10-20T08:13:36.695040"
+    "timestamp": "2025-10-20T08:50:07.707064"
   },
   "Workout Exercise History": {
     "success": true,
     "message": "Retrieved 1 history entries with correct max weight (80.0)",
     "details": null,
-    "timestamp": "2025-10-20T08:13:37.267376"
+    "timestamp": "2025-10-20T08:50:08.278559"
   },
   "Workout Exercise Stats": {
     "success": true,
     "message": "Stats calculated correctly: PB=80.0kg, 1RM=96.0kg, Sessions=1, Volume=1640.0",
     "details": null,
-    "timestamp": "2025-10-20T08:13:37.834938"
+    "timestamp": "2025-10-20T08:50:08.852128"
   },
   "Workout Dashboard Stats": {
     "success": true,
     "message": "Dashboard stats: 2 workouts, 4900.0kg total volume, favorite: Bench Press",
     "details": null,
-    "timestamp": "2025-10-20T08:13:38.372045"
+    "timestamp": "2025-10-20T08:50:09.388976"
   },
   "Workout Session Delete": {
     "success": true,
-    "message": "Successfully deleted session c19dce14... and verified removal",
+    "message": "Successfully deleted session e752c2d8... and verified removal",
     "details": null,
-    "timestamp": "2025-10-20T08:13:39.121269"
+    "timestamp": "2025-10-20T08:50:10.174919"
   },
   "User Profile Weight Unit": {
     "success": true,
     "message": "Weight unit field working correctly: default='kg', updated to 'lbs', reverted to 'kg'",
     "details": null,
-    "timestamp": "2025-10-20T08:13:39.850653"
+    "timestamp": "2025-10-20T08:50:10.888284"
   }
 }
