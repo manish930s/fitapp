@@ -129,7 +129,11 @@ function App() {
     if (currentPage === 'mealplan' && token) {
       fetchMealPlans();
     }
-  }, [currentPage, token]);
+    if (currentPage === 'workout' && token) {
+      fetchExercises(selectedCategory);
+      fetchWorkoutDashboardStats();
+    }
+  }, [currentPage, token, selectedCategory]);
 
   useEffect(() => {
     if (currentPage === 'scan' && token) {
