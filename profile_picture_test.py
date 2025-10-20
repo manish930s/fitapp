@@ -12,7 +12,7 @@ from datetime import datetime
 import os
 
 # Configuration
-BASE_URL = "https://chat-meal-revival.preview.emergentagent.com/api"
+BASE_URL = "https://workout-tracker-176.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "test@fitflow.com"
 TEST_USER_PASSWORD = "Test123!"
 
