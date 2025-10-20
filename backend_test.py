@@ -1029,62 +1029,56 @@ def test_workout_exercises_list():
                     f"Missing original exercises: {missing_exercises}")
             return False
         
-        # Test 2: Filter by category - Chest
-        response = requests.get(f"{BASE_URL}/workouts/exercises?category=Chest", headers=headers, timeout=10)
+        # Test 2: Test ALL 7 categories (expanded from 4)
+        categories_to_test = {
+            "All": exercises,  # Should return all exercises
+            "Chest": ["Bench Press", "Incline Bench Press", "Dumbbell Fly", "Push-Ups", "Cable Crossover"],
+            "Back": ["Deadlift", "Barbell Row", "Pull Ups", "Lat Pulldown", "Seated Cable Row", "T-Bar Row"],
+            "Legs": ["Squat", "Leg Press", "Leg Curl", "Leg Extension", "Lunges", "Bulgarian Split Squat", "Calf Raises"],
+            "Shoulders": ["Overhead Press", "Lateral Raise", "Front Raise", "Rear Delt Fly", "Shrugs"],
+            "Arms": ["Bicep Curl", "Hammer Curl", "Tricep Pushdown", "Dips", "Skull Crushers"],
+            "Core": ["Plank", "Crunches", "Russian Twists", "Leg Raises", "Cable Crunches"]
+        }
         
-        if response.status_code != 200:
-            log_test("Workout Exercises List - Chest Filter", False, 
-                    f"Chest filter failed - Status: {response.status_code}")
-            return False
+        for category, expected_exercises in categories_to_test.items():
+            if category == "All":
+                # Already tested above
+                continue
+                
+            response = requests.get(f"{BASE_URL}/workouts/exercises?category={category}", 
+                                  headers=headers, timeout=10)
+            
+            if response.status_code != 200:
+                log_test(f"Workout Exercises List - {category} Filter", False, 
+                        f"{category} filter failed - Status: {response.status_code}")
+                return False
+            
+            category_data = response.json()
+            category_exercises = category_data.get("exercises", [])
+            category_names = [ex["name"] for ex in category_exercises]
+            
+            # Verify expected exercises are present
+            missing_exercises = [ex for ex in expected_exercises if ex not in category_names]
+            if missing_exercises:
+                log_test(f"Workout Exercises List - {category} Filter", False, 
+                        f"Missing {category} exercises: {missing_exercises}")
+                return False
+            
+            # Verify all exercises in category match the filter
+            for exercise in category_exercises:
+                if exercise.get("category") != category:
+                    log_test(f"Workout Exercises List - {category} Filter", False, 
+                            f"Exercise {exercise.get('name')} has wrong category: {exercise.get('category')}")
+                    return False
         
-        chest_data = response.json()
-        chest_exercises = chest_data.get("exercises", [])
-        
-        # Should have at least Bench Press
-        chest_names = [ex["name"] for ex in chest_exercises]
-        if "Bench Press" not in chest_names:
-            log_test("Workout Exercises List - Chest Filter", False, 
-                    "Bench Press not found in Chest category")
-            return False
-        
-        # Test 3: Filter by category - Back
-        response = requests.get(f"{BASE_URL}/workouts/exercises?category=Back", headers=headers, timeout=10)
-        
-        if response.status_code != 200:
-            log_test("Workout Exercises List - Back Filter", False, 
-                    f"Back filter failed - Status: {response.status_code}")
-            return False
-        
-        back_data = response.json()
-        back_exercises = back_data.get("exercises", [])
-        
-        # Should have Deadlift, Barbell Row, Pull Ups
-        back_names = [ex["name"] for ex in back_exercises]
-        expected_back = ["Deadlift", "Barbell Row", "Pull Ups"]
-        missing_back = [ex for ex in expected_back if ex not in back_names]
-        
-        if missing_back:
-            log_test("Workout Exercises List - Back Filter", False, 
-                    f"Missing back exercises: {missing_back}")
-            return False
-        
-        # Test 4: Filter by category - Legs
-        response = requests.get(f"{BASE_URL}/workouts/exercises?category=Legs", headers=headers, timeout=10)
-        
-        if response.status_code != 200:
-            log_test("Workout Exercises List - Legs Filter", False, 
-                    f"Legs filter failed - Status: {response.status_code}")
-            return False
-        
-        legs_data = response.json()
-        legs_exercises = legs_data.get("exercises", [])
-        
-        # Should have Squat
-        legs_names = [ex["name"] for ex in legs_exercises]
-        if "Squat" not in legs_names:
-            log_test("Workout Exercises List - Legs Filter", False, 
-                    "Squat not found in Legs category")
-            return False
+        # Test case-insensitive filtering
+        response = requests.get(f"{BASE_URL}/workouts/exercises?category=chest", headers=headers, timeout=10)
+        if response.status_code == 200:
+            chest_lower = response.json().get("exercises", [])
+            if len(chest_lower) != len(categories_to_test["Chest"]):
+                log_test("Workout Exercises List - Case Insensitive", False, 
+                        "Case-insensitive filtering not working")
+                return False
         
         log_test("Workout Exercises List", True, 
                 f"Retrieved {len(exercises)} exercises with category filtering working correctly")
