@@ -2013,149 +2013,331 @@ function App() {
               </div>
             )}
 
+            {/* Personal Records */}
+            {exerciseStats && (
+              <div className="workout-section">
+                <h3>🏆 Personal Records</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                  <div style={{ 
+                    padding: '20px', 
+                    backgroundColor: '#1a1a1a', 
+                    borderRadius: '12px', 
+                    border: '2px solid #22c55e',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ fontSize: '13px', color: '#888', marginBottom: '8px' }}>Max Weight</div>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#22c55e' }}>
+                      {exerciseStats.personal_best}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>{user?.weight_unit || 'kg'}</div>
+                  </div>
+                  <div style={{ 
+                    padding: '20px', 
+                    backgroundColor: '#1a1a1a', 
+                    borderRadius: '12px', 
+                    border: '2px solid #22c55e',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ fontSize: '13px', color: '#888', marginBottom: '8px' }}>Max Reps</div>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#22c55e' }}>
+                      {exerciseStats.max_reps || 0}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>reps</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Performance History */}
             {exerciseHistory && exerciseHistory.sessions && exerciseHistory.sessions.length > 0 && (
               <div className="workout-section">
-                <h3>📊 Performance History</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                  <h3 style={{ margin: 0 }}>📊 Your Performance</h3>
+                  <select 
+                    value={progressTimePeriod} 
+                    onChange={(e) => setProgressTimePeriod(e.target.value)}
+                    style={{
+                      padding: '8px 12px',
+                      backgroundColor: '#1a1a1a',
+                      color: '#fff',
+                      border: '1px solid #333',
+                      borderRadius: '8px',
+                      fontSize: '13px'
+                    }}
+                  >
+                    <option value="1month">Last 1 month</option>
+                    <option value="3months">Last 3 months</option>
+                    <option value="6months">Last 6 months</option>
+                    <option value="all">All time</option>
+                  </select>
+                </div>
                 
-                {/* Max Weight Progress Chart */}
-                <div style={{ marginBottom: '30px' }}>
-                  <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px' }}>
-                    Max Weight ({user?.weight_unit || 'kg'}) - Last 10 Sessions
-                  </p>
-                  <div className="performance-chart">
-                    {exerciseHistory.sessions.slice(-10).reverse().map((session, index) => {
-                      const maxWeight = Math.max(...exerciseHistory.sessions.map(s => s.max_weight || 0));
-                      const height = ((session.max_weight || 0) / maxWeight) * 100;
-                      const date = new Date(session.workout_date);
-                      const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                      
-                      return (
-                        <div key={index} className="chart-bar-container">
-                          <div 
-                            className="chart-bar"
-                            style={{ 
-                              height: `${Math.max(height, 10)}%`,
-                              backgroundColor: index === 0 ? '#10b981' : '#2a2a2a',
-                              minHeight: '20px'
-                            }}
-                          >
-                            <span className="bar-value">{session.max_weight}</span>
+                {(() => {
+                  // Filter sessions based on time period
+                  const now = new Date();
+                  const filterDate = progressTimePeriod === 'all' ? null : 
+                    progressTimePeriod === '1month' ? new Date(now.setMonth(now.getMonth() - 1)) :
+                    progressTimePeriod === '3months' ? new Date(now.setMonth(now.getMonth() - 3)) :
+                    new Date(now.setMonth(now.getMonth() - 6));
+                  
+                  let filteredSessions = exerciseHistory.sessions.filter(session => {
+                    if (!filterDate) return true;
+                    const sessionDate = new Date(session.workout_date);
+                    return sessionDate >= filterDate;
+                  });
+                  
+                  // Sort by date ascending for charts
+                  filteredSessions = filteredSessions.sort((a, b) => 
+                    new Date(a.workout_date) - new Date(b.workout_date)
+                  );
+                  
+                  if (filteredSessions.length === 0) {
+                    return <p style={{ fontSize: '14px', color: '#888', textAlign: 'center', padding: '20px' }}>
+                      No workout data for selected time period
+                    </p>;
+                  }
+                  
+                  const maxWeightValue = Math.max(...filteredSessions.map(s => s.max_weight || 0));
+                  const maxVolumeValue = Math.max(...filteredSessions.map(s => s.total_volume || 0));
+                  
+                  return (
+                    <>
+                      {/* Weight Over Time Chart */}
+                      <div style={{ marginBottom: '30px' }}>
+                        <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px', fontWeight: '500' }}>
+                          Weight Over Time ({user?.weight_unit || 'kg'})
+                        </p>
+                        <div style={{ 
+                          position: 'relative', 
+                          height: '200px', 
+                          backgroundColor: '#0a0a0a',
+                          borderRadius: '12px',
+                          padding: '20px 15px 40px 15px',
+                          border: '1px solid #222'
+                        }}>
+                          <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
+                            {/* Grid lines */}
+                            {[0, 25, 50, 75, 100].map((percent) => (
+                              <line 
+                                key={percent}
+                                x1="0" 
+                                y1={`${percent}%`} 
+                                x2="100%" 
+                                y2={`${percent}%`} 
+                                stroke="#1a1a1a" 
+                                strokeWidth="1"
+                              />
+                            ))}
+                            
+                            {/* Line chart */}
+                            <polyline
+                              fill="none"
+                              stroke="#22c55e"
+                              strokeWidth="3"
+                              points={filteredSessions.map((session, index) => {
+                                const x = (index / (filteredSessions.length - 1 || 1)) * 100;
+                                const y = 100 - ((session.max_weight / maxWeightValue) * 100);
+                                return `${x}%,${y}%`;
+                              }).join(' ')}
+                            />
+                            
+                            {/* Data points */}
+                            {filteredSessions.map((session, index) => {
+                              const x = (index / (filteredSessions.length - 1 || 1)) * 100;
+                              const y = 100 - ((session.max_weight / maxWeightValue) * 100);
+                              return (
+                                <g key={index}>
+                                  <circle 
+                                    cx={`${x}%`} 
+                                    cy={`${y}%`} 
+                                    r="5" 
+                                    fill="#22c55e" 
+                                    stroke="#0a0a0a"
+                                    strokeWidth="2"
+                                  />
+                                  <text 
+                                    x={`${x}%`} 
+                                    y={`${y - 5}%`} 
+                                    fill="#22c55e" 
+                                    fontSize="11" 
+                                    textAnchor="middle"
+                                    dy="-5"
+                                  >
+                                    {session.max_weight}
+                                  </text>
+                                </g>
+                              );
+                            })}
+                          </svg>
+                          
+                          {/* Date labels */}
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            marginTop: '10px',
+                            fontSize: '10px',
+                            color: '#666'
+                          }}>
+                            {filteredSessions.length > 1 && (
+                              <>
+                                <span>{new Date(filteredSessions[0].workout_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                <span>{new Date(filteredSessions[filteredSessions.length - 1].workout_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                              </>
+                            )}
                           </div>
-                          <span className="bar-label" style={{ fontSize: '10px' }}>{monthDay}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Total Volume Progress Chart */}
-                <div style={{ marginBottom: '30px' }}>
-                  <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px' }}>
-                    Total Volume ({user?.weight_unit || 'kg'}) - Last 10 Sessions
-                  </p>
-                  <div className="performance-chart">
-                    {exerciseHistory.sessions.slice(-10).reverse().map((session, index) => {
-                      const maxVolume = Math.max(...exerciseHistory.sessions.map(s => s.total_volume || 0));
-                      const height = ((session.total_volume || 0) / maxVolume) * 100;
-                      const date = new Date(session.workout_date);
-                      const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                      
-                      return (
-                        <div key={index} className="chart-bar-container">
-                          <div 
-                            className="chart-bar"
-                            style={{ 
-                              height: `${Math.max(height, 10)}%`,
-                              backgroundColor: index === 0 ? '#3b82f6' : '#2a2a2a',
-                              minHeight: '20px'
-                            }}
-                          >
-                            <span className="bar-value">{session.total_volume}</span>
-                          </div>
-                          <span className="bar-label" style={{ fontSize: '10px' }}>{monthDay}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Sets Progress Chart */}
-                <div>
-                  <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px' }}>
-                    Number of Sets - Last 10 Sessions
-                  </p>
-                  <div className="performance-chart">
-                    {exerciseHistory.sessions.slice(-10).reverse().map((session, index) => {
-                      const maxSets = Math.max(...exerciseHistory.sessions.map(s => s.sets?.length || 0));
-                      const setsCount = session.sets?.length || 0;
-                      const height = (setsCount / maxSets) * 100;
-                      const date = new Date(session.workout_date);
-                      const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                      
-                      return (
-                        <div key={index} className="chart-bar-container">
-                          <div 
-                            className="chart-bar"
-                            style={{ 
-                              height: `${Math.max(height, 10)}%`,
-                              backgroundColor: index === 0 ? '#f59e0b' : '#2a2a2a',
-                              minHeight: '20px'
-                            }}
-                          >
-                            <span className="bar-value">{setsCount}</span>
-                          </div>
-                          <span className="bar-label" style={{ fontSize: '10px' }}>{monthDay}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Progress Summary */}
-                <div style={{ 
-                  marginTop: '25px', 
-                  padding: '15px', 
-                  backgroundColor: '#1a1a1a', 
-                  borderRadius: '8px',
-                  border: '1px solid #333'
-                }}>
-                  <h4 style={{ fontSize: '14px', marginBottom: '12px', color: '#22c55e' }}>
-                    📈 Progress Summary
-                  </h4>
-                  {(() => {
-                    const sessions = exerciseHistory.sessions;
-                    if (sessions.length < 2) return <p style={{ fontSize: '12px', color: '#888' }}>Complete more sessions to see progress trends</p>;
-                    
-                    const recent = sessions[sessions.length - 1];
-                    const previous = sessions[sessions.length - 2];
-                    const weightChange = ((recent.max_weight || 0) - (previous.max_weight || 0));
-                    const volumeChange = ((recent.total_volume || 0) - (previous.total_volume || 0));
-                    
-                    return (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                          <span style={{ color: '#888' }}>Max Weight Change:</span>
-                          <span style={{ color: weightChange >= 0 ? '#22c55e' : '#ef4444', fontWeight: '500' }}>
-                            {weightChange >= 0 ? '+' : ''}{weightChange} {user?.weight_unit || 'kg'}
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                          <span style={{ color: '#888' }}>Volume Change:</span>
-                          <span style={{ color: volumeChange >= 0 ? '#22c55e' : '#ef4444', fontWeight: '500' }}>
-                            {volumeChange >= 0 ? '+' : ''}{volumeChange} {user?.weight_unit || 'kg'}
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                          <span style={{ color: '#888' }}>Total Sessions:</span>
-                          <span style={{ color: '#22c55e', fontWeight: '500' }}>
-                            {sessions.length}
-                          </span>
                         </div>
                       </div>
-                    );
-                  })()}
-                </div>
+
+                      {/* Volume Over Time Chart */}
+                      <div style={{ marginBottom: '30px' }}>
+                        <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px', fontWeight: '500' }}>
+                          Volume Over Time ({user?.weight_unit || 'kg'})
+                        </p>
+                        <div style={{ 
+                          position: 'relative', 
+                          height: '200px', 
+                          backgroundColor: '#0a0a0a',
+                          borderRadius: '12px',
+                          padding: '20px 15px 40px 15px',
+                          border: '1px solid #222'
+                        }}>
+                          <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
+                            {/* Grid lines */}
+                            {[0, 25, 50, 75, 100].map((percent) => (
+                              <line 
+                                key={percent}
+                                x1="0" 
+                                y1={`${percent}%`} 
+                                x2="100%" 
+                                y2={`${percent}%`} 
+                                stroke="#1a1a1a" 
+                                strokeWidth="1"
+                              />
+                            ))}
+                            
+                            {/* Area fill */}
+                            <polygon
+                              fill="url(#volumeGradient)"
+                              opacity="0.3"
+                              points={`0,100% ${filteredSessions.map((session, index) => {
+                                const x = (index / (filteredSessions.length - 1 || 1)) * 100;
+                                const y = 100 - ((session.total_volume / maxVolumeValue) * 100);
+                                return `${x}%,${y}%`;
+                              }).join(' ')} 100%,100%`}
+                            />
+                            
+                            {/* Gradient definition */}
+                            <defs>
+                              <linearGradient id="volumeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor="#3b82f6" stopOpacity="1" />
+                                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                              </linearGradient>
+                            </defs>
+                            
+                            {/* Line chart */}
+                            <polyline
+                              fill="none"
+                              stroke="#3b82f6"
+                              strokeWidth="3"
+                              points={filteredSessions.map((session, index) => {
+                                const x = (index / (filteredSessions.length - 1 || 1)) * 100;
+                                const y = 100 - ((session.total_volume / maxVolumeValue) * 100);
+                                return `${x}%,${y}%`;
+                              }).join(' ')}
+                            />
+                            
+                            {/* Data points */}
+                            {filteredSessions.map((session, index) => {
+                              const x = (index / (filteredSessions.length - 1 || 1)) * 100;
+                              const y = 100 - ((session.total_volume / maxVolumeValue) * 100);
+                              return (
+                                <g key={index}>
+                                  <circle 
+                                    cx={`${x}%`} 
+                                    cy={`${y}%`} 
+                                    r="5" 
+                                    fill="#3b82f6" 
+                                    stroke="#0a0a0a"
+                                    strokeWidth="2"
+                                  />
+                                  <text 
+                                    x={`${x}%`} 
+                                    y={`${y - 5}%`} 
+                                    fill="#3b82f6" 
+                                    fontSize="11" 
+                                    textAnchor="middle"
+                                    dy="-5"
+                                  >
+                                    {Math.round(session.total_volume)}
+                                  </text>
+                                </g>
+                              );
+                            })}
+                          </svg>
+                          
+                          {/* Date labels */}
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            marginTop: '10px',
+                            fontSize: '10px',
+                            color: '#666'
+                          }}>
+                            {filteredSessions.length > 1 && (
+                              <>
+                                <span>{new Date(filteredSessions[0].workout_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                <span>{new Date(filteredSessions[filteredSessions.length - 1].workout_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Progress Summary */}
+                      <div style={{ 
+                        padding: '15px', 
+                        backgroundColor: '#1a1a1a', 
+                        borderRadius: '8px',
+                        border: '1px solid #333'
+                      }}>
+                        <h4 style={{ fontSize: '14px', marginBottom: '12px', color: '#22c55e' }}>
+                          📈 Progress Summary
+                        </h4>
+                        {(() => {
+                          if (filteredSessions.length < 2) return <p style={{ fontSize: '12px', color: '#888' }}>Complete more sessions to see progress trends</p>;
+                          
+                          const recent = filteredSessions[filteredSessions.length - 1];
+                          const previous = filteredSessions[filteredSessions.length - 2];
+                          const weightChange = ((recent.max_weight || 0) - (previous.max_weight || 0));
+                          const volumeChange = ((recent.total_volume || 0) - (previous.total_volume || 0));
+                          
+                          return (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                                <span style={{ color: '#888' }}>Max Weight Change:</span>
+                                <span style={{ color: weightChange >= 0 ? '#22c55e' : '#ef4444', fontWeight: '500' }}>
+                                  {weightChange >= 0 ? '+' : ''}{weightChange} {user?.weight_unit || 'kg'}
+                                </span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                                <span style={{ color: '#888' }}>Volume Change:</span>
+                                <span style={{ color: volumeChange >= 0 ? '#22c55e' : '#ef4444', fontWeight: '500' }}>
+                                  {volumeChange >= 0 ? '+' : ''}{Math.round(volumeChange)} {user?.weight_unit || 'kg'}
+                                </span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                                <span style={{ color: '#888' }}>Total Sessions:</span>
+                                <span style={{ color: '#22c55e', fontWeight: '500' }}>
+                                  {filteredSessions.length}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>
