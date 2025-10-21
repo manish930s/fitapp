@@ -2194,8 +2194,8 @@ function App() {
                   {exercise.category}
                 </p>
               </div>
-            ))
-          )}
+            ));
+          })()}
         </div>
       </div>
     );
