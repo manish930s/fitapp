@@ -103,6 +103,7 @@ function App() {
   const [restTimerActive, setRestTimerActive] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [showQuickStartModal, setShowQuickStartModal] = useState(false);
+  const [progressTimePeriod, setProgressTimePeriod] = useState('all'); // 1month, 3months, 6months, all
   const restTimerIntervalRef = useRef(null);
   
   // Camera refs
