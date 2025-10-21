@@ -2408,6 +2408,18 @@ async def get_workout_dashboard_stats(
                 "count": exercise_counts[fav_id]["count"]
             }
         
+        # Find most recent workout
+        recent_workout = None
+        if all_sessions:
+            # Sort by created_at to get the most recent
+            sorted_sessions = sorted(all_sessions, key=lambda x: x["created_at"], reverse=True)
+            most_recent = sorted_sessions[0]
+            recent_workout = {
+                "exercise_id": most_recent["exercise_id"],
+                "name": most_recent["exercise_name"],
+                "created_at": most_recent["created_at"]
+            }
+        
         weight_unit = all_sessions[0].get("weight_unit", "kg") if all_sessions else "kg"
         
         return {
@@ -2416,6 +2428,7 @@ async def get_workout_dashboard_stats(
             "workouts_this_week": workouts_this_week,
             "workouts_this_month": workouts_this_month,
             "favorite_exercise": favorite_exercise,
+            "recent_workout": recent_workout,
             "weight_unit": weight_unit
         }
         
