@@ -274,8 +274,8 @@ def run_focused_test():
     print("🎯 FOCUSED TEST: Workout Dashboard Stats - 'Kg and Recent Workout' Fix Verification")
     print("=" * 80)
     
-    # Step 1: Login
-    if not login_user():
+    # Step 1: Login or Register
+    if not register_or_login_user():
         print("❌ Cannot proceed without authentication")
         return False
     
