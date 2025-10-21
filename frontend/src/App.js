@@ -2016,31 +2016,144 @@ function App() {
             {exerciseHistory && exerciseHistory.sessions && exerciseHistory.sessions.length > 0 && (
               <div className="workout-section">
                 <h3>📊 Performance History</h3>
-                <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px' }}>
-                  Weight Lifted ({user?.weight_unit || 'kg'}) - Last 6 Months
-                </p>
-                <div className="performance-chart">
-                  {exerciseHistory.sessions.slice(0, 6).reverse().map((session, index) => {
-                    const maxWeight = Math.max(...exerciseHistory.sessions.map(s => s.max_weight || 0));
-                    const height = ((session.max_weight || 0) / maxWeight) * 100;
-                    const date = new Date(session.workout_date);
-                    const month = date.toLocaleDateString('en-US', { month: 'short' });
+                
+                {/* Max Weight Progress Chart */}
+                <div style={{ marginBottom: '30px' }}>
+                  <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px' }}>
+                    Max Weight ({user?.weight_unit || 'kg'}) - Last 10 Sessions
+                  </p>
+                  <div className="performance-chart">
+                    {exerciseHistory.sessions.slice(-10).reverse().map((session, index) => {
+                      const maxWeight = Math.max(...exerciseHistory.sessions.map(s => s.max_weight || 0));
+                      const height = ((session.max_weight || 0) / maxWeight) * 100;
+                      const date = new Date(session.workout_date);
+                      const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                      
+                      return (
+                        <div key={index} className="chart-bar-container">
+                          <div 
+                            className="chart-bar"
+                            style={{ 
+                              height: `${Math.max(height, 10)}%`,
+                              backgroundColor: index === 0 ? '#10b981' : '#2a2a2a',
+                              minHeight: '20px'
+                            }}
+                          >
+                            <span className="bar-value">{session.max_weight}</span>
+                          </div>
+                          <span className="bar-label" style={{ fontSize: '10px' }}>{monthDay}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Total Volume Progress Chart */}
+                <div style={{ marginBottom: '30px' }}>
+                  <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px' }}>
+                    Total Volume ({user?.weight_unit || 'kg'}) - Last 10 Sessions
+                  </p>
+                  <div className="performance-chart">
+                    {exerciseHistory.sessions.slice(-10).reverse().map((session, index) => {
+                      const maxVolume = Math.max(...exerciseHistory.sessions.map(s => s.total_volume || 0));
+                      const height = ((session.total_volume || 0) / maxVolume) * 100;
+                      const date = new Date(session.workout_date);
+                      const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                      
+                      return (
+                        <div key={index} className="chart-bar-container">
+                          <div 
+                            className="chart-bar"
+                            style={{ 
+                              height: `${Math.max(height, 10)}%`,
+                              backgroundColor: index === 0 ? '#3b82f6' : '#2a2a2a',
+                              minHeight: '20px'
+                            }}
+                          >
+                            <span className="bar-value">{session.total_volume}</span>
+                          </div>
+                          <span className="bar-label" style={{ fontSize: '10px' }}>{monthDay}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Sets Progress Chart */}
+                <div>
+                  <p style={{ fontSize: '14px', color: '#888', marginBottom: '15px' }}>
+                    Number of Sets - Last 10 Sessions
+                  </p>
+                  <div className="performance-chart">
+                    {exerciseHistory.sessions.slice(-10).reverse().map((session, index) => {
+                      const maxSets = Math.max(...exerciseHistory.sessions.map(s => s.sets?.length || 0));
+                      const setsCount = session.sets?.length || 0;
+                      const height = (setsCount / maxSets) * 100;
+                      const date = new Date(session.workout_date);
+                      const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                      
+                      return (
+                        <div key={index} className="chart-bar-container">
+                          <div 
+                            className="chart-bar"
+                            style={{ 
+                              height: `${Math.max(height, 10)}%`,
+                              backgroundColor: index === 0 ? '#f59e0b' : '#2a2a2a',
+                              minHeight: '20px'
+                            }}
+                          >
+                            <span className="bar-value">{setsCount}</span>
+                          </div>
+                          <span className="bar-label" style={{ fontSize: '10px' }}>{monthDay}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Progress Summary */}
+                <div style={{ 
+                  marginTop: '25px', 
+                  padding: '15px', 
+                  backgroundColor: '#1a1a1a', 
+                  borderRadius: '8px',
+                  border: '1px solid #333'
+                }}>
+                  <h4 style={{ fontSize: '14px', marginBottom: '12px', color: '#22c55e' }}>
+                    📈 Progress Summary
+                  </h4>
+                  {(() => {
+                    const sessions = exerciseHistory.sessions;
+                    if (sessions.length < 2) return <p style={{ fontSize: '12px', color: '#888' }}>Complete more sessions to see progress trends</p>;
+                    
+                    const recent = sessions[sessions.length - 1];
+                    const previous = sessions[sessions.length - 2];
+                    const weightChange = ((recent.max_weight || 0) - (previous.max_weight || 0));
+                    const volumeChange = ((recent.total_volume || 0) - (previous.total_volume || 0));
                     
                     return (
-                      <div key={index} className="chart-bar-container">
-                        <div 
-                          className="chart-bar"
-                          style={{ 
-                            height: `${height}%`,
-                            backgroundColor: index === exerciseHistory.sessions.length - 1 ? '#10b981' : '#2a2a2a'
-                          }}
-                        >
-                          <span className="bar-value">{session.max_weight}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                          <span style={{ color: '#888' }}>Max Weight Change:</span>
+                          <span style={{ color: weightChange >= 0 ? '#22c55e' : '#ef4444', fontWeight: '500' }}>
+                            {weightChange >= 0 ? '+' : ''}{weightChange} {user?.weight_unit || 'kg'}
+                          </span>
                         </div>
-                        <span className="bar-label">{month}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                          <span style={{ color: '#888' }}>Volume Change:</span>
+                          <span style={{ color: volumeChange >= 0 ? '#22c55e' : '#ef4444', fontWeight: '500' }}>
+                            {volumeChange >= 0 ? '+' : ''}{volumeChange} {user?.weight_unit || 'kg'}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                          <span style={{ color: '#888' }}>Total Sessions:</span>
+                          <span style={{ color: '#22c55e', fontWeight: '500' }}>
+                            {sessions.length}
+                          </span>
+                        </div>
                       </div>
                     );
-                  })}
+                  })()}
                 </div>
               </div>
             )}
