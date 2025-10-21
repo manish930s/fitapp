@@ -2148,21 +2148,25 @@ function App() {
         )}
 
         <div className="exercise-grid">
-          {exercises.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
-              <p>No exercises found</p>
-            </div>
-          ) : (
-            exercises
-              .filter(exercise => {
-                // Filter by search query if active
-                if (exerciseSearchQuery.trim()) {
-                  return exercise.name.toLowerCase().includes(exerciseSearchQuery.toLowerCase()) ||
-                         exercise.category.toLowerCase().includes(exerciseSearchQuery.toLowerCase());
-                }
-                return true;
-              })
-              .map((exercise) => (
+          {(() => {
+            const filteredExercises = exercises.filter(exercise => {
+              // Filter by search query if active
+              if (exerciseSearchQuery.trim()) {
+                return exercise.name.toLowerCase().includes(exerciseSearchQuery.toLowerCase()) ||
+                       exercise.category.toLowerCase().includes(exerciseSearchQuery.toLowerCase());
+              }
+              return true;
+            });
+
+            if (filteredExercises.length === 0) {
+              return (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+                  <p>{exerciseSearchQuery.trim() ? `No exercises found matching "${exerciseSearchQuery}"` : 'No exercises found'}</p>
+                </div>
+              );
+            }
+
+            return filteredExercises.map((exercise) => (
               <div 
                 key={exercise.exercise_id} 
                 className="exercise-card"
