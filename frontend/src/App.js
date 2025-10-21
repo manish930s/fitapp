@@ -2124,9 +2124,89 @@ function App() {
           </button>
         </div>
 
-        <button className="btn-primary workout-cta">
+        <button className="btn-primary workout-cta" onClick={() => setShowQuickStartModal(true)}>
           Start Today's Workout
         </button>
+
+        {/* Quick Start Modal */}
+        {showQuickStartModal && (
+          <div className="modal-overlay" onClick={() => setShowQuickStartModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>Quick Start Workout</h3>
+                <button className="icon-btn" onClick={() => setShowQuickStartModal(false)}>✕</button>
+              </div>
+              <div className="modal-body" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <p style={{ color: '#888', marginBottom: '20px', fontSize: '14px' }}>
+                  Select an exercise below to start tracking your workout
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {exercises.slice(0, 10).map((exercise) => (
+                    <button
+                      key={exercise.exercise_id}
+                      className="quick-start-exercise-btn"
+                      onClick={() => {
+                        setShowQuickStartModal(false);
+                        fetchExerciseDetail(exercise.exercise_id);
+                      }}
+                      style={{
+                        padding: '15px',
+                        backgroundColor: '#2a2a2a',
+                        border: '1px solid #333',
+                        borderRadius: '8px',
+                        color: '#fff',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#333';
+                        e.currentTarget.style.borderColor = '#22c55e';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#2a2a2a';
+                        e.currentTarget.style.borderColor = '#333';
+                      }}
+                    >
+                      <span style={{ fontSize: '24px' }}>
+                        {exercise.category === 'Chest' ? '🏋️' : 
+                         exercise.category === 'Legs' ? '🦵' :
+                         exercise.category === 'Back' ? '💪' : 
+                         exercise.category === 'Shoulders' ? '🤸' :
+                         exercise.category === 'Arms' ? '💪' :
+                         exercise.category === 'Core' ? '🧘' : '🏋️'}
+                      </span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: '500', marginBottom: '4px' }}>{exercise.name}</div>
+                        <div style={{ fontSize: '12px', color: '#888' }}>{exercise.category}</div>
+                      </div>
+                      <span style={{ color: '#22c55e' }}>→</span>
+                    </button>
+                  ))}
+                </div>
+                <button 
+                  className="btn-secondary" 
+                  onClick={() => setShowQuickStartModal(false)}
+                  style={{ 
+                    marginTop: '20px', 
+                    width: '100%',
+                    padding: '12px',
+                    backgroundColor: 'transparent',
+                    border: '1px solid #333',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Browse All Exercises
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Workout Dashboard Stats */}
         {workoutDashboardStats && (
