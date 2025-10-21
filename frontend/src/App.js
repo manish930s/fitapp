@@ -2116,7 +2116,7 @@ function App() {
             </div>
             {workoutDashboardStats.favorite_exercise && (
               <div className="workout-stat-item">
-                <span className="stat-value">{workoutDashboardStats.favorite_exercise}</span>
+                <span className="stat-value">{workoutDashboardStats.favorite_exercise.name || workoutDashboardStats.favorite_exercise}</span>
                 <span className="stat-label">Favorite</span>
               </div>
             )}
