@@ -138,7 +138,7 @@ def test_empty_workout_dashboard_stats():
             print(f"✅ weight_unit: {weight_unit} (correct)")
         
         if all_correct:
-            print("✅ EDGE CASE SUCCESS: All values correct for user with no workout sessions")
+            print("✅ EDGE CASE SUCCESS: All critical values correct for user with no workout sessions")
             return True
         else:
             print("❌ EDGE CASE FAILURE: Some values incorrect for empty state")
