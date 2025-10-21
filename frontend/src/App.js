@@ -2153,7 +2153,16 @@ function App() {
               <p>No exercises found</p>
             </div>
           ) : (
-            exercises.map((exercise) => (
+            exercises
+              .filter(exercise => {
+                // Filter by search query if active
+                if (exerciseSearchQuery.trim()) {
+                  return exercise.name.toLowerCase().includes(exerciseSearchQuery.toLowerCase()) ||
+                         exercise.category.toLowerCase().includes(exerciseSearchQuery.toLowerCase());
+                }
+                return true;
+              })
+              .map((exercise) => (
               <div 
                 key={exercise.exercise_id} 
                 className="exercise-card"
