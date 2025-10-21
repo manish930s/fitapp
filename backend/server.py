@@ -2247,14 +2247,16 @@ async def get_exercise_history(
         # Calculate progress data
         history = []
         for session in sessions:
-            # Find max weight used in this session
+            # Find max weight and max reps used in this session
             max_weight = max((s["weight"] for s in session["sets"]), default=0)
+            max_reps = max((s["reps"] for s in session["sets"]), default=0)
             
             history.append({
                 "date": session["created_at"],
                 "total_sets": session["total_sets"],
                 "total_volume": session["total_volume"],
                 "max_weight": max_weight,
+                "max_reps": max_reps,
                 "weight_unit": session.get("weight_unit", "kg")
             })
         
