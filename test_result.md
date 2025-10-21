@@ -303,6 +303,12 @@ frontend:
       - working: true
         agent: "testing"
         comment: "🎉 COMPREHENSIVE WORKOUT BACKEND TESTING COMPLETE: ALL NEW FEATURES WORKING PERFECTLY (100% success rate - 6/6 tests passed). CRITICAL FIXES APPLIED: 1) Fixed auto-suggestion feature - last_session field now returns proper structure with max_weight calculation, 2) Added 2 exercises (Chest Press, Mountain Climbers) to reach 35 total exercises. COMPREHENSIVE TEST RESULTS: ✅ NEW EDIT WORKOUT SESSION ENDPOINT (HIGHEST PRIORITY): PUT /api/workouts/sessions/{session_id} fully functional with volume recalculation (1640→1480), max weight updates (80→70), edge cases handled (404 for invalid IDs, empty sets), ✅ EXPANDED EXERCISE LIBRARY: 35 exercises confirmed across ALL 7 categories - Chest(6), Back(6), Legs(7), Shoulders(5), Arms(5), Core(6), ✅ REAL UNSPLASH IMAGES: All exercises return real images.unsplash.com URLs (verified lateral-raise, bicep-curl, plank + sample), NO placeholder emojis detected, ✅ AUTO-SUGGESTION FEATURE: last_session field working correctly - returns exercise_id, sets, total_volume, max_weight for previous workouts, null for exercises with no history, ✅ EDGE CASES & ERROR HANDLING: Invalid category/exercise return 404, deleted session edit returns 404, invalid data handled appropriately, ✅ VOLUME & STATS RECALCULATION: Complete edit workflow verified - volume calculations accurate, dashboard stats updated correctly. ALL NEW WORKOUT FEATURES are production-ready and meet review requirements."
+      - working: false
+        agent: "user"
+        comment: "User reported: React error when adding workout - 'Objects are not valid as a React child (found: object with keys {exercise_id, name, count})'. Error occurs in favorite exercise display on workout dashboard."
+      - working: "NA"
+        agent: "main"
+        comment: "FIXED: React object rendering error in workout dashboard. Issue was on line 2119 in App.js where favorite_exercise object was being rendered directly instead of accessing its name property. Changed from {workoutDashboardStats.favorite_exercise} to {workoutDashboardStats.favorite_exercise.name || workoutDashboardStats.favorite_exercise} to safely render the exercise name. Frontend has hot reload enabled, changes applied automatically. Error should now be resolved."
   
   - task: "Food Scanner with Camera Capture"
     implemented: true
