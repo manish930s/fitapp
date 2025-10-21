@@ -102,6 +102,7 @@ function App() {
   const [exerciseSearchQuery, setExerciseSearchQuery] = useState('');
   const [restTimerActive, setRestTimerActive] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [showQuickStartModal, setShowQuickStartModal] = useState(false);
   const restTimerIntervalRef = useRef(null);
   
   // Camera refs
