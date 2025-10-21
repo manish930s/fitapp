@@ -31,10 +31,11 @@ def log_test(test_name, success, message="", details=None):
         "timestamp": datetime.now().isoformat()
     }
 
-def login_user():
-    """Login with test credentials"""
+def register_or_login_user():
+    """Register or login with test credentials"""
     global auth_token
     
+    # Try login first
     login_data = {
         "email": TEST_USER_EMAIL,
         "password": TEST_USER_PASSWORD
@@ -48,17 +49,58 @@ def login_user():
             auth_token = data.get("token")
             
             if auth_token:
-                log_test("Login", True, "Successfully logged in with test credentials")
+                log_test("Login", True, "Successfully logged in with existing test credentials")
                 return True
             else:
                 log_test("Login", False, "Missing token in login response")
                 return False
+        elif response.status_code == 401:
+            # User doesn't exist, try to register
+            print("🔄 User doesn't exist, attempting registration...")
+            return register_user()
         else:
             log_test("Login", False, f"Login failed - Status: {response.status_code}, Response: {response.text}")
             return False
             
     except Exception as e:
         log_test("Login", False, f"Login error: {str(e)}")
+        return False
+
+def register_user():
+    """Register new test user"""
+    global auth_token
+    
+    user_data = {
+        "name": "Test User",
+        "email": TEST_USER_EMAIL,
+        "password": TEST_USER_PASSWORD,
+        "age": 30,
+        "gender": "male",
+        "height": 175.0,
+        "weight": 70.0,
+        "activity_level": "moderate",
+        "goal_weight": 68.0
+    }
+    
+    try:
+        response = requests.post(f"{BASE_URL}/auth/register", json=user_data, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            auth_token = data.get("token")
+            
+            if auth_token:
+                log_test("Registration", True, "Successfully registered new test user")
+                return True
+            else:
+                log_test("Registration", False, "Missing token in registration response")
+                return False
+        else:
+            log_test("Registration", False, f"Registration failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        log_test("Registration", False, f"Registration error: {str(e)}")
         return False
 
 def test_workout_dashboard_stats():
