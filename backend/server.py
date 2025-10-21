@@ -2332,6 +2332,7 @@ async def get_exercise_stats(
         
         return {
             "personal_best": personal_best,
+            "max_reps": max_reps,
             "estimated_1rm": round(estimated_1rm, 1),
             "total_sessions": len(sessions),
             "total_volume": round(total_volume, 1),
