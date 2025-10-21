@@ -2289,15 +2289,18 @@ async def get_exercise_stats(
                 "avg_volume_per_session": 0
             }
         
-        # Calculate personal best (highest weight used)
+        # Calculate personal best (highest weight used) and max reps
         all_weights = []
+        all_reps = []
         all_sets = []
         for session in sessions:
             for set_data in session["sets"]:
                 all_weights.append(set_data["weight"])
+                all_reps.append(set_data["reps"])
                 all_sets.append(set_data)
         
         personal_best = max(all_weights) if all_weights else 0
+        max_reps = max(all_reps) if all_reps else 0
         
         # Estimate 1RM using Epley formula: weight * (1 + reps/30)
         # Find the set with highest estimated 1RM
