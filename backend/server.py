@@ -2370,7 +2370,8 @@ async def get_workout_dashboard_stats(
                 "total_volume_lifted": 0,
                 "workouts_this_week": 0,
                 "workouts_this_month": 0,
-                "favorite_exercise": None
+                "favorite_exercise": None,
+                "recent_workout": None
             }
         
         # Calculate total volume
