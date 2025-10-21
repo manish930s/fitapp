@@ -2512,12 +2512,12 @@ function App() {
               <span className="stat-label">Workouts</span>
             </div>
             <div className="workout-stat-item">
-              <span className="stat-value">{workoutDashboardStats.total_volume}</span>
+              <span className="stat-value">{workoutDashboardStats.total_volume_lifted || 0}</span>
               <span className="stat-label">{user?.weight_unit || 'kg'}</span>
             </div>
-            {workoutDashboardStats.favorite_exercise && (
+            {workoutDashboardStats.recent_workout && (
               <div className="workout-stat-item">
-                <span className="stat-value">{workoutDashboardStats.favorite_exercise.name || workoutDashboardStats.favorite_exercise}</span>
+                <span className="stat-value">{workoutDashboardStats.recent_workout.name}</span>
                 <span className="stat-label">Recent Workout</span>
               </div>
             )}
