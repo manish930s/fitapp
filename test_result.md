@@ -309,6 +309,12 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "FIXED: React object rendering error in workout dashboard. Issue was on line 2119 in App.js where favorite_exercise object was being rendered directly instead of accessing its name property. Changed from {workoutDashboardStats.favorite_exercise} to {workoutDashboardStats.favorite_exercise.name || workoutDashboardStats.favorite_exercise} to safely render the exercise name. Frontend has hot reload enabled, changes applied automatically. Error should now be resolved."
+      - working: false
+        agent: "user"
+        comment: "User reported: Search icon in Workout section not working - clicking it does nothing."
+      - working: "NA"
+        agent: "main"
+        comment: "FIXED: Implemented complete exercise search functionality. Changes: 1) Added showExerciseSearch and exerciseSearchQuery state variables, 2) Added onClick handler to search icon (🔍) to toggle search input visibility, 3) Created search input field with real-time filtering that appears when search icon is clicked, 4) Implemented filtering logic to search exercises by name and category (case-insensitive), 5) Added 'No exercises found' message when search returns no results with helpful message showing search query. Search input has auto-focus and styled to match dark theme. Users can now click search icon to show/hide search bar and filter exercises dynamically as they type. Frontend compiled successfully with hot reload."
   
   - task: "Food Scanner with Camera Capture"
     implemented: true
