@@ -2283,6 +2283,7 @@ async def get_exercise_stats(
         if not sessions:
             return {
                 "personal_best": None,
+                "max_reps": None,
                 "estimated_1rm": None,
                 "total_sessions": 0,
                 "total_volume": 0,
