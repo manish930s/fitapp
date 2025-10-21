@@ -98,6 +98,8 @@ function App() {
   const [showWorkoutDetail, setShowWorkoutDetail] = useState(false);
   const [workoutNotes, setWorkoutNotes] = useState('');
   const [restTimer, setRestTimer] = useState(0);
+  const [showExerciseSearch, setShowExerciseSearch] = useState(false);
+  const [exerciseSearchQuery, setExerciseSearchQuery] = useState('');
   const [restTimerActive, setRestTimerActive] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const restTimerIntervalRef = useRef(null);
