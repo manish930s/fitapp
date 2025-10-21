@@ -2053,8 +2053,30 @@ function App() {
       <div className="workout-container">
         <div className="page-header">
           <h2>Exercise Library</h2>
-          <button className="icon-btn">🔍</button>
+          <button className="icon-btn" onClick={() => setShowExerciseSearch(!showExerciseSearch)}>🔍</button>
         </div>
+
+        {/* Search Input */}
+        {showExerciseSearch && (
+          <div style={{ padding: '0 20px 10px 20px' }}>
+            <input
+              type="text"
+              placeholder="Search exercises..."
+              value={exerciseSearchQuery}
+              onChange={(e) => setExerciseSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid #333',
+                backgroundColor: '#1a1a1a',
+                color: '#fff',
+                fontSize: '16px'
+              }}
+              autoFocus
+            />
+          </div>
+        )}
 
         <div className="filter-tabs">
           <button 
