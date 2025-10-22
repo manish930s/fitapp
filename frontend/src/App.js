@@ -1293,10 +1293,18 @@ function App() {
       
       if (response.ok) {
         setScanResult(data);
-        setSuccess('Food analyzed successfully!');
+        
+        // Show auto-track notification
+        if (data.auto_tracked) {
+          showToast(`✓ ${data.food_name} scanned! ${data.calories} cal added to daily intake`);
+        } else {
+          setSuccess('Food analyzed successfully!');
+        }
+        
         setTimeout(() => {
           fetchFoodHistory();
           fetchTodayFood();
+          fetchDailyStats(); // Refresh daily stats to show updated calories
         }, 500);
       } else {
         setError(data.detail || 'Failed to analyze food');
