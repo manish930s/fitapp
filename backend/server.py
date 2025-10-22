@@ -2145,6 +2145,7 @@ async def create_workout_session(
         
         # Create session
         session_id = str(uuid.uuid4())
+        duration_minutes = session_data.duration_minutes or 0  # Use provided duration or 0
         session = {
             "session_id": session_id,
             "user_id": current_user["user_id"],
@@ -2153,6 +2154,7 @@ async def create_workout_session(
             "sets": [s.dict() for s in session_data.sets],
             "total_sets": len(session_data.sets),
             "total_volume": total_volume,
+            "duration_minutes": duration_minutes,
             "weight_unit": weight_unit,
             "notes": session_data.notes,
             "created_at": datetime.utcnow().isoformat(),
@@ -2161,11 +2163,42 @@ async def create_workout_session(
         
         workout_sessions_collection.insert_one(session)
         
+        # AUTO-TRACK: Update daily active minutes if duration provided
+        if duration_minutes > 0:
+            today = datetime.utcnow().date().isoformat()
+            stats = user_stats_collection.find_one({
+                "user_id": current_user["user_id"],
+                "date": today
+            })
+            
+            if stats:
+                # Increment active_minutes
+                new_active_minutes = stats.get("active_minutes", 0) + duration_minutes
+                user_stats_collection.update_one(
+                    {"user_id": current_user["user_id"], "date": today},
+                    {"$set": {"active_minutes": new_active_minutes, "updated_at": datetime.utcnow().isoformat()}}
+                )
+            else:
+                # Create new stats entry
+                user_stats_collection.insert_one({
+                    "user_id": current_user["user_id"],
+                    "date": today,
+                    "steps": 0,
+                    "calories_burned": 0,
+                    "calories_consumed": 0,
+                    "active_minutes": duration_minutes,
+                    "water_intake": 0,
+                    "sleep_hours": 0,
+                    "updated_at": datetime.utcnow().isoformat()
+                })
+        
         return {
             "message": "Workout session created successfully",
             "session_id": session_id,
             "total_volume": total_volume,
-            "total_sets": len(session_data.sets)
+            "total_sets": len(session_data.sets),
+            "duration_minutes": duration_minutes,
+            "auto_tracked": duration_minutes > 0  # Flag to show toast notification
         }
         
     except HTTPException:
