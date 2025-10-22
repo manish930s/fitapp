@@ -145,6 +145,7 @@ class WorkoutSessionCreate(BaseModel):
     exercise_id: str
     sets: List[WorkoutSet]
     notes: Optional[str] = None
+    duration_minutes: Optional[int] = None  # Auto-tracked workout duration
 
 class WorkoutSetUpdate(BaseModel):
     reps: Optional[int] = None
