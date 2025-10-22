@@ -57,6 +57,10 @@ def test_login():
             else:
                 log_test("User Login", False, "Missing token or user_id in response")
                 return False
+        elif response.status_code == 401:
+            # Try to register the user first
+            print("🔄 User not found, attempting registration...")
+            return test_register_and_login()
         else:
             log_test("User Login", False, 
                     f"Status: {response.status_code}, Response: {response.text}")
@@ -64,6 +68,50 @@ def test_login():
             
     except Exception as e:
         log_test("User Login", False, f"Error: {str(e)}")
+        return False
+
+def test_register_and_login():
+    """Register user and then login"""
+    global auth_token, user_id
+    
+    # Try to register first
+    user_data = {
+        "name": "Test User",
+        "email": TEST_USER_EMAIL,
+        "password": TEST_USER_PASSWORD,
+        "age": 30,
+        "gender": "male",
+        "height": 175.0,
+        "weight": 70.0,
+        "activity_level": "moderate",
+        "goal_weight": 68.0
+    }
+    
+    try:
+        response = requests.post(f"{BASE_URL}/auth/register", json=user_data, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            auth_token = data.get("token")
+            user_id = data.get("user", {}).get("user_id")
+            
+            if auth_token and user_id:
+                log_test("User Login", True, "User registered and logged in successfully")
+                return True
+            else:
+                log_test("User Login", False, "Missing token or user_id in registration response")
+                return False
+        elif response.status_code == 400 and "already registered" in response.text:
+            # User exists but login failed - password might be wrong
+            log_test("User Login", False, "User exists but login failed - check credentials")
+            return False
+        else:
+            log_test("User Login", False, 
+                    f"Registration failed - Status: {response.status_code}, Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        log_test("User Login", False, f"Registration error: {str(e)}")
         return False
 
 def create_test_food_scan():
