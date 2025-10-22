@@ -1720,6 +1720,88 @@ function App() {
       >
         <span style={{ fontSize: '28px' }}>💬</span>
       </button>
+      
+      {/* Custom Steps Modal */}
+      {showStepsModal && (
+        <div className="modal-overlay" onClick={() => setShowStepsModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <h3>Add Steps</h3>
+            <input
+              type="number"
+              placeholder="Enter number of steps"
+              value={manualStepsInput}
+              onChange={(e) => setManualStepsInput(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: '#0a0a0a',
+                border: '1px solid #333',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '16px',
+                marginTop: '16px'
+              }}
+            />
+            <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+              <button
+                className="secondary-btn"
+                onClick={() => setShowStepsModal(false)}
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button
+                className="primary-btn"
+                onClick={handleManualStepsSubmit}
+                style={{ flex: 1 }}
+              >
+                Add Steps
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Custom Water Modal */}
+      {showWaterModal && (
+        <div className="modal-overlay" onClick={() => setShowWaterModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <h3>Add Water</h3>
+            <input
+              type="number"
+              placeholder="Enter amount in ml"
+              value={manualWaterInput}
+              onChange={(e) => setManualWaterInput(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: '#0a0a0a',
+                border: '1px solid #333',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '16px',
+                marginTop: '16px'
+              }}
+            />
+            <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+              <button
+                className="secondary-btn"
+                onClick={() => setShowWaterModal(false)}
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button
+                className="primary-btn"
+                onClick={handleManualWaterSubmit}
+                style={{ flex: 1 }}
+              >
+                Add Water
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
     );
   };
