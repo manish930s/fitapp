@@ -2031,11 +2031,24 @@ function App() {
                   <h4>{scan.food_name}</h4>
                   <p>{Math.round(scan.calories)} Calories</p>
                 </div>
-                <span className="scan-time">
-                  {new Date(scan.scanned_at).toLocaleDateString() === new Date().toLocaleDateString() 
-                    ? 'Today' 
-                    : 'Yesterday'}
-                </span>
+                <div className="scan-actions">
+                  <span className="scan-time">
+                    {new Date(scan.scanned_at).toLocaleDateString() === new Date().toLocaleDateString() 
+                      ? 'Today' 
+                      : 'Yesterday'}
+                  </span>
+                  <button 
+                    className="delete-scan-btn" 
+                    onClick={() => {
+                      if (window.confirm(`Delete ${scan.food_name} from your history?`)) {
+                        deleteFoodScan(scan.scan_id);
+                      }
+                    }}
+                    title="Delete scan"
+                  >
+                    🗑️
+                  </button>
+                </div>
               </div>
             ))}
           </div>
