@@ -4758,6 +4758,29 @@ function App() {
           )}
         </>
       )}
+      
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          bottom: '100px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#22c55e',
+          color: '#000',
+          padding: '16px 24px',
+          borderRadius: '12px',
+          boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
+          zIndex: 10000,
+          fontWeight: 'bold',
+          fontSize: '14px',
+          animation: 'slideUp 0.3s ease-out',
+          maxWidth: '90%',
+          textAlign: 'center'
+        }}>
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }
