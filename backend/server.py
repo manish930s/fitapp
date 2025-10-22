@@ -92,6 +92,7 @@ class FoodScanResult(BaseModel):
 class DailyStats(BaseModel):
     steps: int
     calories_burned: int
+    calories_consumed: int
     active_minutes: int
     water_intake: int
     sleep_hours: float
