@@ -1444,6 +1444,7 @@ async def update_daily_stats(stats: DailyStats, current_user: dict = Depends(get
         "date": today,
         "steps": stats.steps,
         "calories_burned": stats.calories_burned,
+        "calories_consumed": stats.calories_consumed,
         "active_minutes": stats.active_minutes,
         "water_intake": stats.water_intake,
         "sleep_hours": stats.sleep_hours,
