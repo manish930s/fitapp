@@ -177,6 +177,21 @@ backend:
         agent: "testing"
         comment: "✅ TESTED: Both endpoints working correctly. /api/food/history returns user's scan history with all nutritional data and images. /api/food/today provides accurate daily totals for calories, protein, carbs, fat, and meal count."
   
+  - task: "DELETE Food Scan Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented DELETE /api/food/scan/{scan_id} endpoint for deleting individual food scans. Endpoint validates user ownership and returns appropriate error codes for edge cases."
+      - working: true
+        agent: "testing"
+        comment: "🎉 COMPREHENSIVE DELETE FOOD SCAN TESTING COMPLETE: All test scenarios passed (100% success rate - 7/7 tests). Test Results with test@fitflow.com credentials: ✅ SUCCESSFUL DELETION: DELETE /api/food/scan/{scan_id} returns 200 with message 'Food scan deleted successfully', ✅ HISTORY VERIFICATION: Deleted scans are properly removed from GET /api/food/history response, history count decreases correctly, ✅ EDGE CASE - DOUBLE DELETE: Second deletion attempt returns 404 'Food scan not found' as expected, ✅ EDGE CASE - INVALID SCAN_ID: Invalid scan_id returns 404 as expected, ✅ EDGE CASE - UNAUTHENTICATED: Request without auth token returns 403 (proper authentication error), ✅ EDGE CASE - OTHER USER'S SCAN: Attempting to delete another user's scan returns 404 (proper user isolation), ✅ AUTHENTICATION: User registration/login working correctly for test setup. All DELETE endpoint requirements met: proper success response, scan removal from history, appropriate error handling for all edge cases, user security enforced."
+  
   - task: "Daily Stats Tracking"
     implemented: true
     working: true
