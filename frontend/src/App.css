@@ -2752,3 +2752,15 @@ input:checked + .toggle-slider:before {
   border: 1px solid var(--border-light);
 }
 
+
+/* Toast Notification Animation */
+@keyframes slideUp {
+  from {
+    bottom: 80px;
+    opacity: 0;
+  }
+  to {
+    bottom: 100px;
+    opacity: 1;
+  }
+}
