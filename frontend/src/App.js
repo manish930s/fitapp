@@ -246,6 +246,21 @@ function App() {
     }
   };
 
+  const fetchDailyStats = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/stats/daily`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const stats = await response.json();
+        setDailyStats(stats);
+      }
+    } catch (err) {
+      console.error('Error fetching daily stats:', err);
+    }
+  };
+
   const fetchGoals = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/goals`, {
