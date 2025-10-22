@@ -1471,6 +1471,7 @@ async def get_daily_stats(current_user: dict = Depends(get_current_user)):
         return {
             "steps": 0,
             "calories_burned": 0,
+            "calories_consumed": 0,
             "active_minutes": 0,
             "water_intake": 0,
             "sleep_hours": 0
@@ -1479,6 +1480,7 @@ async def get_daily_stats(current_user: dict = Depends(get_current_user)):
     return {
         "steps": stats.get("steps", 0),
         "calories_burned": stats.get("calories_burned", 0),
+        "calories_consumed": stats.get("calories_consumed", 0),
         "active_minutes": stats.get("active_minutes", 0),
         "water_intake": stats.get("water_intake", 0),
         "sleep_hours": stats.get("sleep_hours", 0)
