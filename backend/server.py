@@ -1377,6 +1377,34 @@ async def scan_food(image: str = Form(...), current_user: dict = Depends(get_cur
         
         food_scans_collection.insert_one(scan_data)
         
+        # AUTO-TRACK: Update daily calories consumed
+        today = datetime.utcnow().date().isoformat()
+        stats = user_stats_collection.find_one({
+            "user_id": current_user["user_id"],
+            "date": today
+        })
+        
+        if stats:
+            # Increment calories_consumed
+            new_calories = stats.get("calories_consumed", 0) + analysis_result["calories"]
+            user_stats_collection.update_one(
+                {"user_id": current_user["user_id"], "date": today},
+                {"$set": {"calories_consumed": new_calories, "updated_at": datetime.utcnow().isoformat()}}
+            )
+        else:
+            # Create new stats entry
+            user_stats_collection.insert_one({
+                "user_id": current_user["user_id"],
+                "date": today,
+                "steps": 0,
+                "calories_burned": 0,
+                "calories_consumed": analysis_result["calories"],
+                "active_minutes": 0,
+                "water_intake": 0,
+                "sleep_hours": 0,
+                "updated_at": datetime.utcnow().isoformat()
+            })
+        
         return {
             "scan_id": scan_id,
             "food_name": analysis_result["food_name"],
@@ -1384,7 +1412,8 @@ async def scan_food(image: str = Form(...), current_user: dict = Depends(get_cur
             "protein": analysis_result["protein"],
             "carbs": analysis_result["carbs"],
             "fat": analysis_result["fat"],
-            "portion_size": analysis_result["portion_size"]
+            "portion_size": analysis_result["portion_size"],
+            "auto_tracked": True  # Flag to show toast notification
         }
     except Exception as e:
         print(f"Error in scan_food: {str(e)}")
