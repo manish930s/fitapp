@@ -1464,6 +1464,21 @@ async def get_today_food(current_user: dict = Depends(get_current_user)):
         "meal_count": len(scans)
     }
 
+@app.delete("/api/food/scan/{scan_id}")
+async def delete_food_scan(scan_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Delete a food scan by scan_id
+    """
+    result = food_scans_collection.delete_one({
+        "scan_id": scan_id,
+        "user_id": current_user["user_id"]
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Food scan not found")
+    
+    return {"message": "Food scan deleted successfully"}
+
 @app.post("/api/stats/daily")
 async def update_daily_stats(stats: DailyStats, current_user: dict = Depends(get_current_user)):
     today = datetime.utcnow().date().isoformat()
