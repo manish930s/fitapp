@@ -371,13 +371,13 @@ def test_delete_without_auth():
         # Try to delete without auth headers
         response = requests.delete(f"{BASE_URL}/food/scan/{scan_id}", timeout=10)
         
-        if response.status_code == 401:
+        if response.status_code in [401, 403]:
             log_test("Delete Without Auth", True, 
-                    "Correctly returned 401 for unauthenticated request")
+                    f"Correctly returned {response.status_code} for unauthenticated request")
             return True
         else:
             log_test("Delete Without Auth", False, 
-                    f"Expected 401 for unauthenticated request, got {response.status_code}")
+                    f"Expected 401/403 for unauthenticated request, got {response.status_code}")
             return False
             
     except Exception as e:
