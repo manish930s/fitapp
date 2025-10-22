@@ -1491,7 +1491,8 @@ function App() {
         <span style={{ fontSize: '28px' }}>💬</span>
       </button>
     </div>
-  );
+    );
+  };
 
   // Render Food Scanner Page
   const renderScanner = () => (
