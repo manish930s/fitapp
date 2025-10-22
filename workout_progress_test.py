@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://health-tracker-fix-2.preview.emergentagent.com/api"
+BASE_URL = "https://wellness-hub-212.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "test@fitflow.com"
 TEST_USER_PASSWORD = "Test123!"
 
