@@ -778,6 +778,29 @@ function App() {
     }
   };
 
+  const deleteFoodScan = async (scanId) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/food/scan/${scanId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        showToast('✓ Food scan deleted successfully');
+        // Refresh food data
+        fetchFoodHistory();
+        fetchTodayFood();
+        fetchDailyStats();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to delete food scan');
+      }
+    } catch (err) {
+      console.error('Error deleting food scan:', err);
+      setError('Failed to delete food scan');
+    }
+  };
+
   // Workout functions
   const fetchExercises = async (category = null) => {
     try {
