@@ -899,6 +899,11 @@ function App() {
 
     setLoading(true);
     try {
+      // Calculate workout duration in minutes
+      const durationMinutes = workoutStartTime 
+        ? Math.round((Date.now() - workoutStartTime) / 60000)
+        : 0;
+      
       const response = await fetch(`${BACKEND_URL}/api/workouts/sessions`, {
         method: 'POST',
         headers: {
@@ -908,20 +913,38 @@ function App() {
         body: JSON.stringify({
           exercise_id: selectedExercise.exercise_id,
           sets: currentWorkoutSets,
-          notes: workoutNotes
+          notes: workoutNotes,
+          duration_minutes: durationMinutes
         })
       });
       
       if (response.ok) {
         const data = await response.json();
-        setSuccess('Workout saved successfully!');
+        
+        // Show auto-track notification
+        if (data.auto_tracked && durationMinutes > 0) {
+          showToast(`✓ Workout saved! ${durationMinutes} min added to active time`);
+        } else {
+          setSuccess('Workout saved successfully!');
+          setTimeout(() => setSuccess(''), 3000);
+        }
+        
         setCurrentWorkoutSets([]);
         setWorkoutNotes('');
+        
+        // Reset workout timer
+        setWorkoutStartTime(null);
+        setWorkoutDuration(0);
+        if (workoutTimerIntervalRef.current) {
+          clearInterval(workoutTimerIntervalRef.current);
+          workoutTimerIntervalRef.current = null;
+        }
+        
         // Refresh data
         await fetchExerciseHistory(selectedExercise.exercise_id);
         await fetchExerciseStats(selectedExercise.exercise_id);
         await fetchWorkoutDashboardStats();
-        setTimeout(() => setSuccess(''), 3000);
+        await fetchDailyStats(); // Refresh daily stats to show updated active minutes
       } else {
         const error = await response.json();
         setError(error.detail || 'Failed to save workout');
