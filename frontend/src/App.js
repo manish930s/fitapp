@@ -132,6 +132,7 @@ function App() {
   useEffect(() => {
     if (currentPage === 'home' && token) {
       fetchDashboardData();
+      fetchTodayFood();
     }
     if ((currentPage === 'home' || currentPage === 'chatbot') && token) {
       fetchChatHistory();
