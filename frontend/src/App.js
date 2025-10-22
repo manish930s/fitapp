@@ -1561,13 +1561,156 @@ function App() {
         </div>
       </div>
 
+      {/* Enhanced Calorie Tracking */}
       {dailyCalories && (
         <div className="calorie-info">
-          <h3>Daily Calorie Target</h3>
-          <p className="calorie-target">{Math.round(dailyCalories.daily_target)} kcal</p>
-          <p className="calorie-detail">BMR: {Math.round(dailyCalories.bmr)} | TDEE: {Math.round(dailyCalories.tdee)}</p>
+          <h3>Calorie Tracking</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginTop: '16px' }}>
+            <div style={{ textAlign: 'center', padding: '12px', background: '#0a0a0a', borderRadius: '12px' }}>
+              <p style={{ fontSize: '14px', color: '#888', marginBottom: '4px' }}>Consumed</p>
+              <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#22c55e' }}>{dailyStats?.calories_consumed || 0}</p>
+              <p style={{ fontSize: '12px', color: '#888' }}>kcal</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '12px', background: '#0a0a0a', borderRadius: '12px' }}>
+              <p style={{ fontSize: '14px', color: '#888', marginBottom: '4px' }}>Burned</p>
+              <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#f97316' }}>{dailyStats?.calories_burned || 0}</p>
+              <p style={{ fontSize: '12px', color: '#888' }}>kcal</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '12px', background: '#0a0a0a', borderRadius: '12px', border: '2px solid #22c55e' }}>
+              <p style={{ fontSize: '14px', color: '#888', marginBottom: '4px' }}>Net</p>
+              <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#fff' }}>
+                {(dailyStats?.calories_consumed || 0) - (dailyStats?.calories_burned || 0)}
+              </p>
+              <p style={{ fontSize: '12px', color: '#888' }}>kcal</p>
+            </div>
+          </div>
+          <p className="calorie-target" style={{ marginTop: '16px' }}>
+            Target: {Math.round(dailyCalories.daily_target)} kcal | BMR: {Math.round(dailyCalories.bmr)}
+          </p>
         </div>
       )}
+      
+      {/* Quick Add Actions for Steps and Water */}
+      <div style={{ padding: '20px' }}>
+        <h3 style={{ marginBottom: '16px', fontSize: '18px' }}>Quick Actions</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+          {/* Steps Quick Add */}
+          <div style={{ background: '#0a0a0a', padding: '16px', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <span style={{ fontSize: '24px' }}>🚶</span>
+              <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{dailyStats?.steps || 0}</span>
+            </div>
+            <p style={{ fontSize: '14px', color: '#888', marginBottom: '12px' }}>Steps</p>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+              <button 
+                onClick={() => incrementSteps(500)}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  background: '#22c55e',
+                  color: '#000',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                +500
+              </button>
+              <button 
+                onClick={() => incrementSteps(1000)}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  background: '#22c55e',
+                  color: '#000',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                +1000
+              </button>
+            </div>
+            <button 
+              onClick={() => setShowStepsModal(true)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                background: 'transparent',
+                color: '#22c55e',
+                border: '1px solid #22c55e',
+                borderRadius: '8px',
+                fontSize: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              Custom
+            </button>
+          </div>
+          
+          {/* Water Quick Add */}
+          <div style={{ background: '#0a0a0a', padding: '16px', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <span style={{ fontSize: '24px' }}>💧</span>
+              <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{dailyStats?.water_intake || 0}ml</span>
+            </div>
+            <p style={{ fontSize: '14px', color: '#888', marginBottom: '12px' }}>Water</p>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+              <button 
+                onClick={() => incrementWater(250)}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  background: '#3b82f6',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                +250ml
+              </button>
+              <button 
+                onClick={() => incrementWater(500)}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  background: '#3b82f6',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                +500ml
+              </button>
+            </div>
+            <button 
+              onClick={() => setShowWaterModal(true)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                background: 'transparent',
+                color: '#3b82f6',
+                border: '1px solid #3b82f6',
+                borderRadius: '8px',
+                fontSize: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              Custom
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Floating Chatbot Button */}
       <button 
