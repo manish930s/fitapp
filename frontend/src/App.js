@@ -1384,6 +1384,83 @@ function App() {
     return Math.min(progress, 100); // Cap at 100%
   };
 
+  // Toast notification helper
+  const showToast = (message) => {
+    setToastMessage(message);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // Quick increment functions for steps and water
+  const incrementSteps = async (amount) => {
+    try {
+      const formData = new FormData();
+      formData.append('field', 'steps');
+      formData.append('amount', amount);
+      
+      const response = await fetch(`${BACKEND_URL}/api/stats/daily/increment`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        await fetchDailyStats();
+        showToast(`✓ Added ${amount} steps`);
+      }
+    } catch (error) {
+      console.error('Error incrementing steps:', error);
+    }
+  };
+  
+  const incrementWater = async (amount) => {
+    try {
+      const formData = new FormData();
+      formData.append('field', 'water_intake');
+      formData.append('amount', amount);
+      
+      const response = await fetch(`${BACKEND_URL}/api/stats/daily/increment`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        await fetchDailyStats();
+        showToast(`✓ Added ${amount}ml water`);
+      }
+    } catch (error) {
+      console.error('Error incrementing water:', error);
+    }
+  };
+  
+  // Manual input handlers for steps and water
+  const handleManualStepsSubmit = async () => {
+    const amount = parseInt(manualStepsInput);
+    if (amount > 0) {
+      await incrementSteps(amount);
+      setShowStepsModal(false);
+      setManualStepsInput('');
+    }
+  };
+  
+  const handleManualWaterSubmit = async () => {
+    const amount = parseInt(manualWaterInput);
+    if (amount > 0) {
+      await incrementWater(amount);
+      setShowWaterModal(false);
+      setManualWaterInput('');
+    }
+  };
+
+
   // Render Home/Dashboard Page
   const renderHome = () => {
     // Calculate dynamic progress values
