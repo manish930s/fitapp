@@ -532,6 +532,20 @@ frontend:
         agent: "main"
         comment: "CRITICAL ISSUE IDENTIFIED & FIXED: Root cause was Emergent LLM Key budget exceeded (cost: $0.41, max: $0.40) combined with stopped services. Issues found: 1) Backend and frontend services were stopped, 2) Missing craco dependency for frontend build, 3) Old Emergent LLM Key (sk-emergent-08711724d0c7c696cD) exceeded budget limit. Fixes applied: 1) Installed @craco/craco package for frontend, 2) Updated Emergent LLM Key to new key: sk-emergent-f94B9F4150dDe13D4C in backend/.env, 3) Restarted both backend and frontend services. Verification testing: ✅ Chatbot API tested - returning comprehensive AI responses (1500+ chars with workout plans), ✅ AI Meal Plan Generation tested - successfully generated 3-day vegetarian meal plan with complete nutritional data (plan_id: bbb55aaa-3803-484a-9be0-6fdfd5b239b9). Both features fully operational with real OpenAI GPT-4o responses."
 
+  
+  - task: "Auto-tracking from App Activities"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py, /app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented comprehensive auto-tracking features per user requirements. BACKEND CHANGES: 1) Updated DailyStats model to include calories_consumed field (separate from calories_burned), 2) Modified POST /api/food/scan to automatically increment calories_consumed in daily stats after food scan, 3) Added duration_minutes field to WorkoutSessionCreate model, 4) Modified POST /api/workouts/sessions to automatically add duration to active_minutes in daily stats, 5) Updated GET /api/stats/daily to return both calories_consumed and calories_burned, 6) Added new PATCH /api/stats/daily/increment endpoint for quick updates of steps and water_intake, 7) Auto-tracking returns auto_tracked flag to trigger UI notifications. FRONTEND CHANGES: 1) Added workout session timer that automatically tracks time when user opens workout detail page, 2) Updated dashboard to show three calorie metrics: Consumed (green), Burned (orange), Net (white) with daily target reference, 3) Added Quick Actions section with buttons for steps (+500/+1000/custom) and water (+250ml/+500ml/custom), 4) Added custom input modals for manual entry of steps and water, 5) Implemented toast notification system that shows when auto-tracking occurs ('✓ Food scanned! 300 cal added', '✓ Workout saved! 25 min added to active time'), 6) Food scanner shows auto-track notification with food name and calories, 7) Workout timer displays duration in MM:SS format with message 'Time tracking automatically - will count as active minutes', 8) Updated saveWorkoutSession to include duration_minutes and show toast on success, 9) Refresh daily stats after food scan and workout save to update UI immediately. Backend and frontend both restarted successfully. Ready for comprehensive testing of: 1) Food scan auto-updates calories_consumed, 2) Workout session auto-updates active_minutes based on duration, 3) Quick-add buttons for steps (+500, +1000) and water (+250ml, +500ml), 4) Custom input modals for steps and water, 5) Toast notifications appear and disappear, 6) Dashboard shows consumed/burned/net calories correctly, 7) Workout timer counts during session and resets after save."
+
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
