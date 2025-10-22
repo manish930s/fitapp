@@ -1367,8 +1367,24 @@ function App() {
     </div>
   );
 
+  // Helper function to calculate progress percentage
+  const calculateProgress = (current, target) => {
+    if (!current || !target || target === 0) return 0;
+    const progress = Math.round((current / target) * 100);
+    return Math.min(progress, 100); // Cap at 100%
+  };
+
   // Render Home/Dashboard Page
-  const renderHome = () => (
+  const renderHome = () => {
+    // Calculate dynamic progress values
+    const STEPS_GOAL = 10000;
+    const ACTIVE_MINUTES_GOAL = 60;
+    
+    const stepsProgress = calculateProgress(dailyStats?.steps || 0, STEPS_GOAL);
+    const caloriesProgress = calculateProgress(todayFood?.total_calories || 0, dailyCalories?.daily_target || 2000);
+    const activeProgress = calculateProgress(dailyStats?.active_minutes || 0, ACTIVE_MINUTES_GOAL);
+    
+    return (
     <div className="dashboard-container">
       <div className="dashboard-header">
         <div className="user-greeting">
@@ -1386,15 +1402,15 @@ function App() {
 
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-ring" style={{'--progress': '68'}}>
-            <span className="stat-value">{dailyStats?.steps || 8500}</span>
+          <div className="stat-ring" style={{'--progress': stepsProgress}}>
+            <span className="stat-value">{dailyStats?.steps || 0}</span>
           </div>
           <p className="stat-label">Steps</p>
         </div>
         
         <div className="stat-card">
-          <div className="stat-ring" style={{'--progress': '45'}}>
-            <span className="stat-value">{todayFood?.total_calories || 1200}</span>
+          <div className="stat-ring" style={{'--progress': caloriesProgress}}>
+            <span className="stat-value">{todayFood?.total_calories || 0}</span>
           </div>
           <p className="stat-label">Calories</p>
         </div>
@@ -1402,14 +1418,14 @@ function App() {
         <div className="stat-card">
           <div className="stat-icon">⚡</div>
           <div className="stat-info">
-            <p className="stat-value">{streak || 12} days</p>
+            <p className="stat-value">{streak || 0} days</p>
             <p className="stat-label">Streak</p>
           </div>
         </div>
         
         <div className="stat-card">
-          <div className="stat-ring" style={{'--progress': '75'}}>
-            <span className="stat-value">{dailyStats?.active_minutes || 45}m</span>
+          <div className="stat-ring" style={{'--progress': activeProgress}}>
+            <span className="stat-value">{dailyStats?.active_minutes || 0}m</span>
           </div>
           <p className="stat-label">Active</p>
         </div>
