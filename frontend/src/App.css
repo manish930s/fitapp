@@ -772,9 +772,37 @@ body {
   color: var(--text-muted);
 }
 
+.scan-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
 .scan-time {
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+.delete-scan-btn {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  color: #ff3b30;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-scan-btn:hover {
+  background: rgba(255, 59, 48, 0.2);
+  border-color: #ff3b30;
+  transform: scale(1.05);
+}
+
+.delete-scan-btn:active {
+  transform: scale(0.95);
 }
 
 /* Workout */
