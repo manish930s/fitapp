@@ -1487,6 +1487,58 @@ async def get_daily_stats(current_user: dict = Depends(get_current_user)):
         "sleep_hours": stats.get("sleep_hours", 0)
     }
 
+
+@app.patch("/api/stats/daily/increment")
+async def increment_daily_stats(
+    field: str = Form(...),
+    amount: int = Form(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Increment specific daily stat fields (steps, water_intake)"""
+    today = datetime.utcnow().date().isoformat()
+    
+    # Validate field
+    allowed_fields = ["steps", "water_intake"]
+    if field not in allowed_fields:
+        raise HTTPException(status_code=400, detail=f"Field must be one of: {allowed_fields}")
+    
+    # Get or create today's stats
+    stats = user_stats_collection.find_one({
+        "user_id": current_user["user_id"],
+        "date": today
+    })
+    
+    if not stats:
+        # Create new stats entry
+        stats_data = {
+            "user_id": current_user["user_id"],
+            "date": today,
+            "steps": 0,
+            "calories_burned": 0,
+            "calories_consumed": 0,
+            "active_minutes": 0,
+            "water_intake": 0,
+            "sleep_hours": 0,
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        stats_data[field] = amount
+        user_stats_collection.insert_one(stats_data)
+        new_value = amount
+    else:
+        # Increment existing value
+        current_value = stats.get(field, 0)
+        new_value = current_value + amount
+        user_stats_collection.update_one(
+            {"user_id": current_user["user_id"], "date": today},
+            {"$set": {field: new_value, "updated_at": datetime.utcnow().isoformat()}}
+        )
+    
+    return {
+        "message": f"{field} updated successfully",
+        "field": field,
+        "new_value": new_value
+    }
+
 @app.get("/api/stats/streak")
 async def get_streak(current_user: dict = Depends(get_current_user)):
     # Get user's activity history
