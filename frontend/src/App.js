@@ -988,6 +988,32 @@ function App() {
     };
   }, [restTimerActive, restTimer]);
 
+  // Workout timer - start when opening workout detail page
+  useEffect(() => {
+    if (showWorkoutDetail && selectedExercise && !workoutStartTime) {
+      // Start workout timer
+      setWorkoutStartTime(Date.now());
+      
+      // Update duration every second
+      workoutTimerIntervalRef.current = setInterval(() => {
+        setWorkoutDuration(prev => prev + 1);
+      }, 1000);
+    } else if (!showWorkoutDetail && workoutTimerIntervalRef.current) {
+      // Stop timer if leaving workout detail page
+      clearInterval(workoutTimerIntervalRef.current);
+      workoutTimerIntervalRef.current = null;
+      setWorkoutStartTime(null);
+      setWorkoutDuration(0);
+    }
+
+    return () => {
+      if (workoutTimerIntervalRef.current) {
+        clearInterval(workoutTimerIntervalRef.current);
+      }
+    };
+  }, [showWorkoutDetail, selectedExercise]);
+
+
   const startVoiceInput = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       setError('Voice input is not supported in your browser');
