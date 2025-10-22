@@ -106,6 +106,16 @@ function App() {
   const [progressTimePeriod, setProgressTimePeriod] = useState('all'); // 1month, 3months, 6months, all
   const restTimerIntervalRef = useRef(null);
   
+  // Auto-tracking state
+  const [workoutStartTime, setWorkoutStartTime] = useState(null);
+  const [workoutDuration, setWorkoutDuration] = useState(0);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [showStepsModal, setShowStepsModal] = useState(false);
+  const [showWaterModal, setShowWaterModal] = useState(false);
+  const [manualStepsInput, setManualStepsInput] = useState('');
+  const [manualWaterInput, setManualWaterInput] = useState('');
+  const workoutTimerIntervalRef = useRef(null);
+  
   // Camera refs
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
