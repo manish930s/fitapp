@@ -2245,6 +2245,26 @@ function App() {
             <div className="workout-section">
               <h3>📝 Track Your Session</h3>
               
+              {/* Workout Duration Timer */}
+              {workoutStartTime && (
+                <div style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1px solid #22c55e',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  marginBottom: '15px',
+                  fontSize: '14px',
+                  color: '#22c55e',
+                  textAlign: 'center'
+                }}>
+                  <strong>⏱️ Workout Duration:</strong> {Math.floor(workoutDuration / 60)}:{(workoutDuration % 60).toString().padStart(2, '0')}
+                  <br />
+                  <small style={{color: '#888'}}>
+                    Time tracking automatically - will count as active minutes
+                  </small>
+                </div>
+              )}
+              
               {/* Progress indicator from last session */}
               {selectedExercise.last_session && selectedExercise.last_session.max_weight > 0 && (
                 <div style={{
