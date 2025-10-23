@@ -1603,10 +1603,8 @@ async def get_goals(current_user: dict = Depends(get_current_user)):
 
 @app.put("/api/goals/{goal_id}")
 async def update_goal(goal_id: str, goal: Goal, current_user: dict = Depends(get_current_user)):
-    result = supabase.table('goals').update({'current_progress': goal_data.current_progress}).eq('goal_id', goal_id).eq('user_id', current_user['user_id']).execute()
-        }}
-    )
-    if result.modified_count == 0:
+    result = supabase.table('goals').update({'current_progress': goal.current_progress}).eq('goal_id', goal_id).eq('user_id', current_user['user_id']).execute()
+    if not result.data:
         raise HTTPException(status_code=404, detail="Goal not found")
     return {"message": "Goal updated successfully"}
 
