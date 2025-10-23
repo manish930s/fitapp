@@ -119,6 +119,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ TESTED: Both registration and login endpoints working correctly. JWT tokens generated successfully. Password hashing with bcrypt verified. User creation and authentication flow complete."
+      - working: true
+        agent: "testing"
+        comment: "🎉 COMPREHENSIVE SIGNUP/REGISTRATION TESTING COMPLETE: All test scenarios passed (100% success rate - 6/6 tests). Test Results with signuptest@fitflow.com credentials: ✅ POST /api/auth/register: Successfully creates user with all required fields (name, email, age=25, gender=male, height=175cm, weight=70kg, goal_weight=65kg, activity_level=moderate), returns proper response structure with 'Registration successful!' message, JWT token, complete user object, and accurate daily_calories calculation (BMR, TDEE, daily_target=2094.31), ✅ IMMEDIATE LOGIN: User can login immediately after registration using same credentials, returns valid JWT token and correct user data, ✅ JWT TOKEN VALIDITY: Token works for authenticated requests (verified with /api/user/profile endpoint), ✅ ERROR HANDLING: Duplicate email registration correctly returns 400 'Email already registered' error, invalid registration data properly rejected with 422 status, ✅ DATA INTEGRITY: All user profile data matches input exactly, calorie calculations are reasonable and accurate. Complete signup flow works end-to-end without any network errors. Registration and authentication system is production-ready."
   
   - task: "User Profile Management"
     implemented: true
