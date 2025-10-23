@@ -1182,8 +1182,9 @@ def initialize_exercises():
     
     # Insert exercises if they don't exist
     for exercise in exercises:
-        if not exercises_collection.find_one({"exercise_id": exercise["exercise_id"]}):
-            exercises_collection.insert_one(exercise)
+        existing = supabase.table('exercises').select('exercise_id').eq('exercise_id', exercise["exercise_id"]).execute()
+        if not existing.data or len(existing.data) == 0:
+            supabase.table('exercises').insert(exercise).execute()
     
     print(f"Initialized {len(exercises)} exercises in database")
 
