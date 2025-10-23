@@ -1,170 +1,170 @@
 {
   "Health Check": {
-    "success": true,
-    "message": "Service is healthy: FitFlow API",
+    "success": false,
+    "message": "Connection error: HTTPSConnectionPool(host='mongo-migrate-1.preview.emergentagent.com', port=443): Read timed out. (read timeout=10)",
     "details": null,
-    "timestamp": "2025-10-20T08:48:36.757847"
+    "timestamp": "2025-10-23T06:25:13.182897"
   },
   "User Registration": {
-    "success": true,
-    "message": "User registered successfully. Daily calories: {'bmr': 1648.75, 'tdee': 2555.56, 'daily_target': 2055.56}",
+    "success": false,
+    "message": "Error: HTTPSConnectionPool(host='mongo-migrate-1.preview.emergentagent.com', port=443): Read timed out. (read timeout=10)",
     "details": null,
-    "timestamp": "2025-10-20T08:48:37.525026"
+    "timestamp": "2025-10-23T06:25:23.739657"
   },
   "User Login": {
-    "success": true,
-    "message": "Login successful, token received",
+    "success": false,
+    "message": "Error: HTTPSConnectionPool(host='mongo-migrate-1.preview.emergentagent.com', port=443): Read timed out. (read timeout=10)",
     "details": null,
-    "timestamp": "2025-10-20T08:48:38.297617"
+    "timestamp": "2025-10-23T06:25:34.294715"
   },
   "Get User Profile": {
-    "success": true,
-    "message": "Profile retrieved. Daily target: 2055.56 calories",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:38.842763"
+    "timestamp": "2025-10-23T06:25:34.794858"
   },
   "Update User Profile": {
-    "success": true,
-    "message": "Profile updated successfully",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:39.390359"
+    "timestamp": "2025-10-23T06:25:35.294986"
   },
   "AI Food Scan": {
-    "success": true,
-    "message": "Food analyzed: Food Item, Calories: 100.0, Portion: 1 serving (AI integration working)",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:41.330525"
+    "timestamp": "2025-10-23T06:25:35.795139"
   },
   "Food History": {
-    "success": true,
-    "message": "Retrieved 1 food scan records",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:41.889442"
+    "timestamp": "2025-10-23T06:25:36.295279"
   },
   "Today Food Summary": {
-    "success": true,
-    "message": "Today's totals - Calories: 100.0, Meals: 1",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:42.426164"
+    "timestamp": "2025-10-23T06:25:36.795426"
   },
   "Daily Stats": {
-    "success": true,
-    "message": "Stats updated and retrieved successfully",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:43.024928"
+    "timestamp": "2025-10-23T06:25:37.295564"
   },
   "Streak Calculation": {
-    "success": true,
-    "message": "Current streak: 1 days",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:43.564735"
+    "timestamp": "2025-10-23T06:25:37.795708"
   },
   "Goals Management": {
-    "success": true,
-    "message": "Goal created, retrieved, and updated successfully. Goal ID: 3e579a7b-5ed7-44a2-8863-7f8dea1e5971",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:44.201395"
+    "timestamp": "2025-10-23T06:25:38.295859"
   },
   "Measurements Tracking": {
-    "success": true,
-    "message": "Measurement added, latest retrieved, and history retrieved successfully. History count: 1",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:48:44.839226"
+    "timestamp": "2025-10-23T06:25:38.796006"
   },
   "AI Fitness Coach": {
-    "success": true,
-    "message": "AI coach responded successfully. Chat history: 2 messages. Sample response: To achieve your weight loss goal efficiently, it\u2019s essential to balance cardio, strength training, a...",
-    "details": null,
-    "timestamp": "2025-10-20T08:48:53.474430"
-  },
-  "AI Meal Plan Generation - 14 days vegan": {
     "success": false,
-    "message": "Invalid response. Plan ID: 95ea4970-e66a-499b-bed5-3a55e2ffef12, Days: 2",
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:49:52.439704"
+    "timestamp": "2025-10-23T06:25:39.296159"
+  },
+  "AI Meal Plan Generation": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-23T06:25:39.796304"
   },
   "Meal Plan List": {
-    "success": true,
-    "message": "Retrieved 3 meal plans with correct summary format",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:49:52.998976"
+    "timestamp": "2025-10-23T06:25:40.296442"
   },
   "Meal Plan Details": {
-    "success": true,
-    "message": "Retrieved complete meal plan details with 7 days and accurate totals",
+    "success": false,
+    "message": "No auth token or meal plans available",
     "details": null,
-    "timestamp": "2025-10-20T08:49:53.539774"
+    "timestamp": "2025-10-23T06:25:40.796586"
   },
   "Meal Plan Delete": {
-    "success": true,
-    "message": "Successfully deleted meal plan 232214e6... and verified removal",
-    "details": null,
-    "timestamp": "2025-10-20T08:49:54.196220"
-  },
-  "Meal Plan Error Cases - Invalid Duration": {
     "success": false,
-    "message": "API accepted invalid duration of 0",
+    "message": "No auth token or meal plans available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:04.583320"
+    "timestamp": "2025-10-23T06:25:41.296726"
+  },
+  "Meal Plan Error Cases": {
+    "success": false,
+    "message": "No auth token available",
+    "details": null,
+    "timestamp": "2025-10-23T06:25:41.796877"
   },
   "Workout Exercises List": {
-    "success": true,
-    "message": "Retrieved 6 exercises with category filtering working correctly",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:05.271566"
+    "timestamp": "2025-10-23T06:25:42.297022"
   },
   "Workout Exercise Detail": {
-    "success": true,
-    "message": "Successfully retrieved details for 3 exercises with complete information",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:05.921049"
+    "timestamp": "2025-10-23T06:25:42.797162"
   },
   "Workout Session Create": {
-    "success": true,
-    "message": "Successfully created workout sessions with correct volume calculation (1640)",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:06.558919"
+    "timestamp": "2025-10-23T06:25:43.297318"
   },
   "Workout Sessions List": {
-    "success": true,
-    "message": "Retrieved 2 total sessions, 1 bench-press sessions",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:07.134072"
+    "timestamp": "2025-10-23T06:25:43.797469"
   },
   "Workout Session Detail": {
-    "success": true,
-    "message": "Retrieved complete session details with 3 sets and accurate calculations",
+    "success": false,
+    "message": "No auth token or session IDs available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:07.707064"
+    "timestamp": "2025-10-23T06:25:44.297630"
   },
   "Workout Exercise History": {
-    "success": true,
-    "message": "Retrieved 1 history entries with correct max weight (80.0)",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:08.278559"
+    "timestamp": "2025-10-23T06:25:44.797740"
   },
   "Workout Exercise Stats": {
-    "success": true,
-    "message": "Stats calculated correctly: PB=80.0kg, 1RM=96.0kg, Sessions=1, Volume=1640.0",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:08.852128"
+    "timestamp": "2025-10-23T06:25:45.297885"
   },
   "Workout Dashboard Stats": {
-    "success": true,
-    "message": "Dashboard stats: 2 workouts, 4900.0kg total volume, favorite: Bench Press",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:09.388976"
+    "timestamp": "2025-10-23T06:25:45.798028"
   },
   "Workout Session Delete": {
-    "success": true,
-    "message": "Successfully deleted session e752c2d8... and verified removal",
+    "success": false,
+    "message": "No auth token or session IDs available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:10.174919"
+    "timestamp": "2025-10-23T06:25:46.298175"
   },
   "User Profile Weight Unit": {
-    "success": true,
-    "message": "Weight unit field working correctly: default='kg', updated to 'lbs', reverted to 'kg'",
+    "success": false,
+    "message": "No auth token available",
     "details": null,
-    "timestamp": "2025-10-20T08:50:10.888284"
+    "timestamp": "2025-10-23T06:25:46.798321"
   }
 }
