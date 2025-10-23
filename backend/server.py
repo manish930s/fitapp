@@ -173,10 +173,10 @@ def decode_jwt_token(token: str) -> dict:
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
     payload = decode_jwt_token(token)
-    user = users_collection.find_one({"user_id": payload["user_id"]})
-    if not user:
+    result = supabase.table('users').select('*').eq('user_id', payload["user_id"]).execute()
+    if not result.data or len(result.data) == 0:
         raise HTTPException(status_code=401, detail="User not found")
-    return user
+    return result.data[0]
 
 def calculate_daily_calories(weight: float, height: float, age: int, gender: str, activity_level: str, goal_weight: float = None) -> dict:
     """
