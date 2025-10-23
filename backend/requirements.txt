@@ -89,6 +89,17 @@ markupsafe
 httpcore
 jiter
 supabase==2.9.1
+gotrue
+postgrest
+realtime
+storage3
+supafunc
+websockets
+deprecation
+h2
+hpack
+hyperframe
+strenum
 fastapi-mail
 itsdangerous
 pydantic-settings
