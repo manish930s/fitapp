@@ -4,14 +4,18 @@ from jinja2 import Template
 import base64
 import os
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 class EmailService:
     def __init__(self):
         # Get SMTP configuration from environment variables
         mail_server = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
         mail_port = int(os.getenv('MAIL_PORT', '587'))
-        mail_username = os.getenv('MAIL_USERNAME', '')
-        mail_password = os.getenv('MAIL_PASSWORD', '')
+        mail_username = os.getenv('MAIL_USERNAME', 'noreply@fitsani.com')
+        mail_password = os.getenv('MAIL_PASSWORD', 'defaultpassword')
         mail_from = os.getenv('MAIL_FROM', mail_username)
         
         # Configure SMTP connection
