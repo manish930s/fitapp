@@ -1305,7 +1305,7 @@ async def update_profile(profile_data: UserProfile, current_user: dict = Depends
     update_data = {k: v for k, v in profile_data.dict().items() if v is not None}
     
     if update_data:
-        supabase.table(\'users\').update(update_data).eq(\'user_id\', current_user["user_id"]).execute()
+        supabase.table('users').update(update_data).eq('user_id', current_user["user_id"]).execute()
     
     return {"message": "Profile updated successfully"}
 
