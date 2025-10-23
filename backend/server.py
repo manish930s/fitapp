@@ -1460,7 +1460,7 @@ async def delete_food_scan(scan_id: str, current_user: dict = Depends(get_curren
     """
     result = supabase.table('food_scans').delete().eq('scan_id', scan_id).eq('user_id', current_user["user_id"]).execute()
     
-    if result.deleted_count == 0:
+    if not result.data:
         raise HTTPException(status_code=404, detail="Food scan not found")
     
     return {"message": "Food scan deleted successfully"}
