@@ -1615,6 +1615,101 @@ function App() {
     }
   };
 
+  // Render Email Verification Page
+  const renderVerifyEmail = () => (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-icon">📧</div>
+        <h1>Check Your Email</h1>
+        <p style={{color: '#b0b0b0', marginBottom: '30px', lineHeight: '1.6'}}>
+          We've sent a verification link to <strong style={{color: '#2dffc4'}}>{verificationEmail}</strong>
+        </p>
+        
+        <div style={{
+          background: 'rgba(45, 255, 196, 0.1)', 
+          border: '1px solid #2dffc4',
+          borderRadius: '12px',
+          padding: '20px',
+          marginBottom: '30px',
+          textAlign: 'left'
+        }}>
+          <h3 style={{color: '#2dffc4', marginBottom: '15px', fontSize: '18px'}}>📋 Next Steps:</h3>
+          <ol style={{color: '#b0b0b0', paddingLeft: '20px', lineHeight: '1.8'}}>
+            <li>Open your email inbox</li>
+            <li>Look for an email from <strong>Fitsani</strong></li>
+            <li>Click the verification link in the email</li>
+            <li>You'll be redirected to login</li>
+          </ol>
+        </div>
+
+        <div style={{
+          background: 'rgba(255, 193, 7, 0.1)', 
+          border: '1px solid #ffc107',
+          borderRadius: '8px',
+          padding: '15px',
+          marginBottom: '20px',
+          fontSize: '14px',
+          color: '#ffdb4d'
+        }}>
+          <strong>⏰ Note:</strong> The verification link expires in 24 hours
+        </div>
+
+        {success && (
+          <div style={{
+            background: 'rgba(45, 255, 196, 0.2)',
+            color: '#2dffc4',
+            padding: '12px',
+            borderRadius: '8px',
+            marginBottom: '15px',
+            fontSize: '14px'
+          }}>
+            ✓ {success}
+          </div>
+        )}
+
+        {error && (
+          <div style={{
+            background: 'rgba(255, 87, 87, 0.2)',
+            color: '#ff5757',
+            padding: '12px',
+            borderRadius: '8px',
+            marginBottom: '15px',
+            fontSize: '14px'
+          }}>
+            {error}
+          </div>
+        )}
+
+        <div style={{marginBottom: '20px'}}>
+          <p style={{color: '#808080', fontSize: '14px', marginBottom: '10px'}}>
+            Didn't receive the email?
+          </p>
+          <button 
+            className="btn-secondary"
+            onClick={handleResendVerification}
+            disabled={resendingEmail}
+            style={{width: '100%'}}
+          >
+            {resendingEmail ? '⏳ Sending...' : '📤 Resend Verification Email'}
+          </button>
+        </div>
+
+        <div style={{borderTop: '1px solid #2a2a2a', paddingTop: '20px'}}>
+          <p style={{color: '#808080', fontSize: '14px', marginBottom: '10px'}}>
+            Already verified?
+          </p>
+          <button 
+            className="btn-primary"
+            onClick={() => setCurrentPage('login')}
+            style={{width: '100%'}}
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
 
   // Render Home/Dashboard Page
   const renderHome = () => {
