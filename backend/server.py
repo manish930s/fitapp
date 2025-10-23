@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime, timedelta
-from supabase import create_client, Client
+from pymongo import MongoClient
 import os
 import jwt
 import bcrypt
@@ -28,10 +28,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Supabase Connection
-SUPABASE_URL = os.environ.get('SUPABASE_URL')
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# MongoDB Connection
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+client = MongoClient(MONGO_URL)
+db = client['fitflow_db']
+users_collection = db['users']
+food_scans_collection = db['food_scans']
+user_stats_collection = db['user_stats']
+goals_collection = db['goals']
+measurements_collection = db['measurements']
+chat_history_collection = db['chat_history']
+meal_plans_collection = db['meal_plans']
+exercises_collection = db['exercises']
+workout_sessions_collection = db['workout_sessions']
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
@@ -173,10 +182,10 @@ def decode_jwt_token(token: str) -> dict:
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
     payload = decode_jwt_token(token)
-    result = supabase.table('users').select('*').eq('user_id', payload["user_id"]).execute()
-    if not result.data or len(result.data) == 0:
+    user = users_collection.find_one({"user_id": payload["user_id"]})
+    if not user:
         raise HTTPException(status_code=401, detail="User not found")
-    return result.data[0]
+    return user
 
 def calculate_daily_calories(weight: float, height: float, age: int, gender: str, activity_level: str, goal_weight: float = None) -> dict:
     """
@@ -1182,9 +1191,8 @@ def initialize_exercises():
     
     # Insert exercises if they don't exist
     for exercise in exercises:
-        existing = supabase.table('exercises').select('exercise_id').eq('exercise_id', exercise["exercise_id"]).execute()
-        if not existing.data or len(existing.data) == 0:
-            supabase.table('exercises').insert(exercise).execute()
+        if not exercises_collection.find_one({"exercise_id": exercise["exercise_id"]}):
+            exercises_collection.insert_one(exercise)
     
     print(f"Initialized {len(exercises)} exercises in database")
 
@@ -1199,8 +1207,7 @@ async def health_check():
 @app.post("/api/auth/register")
 async def register(user_data: UserRegister):
     # Check if user already exists
-    existing = supabase.table('users').select('email').eq('email', user_data.email).execute()
-    if existing.data and len(existing.data) > 0:
+    if users_collection.find_one({"email": user_data.email}):
         raise HTTPException(status_code=400, detail="Email already registered")
     
     user_id = str(uuid.uuid4())
@@ -1220,7 +1227,7 @@ async def register(user_data: UserRegister):
         "created_at": datetime.utcnow().isoformat()
     }
     
-    supabase.table('users').insert(user).execute()
+    users_collection.insert_one(user)
     
     # Calculate daily calorie requirements if profile is complete
     daily_calories = None
@@ -1245,13 +1252,9 @@ async def register(user_data: UserRegister):
 
 @app.post("/api/auth/login")
 async def login(credentials: UserLogin):
-    result = supabase.table('users').select('*').eq('email', credentials.email).execute()
+    user = users_collection.find_one({"email": credentials.email})
     
-    if not result.data or len(result.data) == 0:
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    user = result.data[0]
-    if not verify_password(credentials.password, user["password"]):
+    if not user or not verify_password(credentials.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     token = create_jwt_token(user["user_id"], user["email"])
@@ -1296,7 +1299,10 @@ async def update_profile(profile_data: UserProfile, current_user: dict = Depends
     update_data = {k: v for k, v in profile_data.dict().items() if v is not None}
     
     if update_data:
-        supabase.table('users').update(update_data).eq('user_id', current_user["user_id"]).execute()
+        users_collection.update_one(
+            {"user_id": current_user["user_id"]},
+            {"$set": update_data}
+        )
     
     return {"message": "Profile updated successfully"}
 
@@ -1308,8 +1314,7 @@ class ChangePasswordRequest(BaseModel):
 async def change_password(password_data: ChangePasswordRequest, current_user: dict = Depends(get_current_user)):
     """Change user password"""
     # Verify current password
-    result = supabase.table('users').select('*').eq('user_id', current_user["user_id"]).execute()
-    user = result.data[0] if result.data else None
+    user = users_collection.find_one({"user_id": current_user["user_id"]})
     if not user or not bcrypt.checkpw(password_data.current_password.encode('utf-8'), user['password'].encode('utf-8')):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
     
@@ -1317,7 +1322,10 @@ async def change_password(password_data: ChangePasswordRequest, current_user: di
     hashed_password = bcrypt.hashpw(password_data.new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     # Update password
-    supabase.table('users').update({"password": hashed_password}).eq('user_id', current_user["user_id"]).execute()
+    users_collection.update_one(
+        {"user_id": current_user["user_id"]},
+        {"$set": {"password": hashed_password}}
+    )
     
     return {"message": "Password changed successfully"}
 
@@ -1327,12 +1335,12 @@ async def delete_account(current_user: dict = Depends(get_current_user)):
     user_id = current_user["user_id"]
     
     # Delete user data from all collections
-    supabase.table('users').delete().eq('user_id', user_id).execute()
-    supabase.table('food_scans').delete().eq('user_id', user_id).execute()
-    supabase.table('user_stats').delete().eq('user_id', user_id).execute()
-    supabase.table('goals').delete().eq('user_id', user_id).execute()
-    supabase.table('measurements').delete().eq('user_id', user_id).execute()
-    supabase.table('chat_history').delete().eq('user_id', user_id).execute()
+    users_collection.delete_one({"user_id": user_id})
+    food_scans_collection.delete_many({"user_id": user_id})
+    user_stats_collection.delete_many({"user_id": user_id})
+    goals_collection.delete_many({"user_id": user_id})
+    measurements_collection.delete_many({"user_id": user_id})
+    chat_history_collection.delete_many({"user_id": user_id})
     
     return {"message": "Account deleted successfully"}
 
@@ -1367,20 +1375,25 @@ async def scan_food(image: str = Form(...), current_user: dict = Depends(get_cur
             "scanned_at": datetime.utcnow().isoformat()
         }
         
-        supabase.table('food_scans').insert(scan_data).execute()
+        food_scans_collection.insert_one(scan_data)
         
         # AUTO-TRACK: Update daily calories consumed
         today = datetime.utcnow().date().isoformat()
-        stats_result = supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).eq('date', today).execute()
-        stats = stats_result.data[0] if stats_result.data else None
+        stats = user_stats_collection.find_one({
+            "user_id": current_user["user_id"],
+            "date": today
+        })
         
         if stats:
             # Increment calories_consumed
             new_calories = stats.get("calories_consumed", 0) + analysis_result["calories"]
-            supabase.table('user_stats').update({"calories_consumed": new_calories, "updated_at": datetime.utcnow().isoformat()}).eq('user_id', current_user["user_id"]).eq('date', today).execute()
+            user_stats_collection.update_one(
+                {"user_id": current_user["user_id"], "date": today},
+                {"$set": {"calories_consumed": new_calories, "updated_at": datetime.utcnow().isoformat()}}
+            )
         else:
             # Create new stats entry
-            supabase.table('user_stats').insert({
+            user_stats_collection.insert_one({
                 "user_id": current_user["user_id"],
                 "date": today,
                 "steps": 0,
@@ -1408,8 +1421,9 @@ async def scan_food(image: str = Form(...), current_user: dict = Depends(get_cur
 
 @app.get("/api/food/history")
 async def get_food_history(limit: int = 20, current_user: dict = Depends(get_current_user)):
-    scans_result = supabase.table('food_scans').select('*').eq('user_id', current_user["user_id"]).order('scanned_at', desc=True).limit(limit).execute()
-    scans = scans_result.data if scans_result.data else []
+    scans = list(food_scans_collection.find(
+        {"user_id": current_user["user_id"]}
+    ).sort("scanned_at", -1).limit(limit))
     
     # Format the response
     history = []
@@ -1432,7 +1446,7 @@ async def get_food_history(limit: int = 20, current_user: dict = Depends(get_cur
 async def get_today_food(current_user: dict = Depends(get_current_user)):
     today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     
-    scans_result_temp = supabase.table('food_scans').select('*').match({
+    scans = list(food_scans_collection.find({
         "user_id": current_user["user_id"],
         "scanned_at": {"$gte": today_start.isoformat()}
     }).sort("scanned_at", -1))
@@ -1455,8 +1469,12 @@ async def delete_food_scan(scan_id: str, current_user: dict = Depends(get_curren
     """
     Delete a food scan by scan_id
     """
-    result = supabase.table('food_scans').delete().eq('scan_id', scan_id).eq('user_id', current_user["user_id"]).execute()
-    if not result.data or len(result.data) == 0:
+    result = food_scans_collection.delete_one({
+        "scan_id": scan_id,
+        "user_id": current_user["user_id"]
+    })
+    
+    if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Food scan not found")
     
     return {"message": "Food scan deleted successfully"}
@@ -1477,7 +1495,11 @@ async def update_daily_stats(stats: DailyStats, current_user: dict = Depends(get
         "updated_at": datetime.utcnow().isoformat()
     }
     
-    supabase.table('user_stats').upsert(stats_data, on_conflict='user_id,date').execute()
+    user_stats_collection.update_one(
+        {"user_id": current_user["user_id"], "date": today},
+        {"$set": stats_data},
+        upsert=True
+    )
     
     return {"message": "Daily stats updated successfully"}
 
@@ -1485,8 +1507,10 @@ async def update_daily_stats(stats: DailyStats, current_user: dict = Depends(get
 async def get_daily_stats(current_user: dict = Depends(get_current_user)):
     today = datetime.utcnow().date().isoformat()
     
-    stats_result = supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).eq('date', today).execute()
-        stats = stats_result.data[0] if stats_result.data else None
+    stats = user_stats_collection.find_one({
+        "user_id": current_user["user_id"],
+        "date": today
+    })
     
     if not stats:
         return {
@@ -1523,8 +1547,10 @@ async def increment_daily_stats(
         raise HTTPException(status_code=400, detail=f"Field must be one of: {allowed_fields}")
     
     # Get or create today's stats
-    stats_result = supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).eq('date', today).execute()
-        stats = stats_result.data[0] if stats_result.data else None
+    stats = user_stats_collection.find_one({
+        "user_id": current_user["user_id"],
+        "date": today
+    })
     
     if not stats:
         # Create new stats entry
@@ -1540,13 +1566,16 @@ async def increment_daily_stats(
             "updated_at": datetime.utcnow().isoformat()
         }
         stats_data[field] = amount
-        supabase.table('user_stats').insert(stats_data).execute()
+        user_stats_collection.insert_one(stats_data)
         new_value = amount
     else:
         # Increment existing value
         current_value = stats.get(field, 0)
         new_value = current_value + amount
-        supabase.table('user_stats').update({field: new_value, "updated_at": datetime.utcnow().isoformat()}).eq('user_id', current_user["user_id"]).eq('date', today).execute()
+        user_stats_collection.update_one(
+            {"user_id": current_user["user_id"], "date": today},
+            {"$set": {field: new_value, "updated_at": datetime.utcnow().isoformat()}}
+        )
     
     return {
         "message": f"{field} updated successfully",
@@ -1557,7 +1586,7 @@ async def increment_daily_stats(
 @app.get("/api/stats/streak")
 async def get_streak(current_user: dict = Depends(get_current_user)):
     # Get user's activity history
-    stats_result_temp2 = supabase.table('user_stats').select('*').match(
+    stats = list(user_stats_collection.find(
         {"user_id": current_user["user_id"]}
     ).sort("date", -1))
     
@@ -1593,12 +1622,12 @@ async def create_goal(goal: Goal, current_user: dict = Depends(get_current_user)
         "created_at": datetime.utcnow().isoformat(),
         "updated_at": datetime.utcnow().isoformat()
     }
-    supabase.table('goals').insert(goal_data).execute()
+    goals_collection.insert_one(goal_data)
     return {"message": "Goal created successfully", "goal_id": goal_id}
 
 @app.get("/api/goals")
 async def get_goals(current_user: dict = Depends(get_current_user)):
-    goals_result_temp = supabase.table('goals').select('*').match(
+    goals = list(goals_collection.find(
         {"user_id": current_user["user_id"]},
         {"_id": 0}
     ))
@@ -1606,7 +1635,7 @@ async def get_goals(current_user: dict = Depends(get_current_user)):
 
 @app.put("/api/goals/{goal_id}")
 async def update_goal(goal_id: str, goal: Goal, current_user: dict = Depends(get_current_user)):
-    result = supabase.table('goals').update(
+    result = goals_collection.update_one(
         {"goal_id": goal_id, "user_id": current_user["user_id"]},
         {"$set": {
             "current_progress": goal.current_progress,
@@ -1630,12 +1659,12 @@ async def add_measurement(measurement: Measurement, current_user: dict = Depends
         "bmi": measurement.bmi,
         "date": datetime.utcnow().isoformat()
     }
-    supabase.table('measurements').insert(measurement_data).execute()
+    measurements_collection.insert_one(measurement_data)
     return {"message": "Measurement added successfully", "measurement_id": measurement_id}
 
 @app.get("/api/measurements/latest")
 async def get_latest_measurement(current_user: dict = Depends(get_current_user)):
-    measurement_result_temp = supabase.table('measurements').select('*').match(
+    measurement = measurements_collection.find_one(
         {"user_id": current_user["user_id"]},
         {"_id": 0},
         sort=[("date", -1)]
@@ -1646,7 +1675,7 @@ async def get_latest_measurement(current_user: dict = Depends(get_current_user))
 
 @app.get("/api/measurements/history")
 async def get_measurements_history(limit: int = 30, current_user: dict = Depends(get_current_user)):
-    measurements_result_temp = supabase.table('measurements').select('*').match(
+    measurements = list(measurements_collection.find(
         {"user_id": current_user["user_id"]},
         {"_id": 0}
     ).sort("date", -1).limit(limit))
@@ -1707,7 +1736,7 @@ async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depend
         assistant_message = await llm_chat.send_message(user_msg)
         
         # Save chat to history
-        supabase.table('chat_history').insert({
+        chat_history_collection.insert_one({
             "chat_id": str(uuid.uuid4()),
             "user_id": user["user_id"],
             "user_message": chat.message,
@@ -1726,7 +1755,7 @@ async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depend
 @app.get("/api/chat/history")
 async def get_chat_history(limit: int = 20, current_user: dict = Depends(get_current_user)):
     """Get chat history"""
-    chats_result_temp = supabase.table('chat_history').select('*').match(
+    chats = list(chat_history_collection.find(
         {"user_id": current_user["user_id"]},
         {"_id": 0}
     ).sort("timestamp", -1).limit(limit))
@@ -1738,8 +1767,7 @@ async def get_chat_history(limit: int = 20, current_user: dict = Depends(get_cur
 async def generate_meal_plan(plan_request: MealPlanGenerate, current_user: dict = Depends(get_current_user)):
     """Generate AI-powered meal plan"""
     try:
-        user_result_temp = supabase.table('users').select('*').eq('user_id', current_user["user_id"]).execute()
-        user = user_result_temp.data[0] if user_result_temp.data else None
+        user = users_collection.find_one({"user_id": current_user["user_id"]}, {"_id": 0})
         
         # Calculate calorie target if not provided
         calorie_target = plan_request.calorie_target
@@ -1856,7 +1884,7 @@ Make sure the total daily calories are close to {calorie_target} kcal. Return ON
             "days": meal_plan_data["days"]
         }
         
-        supabase.table('meal_plans').insert(meal_plan).execute()
+        meal_plans_collection.insert_one(meal_plan)
         
         return {
             "plan_id": plan_id,
@@ -1897,7 +1925,7 @@ async def create_meal_plan(plan: MealPlanCreate, current_user: dict = Depends(ge
             "days": plan.days
         }
         
-        supabase.table('meal_plans').insert(meal_plan).execute()
+        meal_plans_collection.insert_one(meal_plan)
         
         return {
             "plan_id": plan_id,
@@ -1914,7 +1942,7 @@ async def create_meal_plan(plan: MealPlanCreate, current_user: dict = Depends(ge
 async def get_meal_plans(current_user: dict = Depends(get_current_user)):
     """Get all meal plans for user"""
     try:
-        plans_result_temp = supabase.table('meal_plans').select('*').match(
+        plans = list(meal_plans_collection.find(
             {"user_id": current_user["user_id"]},
             {"_id": 0}
         ).sort("created_at", -1))
@@ -1941,7 +1969,7 @@ async def get_meal_plans(current_user: dict = Depends(get_current_user)):
 async def get_meal_plan(plan_id: str, current_user: dict = Depends(get_current_user)):
     """Get specific meal plan with full details"""
     try:
-        plan_result_temp = supabase.table('meal_plans').select('*').match(
+        plan = meal_plans_collection.find_one(
             {"plan_id": plan_id, "user_id": current_user["user_id"]},
             {"_id": 0}
         )
@@ -1960,7 +1988,7 @@ async def get_meal_plan(plan_id: str, current_user: dict = Depends(get_current_u
 async def delete_meal_plan(plan_id: str, current_user: dict = Depends(get_current_user)):
     """Delete a meal plan"""
     try:
-        result = supabase.table('meal_plans').delete().match({
+        result = meal_plans_collection.delete_one({
             "plan_id": plan_id,
             "user_id": current_user["user_id"]
         })
@@ -1991,7 +2019,7 @@ async def update_meal(
             raise HTTPException(status_code=400, detail=f"Invalid meal category. Must be one of: {', '.join(valid_categories)}")
         
         # Find the meal plan
-        plan_result_temp = supabase.table('meal_plans').select('*').match(
+        plan = meal_plans_collection.find_one(
             {"plan_id": plan_id, "user_id": current_user["user_id"]},
             {"_id": 0}
         )
@@ -2030,7 +2058,7 @@ async def update_meal(
             raise HTTPException(status_code=404, detail=f"Day {day_number} not found in meal plan")
         
         # Update the meal plan in database
-        supabase.table('meal_plans').update(
+        meal_plans_collection.update_one(
             {"plan_id": plan_id, "user_id": current_user["user_id"]},
             {"$set": {"days": plan["days"]}}
         )
@@ -2058,8 +2086,7 @@ async def get_exercises(
         if category and category.lower() != 'all':
             query["category"] = {"$regex": f"^{category}$", "$options": "i"}
         
-        exercises_result_temp = supabase.table('exercises').select('*').execute()
-        exercises = [e for e in (exercises_result_temp.data if exercises_result_temp.data else []) if not query or all(e.get(k) == v for k, v in query.items())]
+        exercises = list(exercises_collection.find(query, {"_id": 0}))
         return {"exercises": exercises}
         
     except HTTPException:
@@ -2076,13 +2103,12 @@ async def get_exercise_detail(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        exercise_result_temp = supabase.table('exercises').select('*').eq('exercise_id', exercise_id).execute()
-        exercise = exercise_result_temp.data[0] if exercise_result_temp.data else None
+        exercise = exercises_collection.find_one({"exercise_id": exercise_id}, {"_id": 0})
         if not exercise:
             raise HTTPException(status_code=404, detail="Exercise not found")
         
         # Get user's last workout for this exercise (auto-suggestion feature)
-        last_session_result = supabase.table('workout_sessions').select('*').match(
+        last_session_raw = workout_sessions_collection.find_one(
             {"user_id": current_user["user_id"], "exercise_id": exercise_id},
             {"_id": 0},
             sort=[("created_at", -1)]
@@ -2121,14 +2147,12 @@ async def create_workout_session(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Verify exercise exists
-        exercise_result = supabase.table('exercises').select('*').eq('exercise_id', session_data.exercise_id).execute()
-        exercise = exercise_result.data[0] if exercise_result.data else None
+        exercise = exercises_collection.find_one({"exercise_id": session_data.exercise_id})
         if not exercise:
             raise HTTPException(status_code=404, detail="Exercise not found")
         
         # Get user's weight unit preference
-        result = supabase.table('users').select('*').eq('user_id', current_user["user_id"]).execute()
-    user = result.data[0] if result.data else None
+        user = users_collection.find_one({"user_id": current_user["user_id"]})
         weight_unit = user.get("weight_unit", "kg") if user else "kg"
         
         # Calculate total volume (weight * reps * sets)
@@ -2152,22 +2176,26 @@ async def create_workout_session(
             "completed": True
         }
         
-        supabase.table('workout_sessions').insert(session).execute()
+        workout_sessions_collection.insert_one(session)
         
         # AUTO-TRACK: Update daily active minutes if duration provided
         if duration_minutes > 0:
             today = datetime.utcnow().date().isoformat()
-            stats_result = supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).eq('date', today).execute()
-        stats = stats_result.data[0] if stats_result.data else None
+            stats = user_stats_collection.find_one({
+                "user_id": current_user["user_id"],
+                "date": today
+            })
             
             if stats:
                 # Increment active_minutes
                 new_active_minutes = stats.get("active_minutes", 0) + duration_minutes
-                supabase.table('user_stats').update({"active_minutes": new_active_minutes, "updated_at": datetime.utcnow().isoformat()}}
+                user_stats_collection.update_one(
+                    {"user_id": current_user["user_id"], "date": today},
+                    {"$set": {"active_minutes": new_active_minutes, "updated_at": datetime.utcnow().isoformat()}}
                 )
             else:
                 # Create new stats entry
-                supabase.table('user_stats').insert({
+                user_stats_collection.insert_one({
                     "user_id": current_user["user_id"],
                     "date": today,
                     "steps": 0,
@@ -2207,7 +2235,7 @@ async def get_workout_sessions(
         if exercise_id:
             query["exercise_id"] = exercise_id
         
-        sessions_result_query = supabase.table('workout_sessions').select('*').match(
+        sessions = list(workout_sessions_collection.find(
             query,
             {"_id": 0}
         ).sort("created_at", -1).limit(limit))
@@ -2228,7 +2256,7 @@ async def get_session_detail(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        session_result_query = supabase.table('workout_sessions').select('*').match(
+        session = workout_sessions_collection.find_one(
             {"session_id": session_id, "user_id": current_user["user_id"]},
             {"_id": 0}
         )
@@ -2252,7 +2280,7 @@ async def delete_workout_session(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        result = supabase.table('workout_sessions').delete().match({
+        result = workout_sessions_collection.delete_one({
             "session_id": session_id,
             "user_id": current_user["user_id"]
         })
@@ -2279,7 +2307,7 @@ async def update_workout_session(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Verify session exists and belongs to user
-        existing_session_result_query = supabase.table('workout_sessions').select('*').match({
+        existing_session = workout_sessions_collection.find_one({
             "session_id": session_id,
             "user_id": current_user["user_id"]
         })
@@ -2288,14 +2316,12 @@ async def update_workout_session(
             raise HTTPException(status_code=404, detail="Session not found")
         
         # Verify exercise exists
-        exercise_result = supabase.table('exercises').select('*').eq('exercise_id', session_data.exercise_id).execute()
-        exercise = exercise_result.data[0] if exercise_result.data else None
+        exercise = exercises_collection.find_one({"exercise_id": session_data.exercise_id})
         if not exercise:
             raise HTTPException(status_code=404, detail="Exercise not found")
         
         # Get user's weight unit preference
-        result = supabase.table('users').select('*').eq('user_id', current_user["user_id"]).execute()
-    user = result.data[0] if result.data else None
+        user = users_collection.find_one({"user_id": current_user["user_id"]})
         weight_unit = user.get("weight_unit", "kg") if user else "kg"
         
         # Calculate total volume
@@ -2316,13 +2342,13 @@ async def update_workout_session(
             "updated_at": datetime.utcnow().isoformat()
         }
         
-        supabase.table('workout_sessions').update(
+        workout_sessions_collection.update_one(
             {"session_id": session_id, "user_id": current_user["user_id"]},
             {"$set": update_data}
         )
         
         # Return updated session
-        updated_session_result_query = supabase.table('workout_sessions').select('*').match(
+        updated_session = workout_sessions_collection.find_one(
             {"session_id": session_id},
             {"_id": 0}
         )
@@ -2344,7 +2370,7 @@ async def get_exercise_history(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        sessions_result_query = supabase.table('workout_sessions').select('*').match(
+        sessions = list(workout_sessions_collection.find(
             {"user_id": current_user["user_id"], "exercise_id": exercise_id},
             {"_id": 0}
         ).sort("created_at", -1).limit(limit))
@@ -2385,7 +2411,7 @@ async def get_exercise_stats(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Get all sessions for this exercise
-        sessions_result_query = supabase.table('workout_sessions').select('*').match(
+        sessions = list(workout_sessions_collection.find(
             {"user_id": current_user["user_id"], "exercise_id": exercise_id},
             {"_id": 0}
         ).sort("created_at", -1))
@@ -2467,7 +2493,7 @@ async def get_workout_dashboard_stats(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Get all user's workout sessions
-        all_sessions_result_query = supabase.table('workout_sessions').select('*').match(
+        all_sessions = list(workout_sessions_collection.find(
             {"user_id": current_user["user_id"]},
             {"_id": 0}
         ))
