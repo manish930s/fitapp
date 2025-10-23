@@ -2047,7 +2047,6 @@ async def get_exercise_detail(
         # Get user's last workout for this exercise (auto-suggestion feature)
         last_session_list = get_supabase_list(supabase.table('workout_sessions').select('*').eq('user_id', current_user['user_id']).eq('exercise_id', exercise_id).order('created_at', desc=True).limit(1).execute())
         last_session_raw = last_session_list[0] if last_session_list else None
-        )
         
         # Format last_session for auto-suggestion (simplified structure)
         if last_session_raw:
