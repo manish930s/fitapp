@@ -2124,10 +2124,7 @@ async def create_workout_session(
             if stats:
                 # Increment active_minutes
                 new_active_minutes = stats.get("active_minutes", 0) + duration_minutes
-                user_stats_collection.update_one(
-                    {"user_id": current_user["user_id"], "date": today},
-                    {"$set": {"active_minutes": new_active_minutes, "updated_at": datetime.utcnow().isoformat()}}
-                )
+                supabase.table('user_stats').update({"active_minutes": new_active_minutes, "updated_at": datetime.utcnow().isoformat()}).eq('user_id', current_user["user_id"]).eq('date', today).execute()
             else:
                 # Create new stats entry
                 supabase.table('user_stats').insert({
