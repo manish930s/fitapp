@@ -1408,9 +1408,8 @@ async def scan_food(image: str = Form(...), current_user: dict = Depends(get_cur
 
 @app.get("/api/food/history")
 async def get_food_history(limit: int = 20, current_user: dict = Depends(get_current_user)):
-    scans = list(food_scans_collection.find(
-        {"user_id": current_user["user_id"]}
-    ).sort("scanned_at", -1).limit(limit))
+    scans_result = supabase.table(\'food_scans\').select(\'*\').eq(\'user_id\', current_user["user_id"]).order(\'scanned_at\', desc=True).limit(limit).execute()
+    scans = scans_result.data if scans_result.data else []
     
     # Format the response
     history = []
@@ -1456,12 +1455,8 @@ async def delete_food_scan(scan_id: str, current_user: dict = Depends(get_curren
     """
     Delete a food scan by scan_id
     """
-    result = food_scans_collection.delete_one({
-        "scan_id": scan_id,
-        "user_id": current_user["user_id"]
-    })
-    
-    if result.deleted_count == 0:
+    result = supabase.table(\'food_scans\').delete().eq(\'scan_id\', scan_id).eq(\'user_id\', current_user["user_id"]).execute()
+    if not result.data or len(result.data) == 0:
         raise HTTPException(status_code=404, detail="Food scan not found")
     
     return {"message": "Food scan deleted successfully"}
@@ -1482,11 +1477,7 @@ async def update_daily_stats(stats: DailyStats, current_user: dict = Depends(get
         "updated_at": datetime.utcnow().isoformat()
     }
     
-    user_stats_collection.update_one(
-        {"user_id": current_user["user_id"], "date": today},
-        {"$set": stats_data},
-        upsert=True
-    )
+    supabase.table(\'user_stats\').upsert(stats_data, on_conflict=\'user_id,date\').execute()
     
     return {"message": "Daily stats updated successfully"}
 
@@ -1605,7 +1596,7 @@ async def create_goal(goal: Goal, current_user: dict = Depends(get_current_user)
         "created_at": datetime.utcnow().isoformat(),
         "updated_at": datetime.utcnow().isoformat()
     }
-    goals_collection.insert_one(goal_data)
+    supabase.table(\'goals\').insert(goal_data).execute()
     return {"message": "Goal created successfully", "goal_id": goal_id}
 
 @app.get("/api/goals")
@@ -1642,7 +1633,7 @@ async def add_measurement(measurement: Measurement, current_user: dict = Depends
         "bmi": measurement.bmi,
         "date": datetime.utcnow().isoformat()
     }
-    measurements_collection.insert_one(measurement_data)
+    supabase.table(\'measurements\').insert(measurement_data).execute()
     return {"message": "Measurement added successfully", "measurement_id": measurement_id}
 
 @app.get("/api/measurements/latest")
