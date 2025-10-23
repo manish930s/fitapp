@@ -13,9 +13,9 @@ import os
 
 # Configuration
 BASE_URL = "https://mongo-migrate-1.preview.emergentagent.com/api"
-TEST_USER_EMAIL = "test@fitflow.com"
+TEST_USER_EMAIL = "supabasetest@fitflow.com"
 TEST_USER_PASSWORD = "Test123!"
-TEST_USER_NAME = "Test User"
+TEST_USER_NAME = "Supabase Test User"
 
 # Global variables for test state
 auth_token = None
