@@ -1625,9 +1625,8 @@ async def add_measurement(measurement: Measurement, current_user: dict = Depends
 
 @app.get("/api/measurements/latest")
 async def get_latest_measurement(current_user: dict = Depends(get_current_user)):
-    measurement_list = get_supabase_list(supabase.table('measurements').select('*').eq('user_id', current_user['user_id']).order('measured_at', desc=True).limit(1).execute())
+    measurement_list = get_supabase_list(supabase.table('measurements').select('*').eq('user_id', current_user['user_id']).order('recorded_at', desc=True).limit(1).execute())
     measurement = measurement_list[0] if measurement_list else None
-    )
     if not measurement:
         return {"measurement": None}
     return {"measurement": measurement}
