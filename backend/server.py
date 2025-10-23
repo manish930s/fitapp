@@ -28,19 +28,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# MongoDB Connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-client = MongoClient(MONGO_URL)
-db = client['fitflow_db']
-users_collection = db['users']
-food_scans_collection = db['food_scans']
-user_stats_collection = db['user_stats']
-goals_collection = db['goals']
-measurements_collection = db['measurements']
-chat_history_collection = db['chat_history']
-meal_plans_collection = db['meal_plans']
-exercises_collection = db['exercises']
-workout_sessions_collection = db['workout_sessions']
+# Supabase Connection
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
