@@ -1280,13 +1280,6 @@ async def login(credentials: UserLogin):
     if not user or not verify_password(credentials.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
-    # Check if email is verified
-    if not user.get("email_verified", False):
-        raise HTTPException(
-            status_code=403, 
-            detail="Please verify your email before logging in. Check your inbox for the verification link."
-        )
-    
     token = create_jwt_token(user["user_id"], user["email"])
     
     return {
