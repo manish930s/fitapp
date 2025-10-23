@@ -1546,10 +1546,7 @@ async def increment_daily_stats(
         # Increment existing value
         current_value = stats.get(field, 0)
         new_value = current_value + amount
-        user_stats_collection.update_one(
-            {"user_id": current_user["user_id"], "date": today},
-            {"$set": {field: new_value, "updated_at": datetime.utcnow().isoformat()}}
-        )
+        supabase.table(\'user_stats\').update({field: new_value, "updated_at": datetime.utcnow().isoformat()}).eq(\'user_id\', current_user["user_id"]).eq(\'date\', today).execute()
     
     return {
         "message": f"{field} updated successfully",
