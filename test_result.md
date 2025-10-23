@@ -294,6 +294,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ TESTED: Login flow working perfectly. Fixed critical CSS syntax error in App.css (orphaned properties). Login form accepts test credentials (test@fitflow.com / Test123!), successfully authenticates, and redirects to dashboard. Dark theme with green accents displaying correctly."
+      - working: "NA"
+        agent: "main"
+        comment: "FEATURE ADDED: Added 'Confirm Password' field to signup/registration form. Changes include: 1) New password confirmation input field with proper styling, 2) Client-side validation to ensure password and confirm password match before submission, 3) Error message displays 'Passwords do not match' if validation fails, 4) Backend integration updated to remove confirmPassword field before sending registration data to API. All fields are required. Form maintains existing dark theme with green accents."
   
   - task: "Workout Tracking UI - Exercise Library & Detail Page"
     implemented: true
