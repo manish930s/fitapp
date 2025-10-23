@@ -1205,6 +1205,34 @@ function App() {
     }
   };
 
+  const handleResendVerification = async () => {
+    if (!verificationEmail) return;
+    
+    setResendingEmail(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/auth/resend-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: verificationEmail })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setSuccess('Verification email sent! Please check your inbox.');
+      } else {
+        setError(data.detail || 'Failed to resend email');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setResendingEmail(false);
+    }
+  };
+
   const openEditProfileModal = () => {
     setEditProfileData({
       name: user?.name || '',
