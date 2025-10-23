@@ -1937,7 +1937,7 @@ async def delete_meal_plan(plan_id: str, current_user: dict = Depends(get_curren
     try:
         result = supabase.table('meal_plans').delete().eq('plan_id', plan_id).eq('user_id', current_user["user_id"]).execute()
         
-        if result.deleted_count == 0:
+        if not result.data:
             raise HTTPException(status_code=404, detail="Meal plan not found")
         
         return {"message": "Meal plan deleted successfully"}
