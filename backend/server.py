@@ -1199,7 +1199,8 @@ async def health_check():
 @app.post("/api/auth/register")
 async def register(user_data: UserRegister):
     # Check if user already exists
-    if users_collection.find_one({"email": user_data.email}):
+    existing = supabase.table('users').select('email').eq('email', user_data.email).execute()
+    if existing.data and len(existing.data) > 0:
         raise HTTPException(status_code=400, detail="Email already registered")
     
     user_id = str(uuid.uuid4())
@@ -1219,7 +1220,7 @@ async def register(user_data: UserRegister):
         "created_at": datetime.utcnow().isoformat()
     }
     
-    users_collection.insert_one(user)
+    supabase.table('users').insert(user).execute()
     
     # Calculate daily calorie requirements if profile is complete
     daily_calories = None
