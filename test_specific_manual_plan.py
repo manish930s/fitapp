@@ -6,7 +6,7 @@ Test the specific manual meal plan data structure from the review request
 import requests
 import json
 
-BASE_URL = "https://signup-confirm-1.preview.emergentagent.com/api"
+BASE_URL = "https://verify-email-signup.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "test@fitflow.com"
 TEST_USER_PASSWORD = "Test123!"
 

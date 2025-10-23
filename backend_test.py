@@ -12,7 +12,7 @@ from datetime import datetime
 import os
 
 # Configuration
-BASE_URL = "https://signup-confirm-1.preview.emergentagent.com/api"
+BASE_URL = "https://verify-email-signup.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "supabasetest@fitflow.com"
 TEST_USER_PASSWORD = "Test123!"
 TEST_USER_NAME = "Supabase Test User"
