@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://supabase-connect-22.preview.emergentagent.com/api"
+BASE_URL = "https://eq-over-match.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "test_empty@fitflow.com"
 TEST_USER_PASSWORD = "Test123!"
 

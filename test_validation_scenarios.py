@@ -6,7 +6,7 @@ Test validation scenarios for manual meal plan creation
 import requests
 import json
 
-BASE_URL = "https://supabase-connect-22.preview.emergentagent.com/api"
+BASE_URL = "https://eq-over-match.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "test@fitflow.com"
 TEST_USER_PASSWORD = "Test123!"
 
