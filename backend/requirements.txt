@@ -88,3 +88,4 @@ distro
 markupsafe
 httpcore
 jiter
+supabase==2.9.1
