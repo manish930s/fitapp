@@ -297,6 +297,12 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "FEATURE ADDED: Added 'Confirm Password' field to signup/registration form. Changes include: 1) New password confirmation input field with proper styling, 2) Client-side validation to ensure password and confirm password match before submission, 3) Error message displays 'Passwords do not match' if validation fails, 4) Backend integration updated to remove confirmPassword field before sending registration data to API. All fields are required. Form maintains existing dark theme with green accents."
+      - working: false
+        agent: "user"
+        comment: "User reported: Network error when trying to sign up."
+      - working: "NA"
+        agent: "main"
+        comment: "FIXED: Network error caused by missing Supabase dependencies (gotrue module). Root cause: Backend server was crashing on startup due to ModuleNotFoundError for 'gotrue'. Installed supabase==2.9.1 and all required dependencies (gotrue, httpx, postgrest, realtime, storage3, supafunc, websockets). Updated requirements.txt. Restarted backend server successfully. Tested registration endpoint via curl - working correctly. Tested complete signup flow with confirm password via UI - user successfully registered and redirected to dashboard. Both password validation and backend integration now fully functional."
   
   - task: "Workout Tracking UI - Exercise Library & Detail Page"
     implemented: true
