@@ -1214,7 +1214,7 @@ async def health_check():
     return {"status": "healthy", "service": "FitFlow API"}
 
 @app.post("/api/auth/register")
-async def register(user_data: UserRegister, background_tasks: BackgroundTasks, request: Request):
+async def register(user_data: UserRegister):
     # Check if user already exists
     existing_user = get_supabase_data(supabase.table('users').select('*').eq('email', user_data.email).execute())
     if existing_user:
@@ -1222,9 +1222,6 @@ async def register(user_data: UserRegister, background_tasks: BackgroundTasks, r
     
     user_id = str(uuid.uuid4())
     hashed_pw = hash_password(user_data.password)
-    
-    # Generate verification token
-    verification_token = generate_verification_token(user_data.email)
     
     user = {
         "user_id": user_id,
@@ -1237,9 +1234,6 @@ async def register(user_data: UserRegister, background_tasks: BackgroundTasks, r
         "weight": user_data.weight,
         "activity_level": user_data.activity_level,
         "goal_weight": user_data.goal_weight,
-        "email_verified": False,
-        "verification_token": verification_token,
-        "token_created_at": datetime.utcnow().isoformat(),
         "created_at": datetime.utcnow().isoformat()
     }
     
@@ -1249,24 +1243,34 @@ async def register(user_data: UserRegister, background_tasks: BackgroundTasks, r
         print(f"Database error: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to create user account")
     
-    # Build verification link
-    # Get base URL from request
-    base_url = str(request.base_url).rstrip('/')
-    verification_link = f"{base_url}/api/auth/verify-email?token={verification_token}"
+    # Generate JWT token for immediate login
+    token = create_jwt_token(user_id, user_data.email)
     
-    # Send verification email in background
-    background_tasks.add_task(
-        email_service.send_verification_email,
-        user_email=user_data.email,
-        verification_link=verification_link,
-        user_name=user_data.name
+    # Calculate daily calorie requirements
+    daily_calories = calculate_daily_calories(
+        user_data.weight, 
+        user_data.height, 
+        user_data.age, 
+        user_data.gender, 
+        user_data.activity_level,
+        user_data.goal_weight
     )
     
     return {
-        "message": "Registration successful! Please check your email to verify your account.",
-        "email": user_data.email,
-        "requires_verification": True,
-        "user_id": user_id
+        "message": "Registration successful!",
+        "token": token,
+        "user": {
+            "user_id": user_id,
+            "name": user_data.name,
+            "email": user_data.email,
+            "age": user_data.age,
+            "gender": user_data.gender,
+            "height": user_data.height,
+            "weight": user_data.weight,
+            "goal_weight": user_data.goal_weight,
+            "activity_level": user_data.activity_level
+        },
+        "daily_calories": daily_calories
     }
 
 @app.post("/api/auth/login")
