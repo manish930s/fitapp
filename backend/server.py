@@ -1379,12 +1379,12 @@ async def scan_food(image: str = Form(...), current_user: dict = Depends(get_cur
         
         # AUTO-TRACK: Update daily calories consumed
         today = datetime.utcnow().date().isoformat()
-        stats = get_supabase_data(supabase.table(\'user_stats\').select(\'*\').eq(\'user_id\', current_user["user_id"]).eq(\'date\', today).execute())
+        stats = get_supabase_data(supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).eq('date', today).execute())
         
         if stats:
             # Increment calories_consumed
             new_calories = stats.get("calories_consumed", 0) + analysis_result["calories"]
-            supabase.table(\'user_stats\').update({"calories_consumed": new_calories, "updated_at": datetime.utcnow().isoformat()}).eq(\'user_id\', current_user["user_id"]).eq(\'date\', today).execute()
+            supabase.table('user_stats').update({"calories_consumed": new_calories, "updated_at": datetime.utcnow().isoformat()}).eq('user_id', current_user["user_id"]).eq('date', today).execute()
         else:
             # Create new stats entry
             supabase.table('user_stats').insert({
@@ -1415,7 +1415,7 @@ async def scan_food(image: str = Form(...), current_user: dict = Depends(get_cur
 
 @app.get("/api/food/history")
 async def get_food_history(limit: int = 20, current_user: dict = Depends(get_current_user)):
-    scans = get_supabase_list(supabase.table(\'food_scans\').select(\'*\').eq(\'user_id\', current_user["user_id"]).order(\'scanned_at\', desc=True).limit(limit).execute())
+    scans = get_supabase_list(supabase.table('food_scans').select('*').eq('user_id', current_user["user_id"]).order('scanned_at', desc=True).limit(limit).execute())
     
     # Format the response
     history = []
@@ -1458,7 +1458,7 @@ async def delete_food_scan(scan_id: str, current_user: dict = Depends(get_curren
     """
     Delete a food scan by scan_id
     """
-    result = supabase.table(\'food_scans\').delete().eq(\'scan_id\', scan_id).eq(\'user_id\', current_user["user_id"]).execute()
+    result = supabase.table('food_scans').delete().eq('scan_id', scan_id).eq('user_id', current_user["user_id"]).execute()
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Food scan not found")
@@ -1489,7 +1489,7 @@ async def update_daily_stats(stats: DailyStats, current_user: dict = Depends(get
 async def get_daily_stats(current_user: dict = Depends(get_current_user)):
     today = datetime.utcnow().date().isoformat()
     
-    stats = get_supabase_data(supabase.table(\'user_stats\').select(\'*\').eq(\'user_id\', current_user["user_id"]).eq(\'date\', today).execute())
+    stats = get_supabase_data(supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).eq('date', today).execute())
     
     if not stats:
         return {
@@ -1526,7 +1526,7 @@ async def increment_daily_stats(
         raise HTTPException(status_code=400, detail=f"Field must be one of: {allowed_fields}")
     
     # Get or create today's stats
-    stats = get_supabase_data(supabase.table(\'user_stats\').select(\'*\').eq(\'user_id\', current_user["user_id"]).eq(\'date\', today).execute())
+    stats = get_supabase_data(supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).eq('date', today).execute())
     
     if not stats:
         # Create new stats entry
@@ -1559,7 +1559,7 @@ async def increment_daily_stats(
 @app.get("/api/stats/streak")
 async def get_streak(current_user: dict = Depends(get_current_user)):
     # Get user's activity history
-    stats = get_supabase_list(supabase.table(\'user_stats\').select(\'*\').eq(\'user_id\', current_user["user_id"]).order(\'date\', desc=True).execute())
+    stats = get_supabase_list(supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).order('date', desc=True).execute())
     
     if not stats:
         return {"streak_days": 0}
@@ -1722,7 +1722,7 @@ async def get_chat_history(limit: int = 20, current_user: dict = Depends(get_cur
 async def generate_meal_plan(plan_request: MealPlanGenerate, current_user: dict = Depends(get_current_user)):
     """Generate AI-powered meal plan"""
     try:
-        user = get_supabase_data(supabase.table(\'users\').select(\'*\').eq(\'user_id\', current_user["user_id"]).execute())
+        user = get_supabase_data(supabase.table('users').select('*').eq('user_id', current_user["user_id"]).execute())
         
         # Calculate calorie target if not provided
         calorie_target = plan_request.calorie_target
@@ -1937,7 +1937,7 @@ async def get_meal_plan(plan_id: str, current_user: dict = Depends(get_current_u
 async def delete_meal_plan(plan_id: str, current_user: dict = Depends(get_current_user)):
     """Delete a meal plan"""
     try:
-        result = supabase.table(\'meal_plans\').delete().eq(\'plan_id\', plan_id).eq(\'user_id\', current_user["user_id"]).execute()
+        result = supabase.table('meal_plans').delete().eq('plan_id', plan_id).eq('user_id', current_user["user_id"]).execute()
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Meal plan not found")
@@ -2026,7 +2026,7 @@ async def get_exercises(
         if category and category.lower() != 'all':
             query["category"] = {"$regex": f"^{category}$", "$options": "i"}
         
-        exercises = get_supabase_list(supabase.table(\'exercises\').select(\'*\').execute())
+        exercises = get_supabase_list(supabase.table('exercises').select('*').execute())
         return {"exercises": exercises}
         
     except HTTPException:
@@ -2043,7 +2043,7 @@ async def get_exercise_detail(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        exercise = get_supabase_data(supabase.table(\'exercises\').select(\'*\').eq(\'exercise_id\', exercise_id).execute())
+        exercise = get_supabase_data(supabase.table('exercises').select('*').eq('exercise_id', exercise_id).execute())
         if not exercise:
             raise HTTPException(status_code=404, detail="Exercise not found")
         
@@ -2119,7 +2119,7 @@ async def create_workout_session(
         # AUTO-TRACK: Update daily active minutes if duration provided
         if duration_minutes > 0:
             today = datetime.utcnow().date().isoformat()
-            stats = get_supabase_data(supabase.table(\'user_stats\').select(\'*\').eq(\'user_id\', current_user["user_id"]).eq(\'date\', today).execute())
+            stats = get_supabase_data(supabase.table('user_stats').select('*').eq('user_id', current_user["user_id"]).eq('date', today).execute())
             
             if stats:
                 # Increment active_minutes
@@ -2209,7 +2209,7 @@ async def delete_workout_session(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        result = supabase.table(\'workout_sessions\').delete().eq(\'session_id\', session_id).eq(\'user_id\', current_user["user_id"]).execute()
+        result = supabase.table('workout_sessions').delete().eq('session_id', session_id).eq('user_id', current_user["user_id"]).execute()
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Session not found")
@@ -2233,7 +2233,7 @@ async def update_workout_session(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Verify session exists and belongs to user
-        existing_session = get_supabase_data(supabase.table(\'workout_sessions\').select(\'*\').eq(\'session_id\', session_id).eq(\'user_id\', current_user["user_id"]).execute())
+        existing_session = get_supabase_data(supabase.table('workout_sessions').select('*').eq('session_id', session_id).eq('user_id', current_user["user_id"]).execute())
         
         if not existing_session:
             raise HTTPException(status_code=404, detail="Session not found")
