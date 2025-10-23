@@ -1214,13 +1214,17 @@ async def health_check():
     return {"status": "healthy", "service": "FitFlow API"}
 
 @app.post("/api/auth/register")
-async def register(user_data: UserRegister):
+async def register(user_data: UserRegister, background_tasks: BackgroundTasks, request: Request):
     # Check if user already exists
-    if get_supabase_data(supabase.table('users').select('*').eq('email', user_data.email).execute()):
+    existing_user = get_supabase_data(supabase.table('users').select('*').eq('email', user_data.email).execute())
+    if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
     user_id = str(uuid.uuid4())
     hashed_pw = hash_password(user_data.password)
+    
+    # Generate verification token
+    verification_token = generate_verification_token(user_data.email)
     
     user = {
         "user_id": user_id,
@@ -1233,30 +1237,36 @@ async def register(user_data: UserRegister):
         "weight": user_data.weight,
         "activity_level": user_data.activity_level,
         "goal_weight": user_data.goal_weight,
+        "email_verified": False,
+        "verification_token": verification_token,
+        "token_created_at": datetime.utcnow().isoformat(),
         "created_at": datetime.utcnow().isoformat()
     }
     
-    supabase.table('users').insert(user).execute()
+    try:
+        supabase.table('users').insert(user).execute()
+    except Exception as e:
+        print(f"Database error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to create user account")
     
-    # Calculate daily calorie requirements if profile is complete
-    daily_calories = None
-    if all([user_data.weight, user_data.height, user_data.age, user_data.gender]):
-        daily_calories = calculate_daily_calories(
-            user_data.weight, user_data.height, user_data.age,
-            user_data.gender, user_data.activity_level, user_data.goal_weight
-        )
+    # Build verification link
+    # Get base URL from request
+    base_url = str(request.base_url).rstrip('/')
+    verification_link = f"{base_url}/api/auth/verify-email?token={verification_token}"
     
-    token = create_jwt_token(user_id, user_data.email)
+    # Send verification email in background
+    background_tasks.add_task(
+        email_service.send_verification_email,
+        user_email=user_data.email,
+        verification_link=verification_link,
+        user_name=user_data.name
+    )
     
     return {
-        "message": "User registered successfully",
-        "token": token,
-        "user": {
-            "user_id": user_id,
-            "name": user_data.name,
-            "email": user_data.email
-        },
-        "daily_calories": daily_calories
+        "message": "Registration successful! Please check your email to verify your account.",
+        "email": user_data.email,
+        "requires_verification": True,
+        "user_id": user_id
     }
 
 @app.post("/api/auth/login")
