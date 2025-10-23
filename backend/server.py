@@ -2209,7 +2209,7 @@ async def delete_workout_session(
         
         result = supabase.table('workout_sessions').delete().eq('session_id', session_id).eq('user_id', current_user["user_id"]).execute()
         
-        if result.deleted_count == 0:
+        if not result.data:
             raise HTTPException(status_code=404, detail="Session not found")
         
         return {"message": "Workout session deleted successfully"}
