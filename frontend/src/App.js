@@ -1463,6 +1463,17 @@ function App() {
             />
           </div>
           
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              placeholder="Confirm your password"
+              value={formData.confirmPassword || ''}
+              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+              required
+            />
+          </div>
+          
           {error && <div className="error-message">{error}</div>}
           
           <button type="submit" className="btn-primary" disabled={loading}>
