@@ -2121,7 +2121,8 @@ async def create_workout_session(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Verify exercise exists
-        exercise = exercises_collection.find_one({"exercise_id": session_data.exercise_id})
+        exercise_result = supabase.table(\'exercises\').select(\'*\').eq(\'exercise_id\', session_data.exercise_id).execute()
+        exercise = exercise_result.data[0] if exercise_result.data else None
         if not exercise:
             raise HTTPException(status_code=404, detail="Exercise not found")
         
@@ -2151,7 +2152,7 @@ async def create_workout_session(
             "completed": True
         }
         
-        workout_sessions_collection.insert_one(session)
+        supabase.table(\'workout_sessions\').insert(session).execute()
         
         # AUTO-TRACK: Update daily active minutes if duration provided
         if duration_minutes > 0:
@@ -2162,9 +2163,7 @@ async def create_workout_session(
             if stats:
                 # Increment active_minutes
                 new_active_minutes = stats.get("active_minutes", 0) + duration_minutes
-                user_stats_collection.update_one(
-                    {"user_id": current_user["user_id"], "date": today},
-                    {"$set": {"active_minutes": new_active_minutes, "updated_at": datetime.utcnow().isoformat()}}
+                supabase.table(\'user_stats\').update({"active_minutes": new_active_minutes, "updated_at": datetime.utcnow().isoformat()}}
                 )
             else:
                 # Create new stats entry
@@ -2208,7 +2207,7 @@ async def get_workout_sessions(
         if exercise_id:
             query["exercise_id"] = exercise_id
         
-        sessions = list(workout_sessions_collection.find(
+        sessions_result_query = supabase.table(\'workout_sessions\').select(\'*\').match(
             query,
             {"_id": 0}
         ).sort("created_at", -1).limit(limit))
@@ -2229,7 +2228,7 @@ async def get_session_detail(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        session = workout_sessions_collection.find_one(
+        session_result_query = supabase.table(\'workout_sessions\').select(\'*\').match(
             {"session_id": session_id, "user_id": current_user["user_id"]},
             {"_id": 0}
         )
@@ -2253,7 +2252,7 @@ async def delete_workout_session(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        result = workout_sessions_collection.delete_one({
+        result = supabase.table(\'workout_sessions\').delete().match({
             "session_id": session_id,
             "user_id": current_user["user_id"]
         })
@@ -2280,7 +2279,7 @@ async def update_workout_session(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Verify session exists and belongs to user
-        existing_session = workout_sessions_collection.find_one({
+        existing_session_result_query = supabase.table(\'workout_sessions\').select(\'*\').match({
             "session_id": session_id,
             "user_id": current_user["user_id"]
         })
@@ -2289,7 +2288,8 @@ async def update_workout_session(
             raise HTTPException(status_code=404, detail="Session not found")
         
         # Verify exercise exists
-        exercise = exercises_collection.find_one({"exercise_id": session_data.exercise_id})
+        exercise_result = supabase.table(\'exercises\').select(\'*\').eq(\'exercise_id\', session_data.exercise_id).execute()
+        exercise = exercise_result.data[0] if exercise_result.data else None
         if not exercise:
             raise HTTPException(status_code=404, detail="Exercise not found")
         
@@ -2316,13 +2316,13 @@ async def update_workout_session(
             "updated_at": datetime.utcnow().isoformat()
         }
         
-        workout_sessions_collection.update_one(
+        supabase.table(\'workout_sessions\').update(
             {"session_id": session_id, "user_id": current_user["user_id"]},
             {"$set": update_data}
         )
         
         # Return updated session
-        updated_session = workout_sessions_collection.find_one(
+        updated_session_result_query = supabase.table(\'workout_sessions\').select(\'*\').match(
             {"session_id": session_id},
             {"_id": 0}
         )
@@ -2344,7 +2344,7 @@ async def get_exercise_history(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        sessions = list(workout_sessions_collection.find(
+        sessions_result_query = supabase.table(\'workout_sessions\').select(\'*\').match(
             {"user_id": current_user["user_id"], "exercise_id": exercise_id},
             {"_id": 0}
         ).sort("created_at", -1).limit(limit))
@@ -2385,7 +2385,7 @@ async def get_exercise_stats(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Get all sessions for this exercise
-        sessions = list(workout_sessions_collection.find(
+        sessions_result_query = supabase.table(\'workout_sessions\').select(\'*\').match(
             {"user_id": current_user["user_id"], "exercise_id": exercise_id},
             {"_id": 0}
         ).sort("created_at", -1))
@@ -2467,7 +2467,7 @@ async def get_workout_dashboard_stats(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Get all user's workout sessions
-        all_sessions = list(workout_sessions_collection.find(
+        all_sessions_result_query = supabase.table(\'workout_sessions\').select(\'*\').match(
             {"user_id": current_user["user_id"]},
             {"_id": 0}
         ))
