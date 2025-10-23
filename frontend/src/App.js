@@ -4944,6 +4944,7 @@ function App() {
   return (
     <div className="App">
       {!token ? (
+        currentPage === 'verify-email' ? renderVerifyEmail() : 
         currentPage === 'login' ? renderLogin() : renderRegister()
       ) : (
         <>
