@@ -1295,6 +1295,375 @@ async def login(credentials: UserLogin):
         }
     }
 
+@app.get("/api/auth/verify-email")
+async def verify_email(token: str):
+    """
+    Verify email address using token from verification link.
+    Redirects to frontend after verification.
+    """
+    # Extract email from token (validates expiry automatically - 24 hours)
+    email = verify_token(token, max_age=86400)  # 86400 seconds = 24 hours
+    
+    if not email:
+        # Return HTML response for expired/invalid token
+        return HTMLResponse(
+            content="""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Verification Failed - Fitsani</title>
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: linear-gradient(135deg, #0a0f1e 0%, #1a1f2e 100%);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        margin: 0;
+                        color: #ffffff;
+                    }
+                    .container {
+                        background: #1a1f2e;
+                        border-radius: 16px;
+                        padding: 40px;
+                        max-width: 500px;
+                        text-align: center;
+                        border: 2px solid #ff5757;
+                        box-shadow: 0 8px 32px rgba(255, 87, 87, 0.2);
+                    }
+                    .icon {
+                        font-size: 64px;
+                        margin-bottom: 20px;
+                    }
+                    h1 {
+                        color: #ff5757;
+                        margin-bottom: 20px;
+                        font-size: 28px;
+                    }
+                    p {
+                        color: #b0b0b0;
+                        line-height: 1.6;
+                        margin-bottom: 30px;
+                        font-size: 16px;
+                    }
+                    .button {
+                        display: inline-block;
+                        background: linear-gradient(135deg, #2dffc4 0%, #00d9a3 100%);
+                        color: #0a0f1e;
+                        padding: 14px 32px;
+                        border-radius: 8px;
+                        text-decoration: none;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    }
+                    .button:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 24px rgba(45, 255, 196, 0.4);
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="icon">❌</div>
+                    <h1>Verification Link Expired</h1>
+                    <p>
+                        This verification link has expired or is invalid. 
+                        Verification links are valid for 24 hours for security reasons.
+                    </p>
+                    <p>
+                        Please log in to your account and request a new verification link.
+                    </p>
+                    <a href="/" class="button">Go to Login</a>
+                </div>
+            </body>
+            </html>
+            """,
+            status_code=400
+        )
+    
+    # Find user by email
+    user = get_supabase_data(supabase.table('users').select('*').eq('email', email).execute())
+    
+    if not user:
+        return HTMLResponse(
+            content="""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>User Not Found - Fitsani</title>
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: linear-gradient(135deg, #0a0f1e 0%, #1a1f2e 100%);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        margin: 0;
+                        color: #ffffff;
+                    }
+                    .container {
+                        background: #1a1f2e;
+                        border-radius: 16px;
+                        padding: 40px;
+                        max-width: 500px;
+                        text-align: center;
+                        border: 2px solid #ff5757;
+                    }
+                    .icon { font-size: 64px; margin-bottom: 20px; }
+                    h1 { color: #ff5757; margin-bottom: 20px; }
+                    p { color: #b0b0b0; line-height: 1.6; }
+                    .button {
+                        display: inline-block;
+                        background: linear-gradient(135deg, #2dffc4 0%, #00d9a3 100%);
+                        color: #0a0f1e;
+                        padding: 14px 32px;
+                        border-radius: 8px;
+                        text-decoration: none;
+                        font-weight: 600;
+                        margin-top: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="icon">⚠️</div>
+                    <h1>User Not Found</h1>
+                    <p>The account associated with this verification link could not be found.</p>
+                    <a href="/" class="button">Go to Home</a>
+                </div>
+            </body>
+            </html>
+            """,
+            status_code=404
+        )
+    
+    # Check if already verified
+    if user.get("email_verified"):
+        return HTMLResponse(
+            content="""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Already Verified - Fitsani</title>
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: linear-gradient(135deg, #0a0f1e 0%, #1a1f2e 100%);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        margin: 0;
+                        color: #ffffff;
+                    }
+                    .container {
+                        background: #1a1f2e;
+                        border-radius: 16px;
+                        padding: 40px;
+                        max-width: 500px;
+                        text-align: center;
+                        border: 2px solid #2dffc4;
+                        box-shadow: 0 8px 32px rgba(45, 255, 196, 0.2);
+                    }
+                    .icon { font-size: 64px; margin-bottom: 20px; }
+                    h1 { color: #2dffc4; margin-bottom: 20px; }
+                    p { color: #b0b0b0; line-height: 1.6; margin-bottom: 30px; }
+                    .button {
+                        display: inline-block;
+                        background: linear-gradient(135deg, #2dffc4 0%, #00d9a3 100%);
+                        color: #0a0f1e;
+                        padding: 14px 32px;
+                        border-radius: 8px;
+                        text-decoration: none;
+                        font-weight: 600;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="icon">✅</div>
+                    <h1>Already Verified</h1>
+                    <p>Your email address has already been verified. You can log in to your account.</p>
+                    <a href="/" class="button">Go to Login</a>
+                </div>
+            </body>
+            </html>
+            """
+        )
+    
+    # Update user as verified
+    try:
+        supabase.table('users').update({
+            "email_verified": True,
+            "verification_token": None  # Clear the token after use
+        }).eq('user_id', user['user_id']).execute()
+        
+        # Return success HTML page
+        return HTMLResponse(
+            content=f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Email Verified - Fitsani</title>
+                <style>
+                    body {{
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: linear-gradient(135deg, #0a0f1e 0%, #1a1f2e 100%);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        margin: 0;
+                        color: #ffffff;
+                    }}
+                    .container {{
+                        background: #1a1f2e;
+                        border-radius: 16px;
+                        padding: 40px;
+                        max-width: 500px;
+                        text-align: center;
+                        border: 2px solid #2dffc4;
+                        box-shadow: 0 8px 32px rgba(45, 255, 196, 0.3);
+                    }}
+                    .icon {{
+                        font-size: 80px;
+                        margin-bottom: 20px;
+                        animation: bounce 1s ease-in-out;
+                    }}
+                    @keyframes bounce {{
+                        0%, 100% {{ transform: translateY(0); }}
+                        50% {{ transform: translateY(-20px); }}
+                    }}
+                    h1 {{
+                        color: #2dffc4;
+                        margin-bottom: 20px;
+                        font-size: 32px;
+                    }}
+                    p {{
+                        color: #b0b0b0;
+                        line-height: 1.6;
+                        margin-bottom: 30px;
+                        font-size: 16px;
+                    }}
+                    .button {{
+                        display: inline-block;
+                        background: linear-gradient(135deg, #2dffc4 0%, #00d9a3 100%);
+                        color: #0a0f1e;
+                        padding: 16px 40px;
+                        border-radius: 8px;
+                        text-decoration: none;
+                        font-weight: 700;
+                        font-size: 16px;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 16px rgba(45, 255, 196, 0.3);
+                    }}
+                    .button:hover {{
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 24px rgba(45, 255, 196, 0.5);
+                    }}
+                    .feature-list {{
+                        background-color: rgba(45, 255, 196, 0.05);
+                        padding: 20px;
+                        border-radius: 8px;
+                        margin: 20px 0;
+                        text-align: left;
+                    }}
+                    .feature-list li {{
+                        margin: 10px 0;
+                        color: #b0b0b0;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="icon">🎉</div>
+                    <h1>Email Verified Successfully!</h1>
+                    <p>
+                        Welcome to Fitsani, {user['name']}! Your email address has been verified successfully.
+                    </p>
+                    <p>
+                        You can now access all features of your Fitsani account:
+                    </p>
+                    <ul class="feature-list">
+                        <li>🍎 <strong>AI Food Scanner</strong> - Track calories instantly</li>
+                        <li>💪 <strong>Workout Tracker</strong> - Log your exercises</li>
+                        <li>🤖 <strong>AI Fitness Coach</strong> - Get personalized advice</li>
+                        <li>📊 <strong>Progress Dashboard</strong> - Monitor your journey</li>
+                        <li>🥗 <strong>AI Meal Planner</strong> - Custom meal plans</li>
+                    </ul>
+                    <a href="/" class="button">Login to Your Account →</a>
+                </div>
+                <script>
+                    // Auto-redirect to login page after 5 seconds
+                    setTimeout(() => {{
+                        window.location.href = '/';
+                    }}, 5000);
+                </script>
+            </body>
+            </html>
+            """
+        )
+        
+    except Exception as e:
+        print(f"Error verifying email: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to verify email")
+
+@app.post("/api/auth/resend-verification")
+async def resend_verification(email: EmailStr, background_tasks: BackgroundTasks, request: Request):
+    """
+    Resend verification email for users who didn't receive it.
+    """
+    # Find user by email
+    user = get_supabase_data(supabase.table('users').select('*').eq('email', email).execute())
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if already verified
+    if user.get("email_verified"):
+        raise HTTPException(status_code=400, detail="Email already verified")
+    
+    # Generate new verification token
+    new_token = generate_verification_token(email)
+    
+    # Update user with new token
+    try:
+        supabase.table('users').update({
+            "verification_token": new_token,
+            "token_created_at": datetime.utcnow().isoformat()
+        }).eq('user_id', user['user_id']).execute()
+    except Exception as e:
+        print(f"Error updating verification token: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to generate new verification link")
+    
+    # Build verification link
+    base_url = str(request.base_url).rstrip('/')
+    verification_link = f"{base_url}/api/auth/verify-email?token={new_token}"
+    
+    # Send verification email in background
+    background_tasks.add_task(
+        email_service.send_verification_email,
+        user_email=email,
+        verification_link=verification_link,
+        user_name=user['name']
+    )
+    
+    return {
+        "message": "Verification email has been resent. Please check your inbox.",
+        "email": email
+    }
+
+
 @app.get("/api/user/profile")
 async def get_profile(current_user: dict = Depends(get_current_user)):
     daily_calories = None
