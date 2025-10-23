@@ -1245,9 +1245,13 @@ async def register(user_data: UserRegister):
 
 @app.post("/api/auth/login")
 async def login(credentials: UserLogin):
-    user = users_collection.find_one({"email": credentials.email})
+    result = supabase.table('users').select('*').eq('email', credentials.email).execute()
     
-    if not user or not verify_password(credentials.password, user["password"]):
+    if not result.data or len(result.data) == 0:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    user = result.data[0]
+    if not verify_password(credentials.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     token = create_jwt_token(user["user_id"], user["email"])
