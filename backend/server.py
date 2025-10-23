@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime, timedelta
-from pymongo import MongoClient
+from supabase import create_client, Client
 import os
 import jwt
 import bcrypt
