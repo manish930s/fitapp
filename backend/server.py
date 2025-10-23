@@ -1590,8 +1590,7 @@ async def create_goal(goal: Goal, current_user: dict = Depends(get_current_user)
         "target_value": goal.target_value,
         "current_progress": goal.current_progress,
         "unit": goal.unit,
-        "created_at": datetime.utcnow().isoformat(),
-        "updated_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat()
     }
     supabase.table('goals').insert(goal_data).execute()
     return {"message": "Goal created successfully", "goal_id": goal_id}
