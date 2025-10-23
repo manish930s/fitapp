@@ -1142,11 +1142,19 @@ function App() {
       const data = await response.json();
       
       if (response.ok) {
-        localStorage.setItem('fitflow_token', data.token);
-        setToken(data.token);
-        setUser(data.user);
-        setDailyCalories(data.daily_calories);
-        setCurrentPage('home');
+        // Check if email verification is required
+        if (data.requires_verification) {
+          setVerificationEmail(data.email);
+          setCurrentPage('verify-email');
+          setSuccess(data.message);
+        } else {
+          // Old flow - direct login (shouldn't happen with new backend)
+          localStorage.setItem('fitflow_token', data.token);
+          setToken(data.token);
+          setUser(data.user);
+          setDailyCalories(data.daily_calories);
+          setCurrentPage('home');
+        }
       } else {
         setError(data.detail || 'Registration failed');
       }
