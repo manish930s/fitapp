@@ -11,6 +11,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [resendingEmail, setResendingEmail] = useState(false);
   
   // Food scanner state
   const [scannerMode, setScannerMode] = useState('upload'); // 'upload' or 'camera'
