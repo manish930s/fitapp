@@ -1432,7 +1432,7 @@ async def get_food_history(limit: int = 20, current_user: dict = Depends(get_cur
 async def get_today_food(current_user: dict = Depends(get_current_user)):
     today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     
-    scans = list(food_scans_collection.find({
+    scans_result_temp = supabase.table(\'food_scans\').select(\'*\').match({
         "user_id": current_user["user_id"],
         "scanned_at": {"$gte": today_start.isoformat()}
     }).sort("scanned_at", -1))
@@ -1540,7 +1540,7 @@ async def increment_daily_stats(
             "updated_at": datetime.utcnow().isoformat()
         }
         stats_data[field] = amount
-        user_stats_collection.insert_one(stats_data)
+        supabase.table(\'user_stats\').insert(stats_data).execute()
         new_value = amount
     else:
         # Increment existing value
@@ -1557,7 +1557,7 @@ async def increment_daily_stats(
 @app.get("/api/stats/streak")
 async def get_streak(current_user: dict = Depends(get_current_user)):
     # Get user's activity history
-    stats = list(user_stats_collection.find(
+    stats_result_temp2 = supabase.table(\'user_stats\').select(\'*\').match(
         {"user_id": current_user["user_id"]}
     ).sort("date", -1))
     
@@ -1598,7 +1598,7 @@ async def create_goal(goal: Goal, current_user: dict = Depends(get_current_user)
 
 @app.get("/api/goals")
 async def get_goals(current_user: dict = Depends(get_current_user)):
-    goals = list(goals_collection.find(
+    goals_result_temp = supabase.table(\'goals\').select(\'*\').match(
         {"user_id": current_user["user_id"]},
         {"_id": 0}
     ))
@@ -1606,7 +1606,7 @@ async def get_goals(current_user: dict = Depends(get_current_user)):
 
 @app.put("/api/goals/{goal_id}")
 async def update_goal(goal_id: str, goal: Goal, current_user: dict = Depends(get_current_user)):
-    result = goals_collection.update_one(
+    result = supabase.table(\'goals\').update(
         {"goal_id": goal_id, "user_id": current_user["user_id"]},
         {"$set": {
             "current_progress": goal.current_progress,
@@ -1635,7 +1635,7 @@ async def add_measurement(measurement: Measurement, current_user: dict = Depends
 
 @app.get("/api/measurements/latest")
 async def get_latest_measurement(current_user: dict = Depends(get_current_user)):
-    measurement = measurements_collection.find_one(
+    measurement_result_temp = supabase.table(\'measurements\').select(\'*\').match(
         {"user_id": current_user["user_id"]},
         {"_id": 0},
         sort=[("date", -1)]
@@ -1646,7 +1646,7 @@ async def get_latest_measurement(current_user: dict = Depends(get_current_user))
 
 @app.get("/api/measurements/history")
 async def get_measurements_history(limit: int = 30, current_user: dict = Depends(get_current_user)):
-    measurements = list(measurements_collection.find(
+    measurements_result_temp = supabase.table(\'measurements\').select(\'*\').match(
         {"user_id": current_user["user_id"]},
         {"_id": 0}
     ).sort("date", -1).limit(limit))
@@ -1707,7 +1707,7 @@ async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depend
         assistant_message = await llm_chat.send_message(user_msg)
         
         # Save chat to history
-        chat_history_collection.insert_one({
+        supabase.table(\'chat_history\').insert({
             "chat_id": str(uuid.uuid4()),
             "user_id": user["user_id"],
             "user_message": chat.message,
@@ -1726,7 +1726,7 @@ async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depend
 @app.get("/api/chat/history")
 async def get_chat_history(limit: int = 20, current_user: dict = Depends(get_current_user)):
     """Get chat history"""
-    chats = list(chat_history_collection.find(
+    chats_result_temp = supabase.table(\'chat_history\').select(\'*\').match(
         {"user_id": current_user["user_id"]},
         {"_id": 0}
     ).sort("timestamp", -1).limit(limit))
@@ -1738,7 +1738,8 @@ async def get_chat_history(limit: int = 20, current_user: dict = Depends(get_cur
 async def generate_meal_plan(plan_request: MealPlanGenerate, current_user: dict = Depends(get_current_user)):
     """Generate AI-powered meal plan"""
     try:
-        user = users_collection.find_one({"user_id": current_user["user_id"]}, {"_id": 0})
+        user_result_temp = supabase.table(\'users\').select(\'*\').eq(\'user_id\', current_user["user_id"]).execute()
+        user = user_result_temp.data[0] if user_result_temp.data else None
         
         # Calculate calorie target if not provided
         calorie_target = plan_request.calorie_target
@@ -1855,7 +1856,7 @@ Make sure the total daily calories are close to {calorie_target} kcal. Return ON
             "days": meal_plan_data["days"]
         }
         
-        meal_plans_collection.insert_one(meal_plan)
+        supabase.table(\'meal_plans\').insert(meal_plan).execute()
         
         return {
             "plan_id": plan_id,
@@ -1896,7 +1897,7 @@ async def create_meal_plan(plan: MealPlanCreate, current_user: dict = Depends(ge
             "days": plan.days
         }
         
-        meal_plans_collection.insert_one(meal_plan)
+        supabase.table(\'meal_plans\').insert(meal_plan).execute()
         
         return {
             "plan_id": plan_id,
@@ -1913,7 +1914,7 @@ async def create_meal_plan(plan: MealPlanCreate, current_user: dict = Depends(ge
 async def get_meal_plans(current_user: dict = Depends(get_current_user)):
     """Get all meal plans for user"""
     try:
-        plans = list(meal_plans_collection.find(
+        plans_result_temp = supabase.table(\'meal_plans\').select(\'*\').match(
             {"user_id": current_user["user_id"]},
             {"_id": 0}
         ).sort("created_at", -1))
@@ -1940,7 +1941,7 @@ async def get_meal_plans(current_user: dict = Depends(get_current_user)):
 async def get_meal_plan(plan_id: str, current_user: dict = Depends(get_current_user)):
     """Get specific meal plan with full details"""
     try:
-        plan = meal_plans_collection.find_one(
+        plan_result_temp = supabase.table(\'meal_plans\').select(\'*\').match(
             {"plan_id": plan_id, "user_id": current_user["user_id"]},
             {"_id": 0}
         )
@@ -1959,7 +1960,7 @@ async def get_meal_plan(plan_id: str, current_user: dict = Depends(get_current_u
 async def delete_meal_plan(plan_id: str, current_user: dict = Depends(get_current_user)):
     """Delete a meal plan"""
     try:
-        result = meal_plans_collection.delete_one({
+        result = supabase.table(\'meal_plans\').delete().match({
             "plan_id": plan_id,
             "user_id": current_user["user_id"]
         })
@@ -1990,7 +1991,7 @@ async def update_meal(
             raise HTTPException(status_code=400, detail=f"Invalid meal category. Must be one of: {', '.join(valid_categories)}")
         
         # Find the meal plan
-        plan = meal_plans_collection.find_one(
+        plan_result_temp = supabase.table(\'meal_plans\').select(\'*\').match(
             {"plan_id": plan_id, "user_id": current_user["user_id"]},
             {"_id": 0}
         )
@@ -2029,7 +2030,7 @@ async def update_meal(
             raise HTTPException(status_code=404, detail=f"Day {day_number} not found in meal plan")
         
         # Update the meal plan in database
-        meal_plans_collection.update_one(
+        supabase.table(\'meal_plans\').update(
             {"plan_id": plan_id, "user_id": current_user["user_id"]},
             {"$set": {"days": plan["days"]}}
         )
@@ -2057,7 +2058,8 @@ async def get_exercises(
         if category and category.lower() != 'all':
             query["category"] = {"$regex": f"^{category}$", "$options": "i"}
         
-        exercises = list(exercises_collection.find(query, {"_id": 0}))
+        exercises_result_temp = supabase.table(\'exercises\').select(\'*\').execute()
+        exercises = [e for e in (exercises_result_temp.data if exercises_result_temp.data else []) if not query or all(e.get(k) == v for k, v in query.items())]
         return {"exercises": exercises}
         
     except HTTPException:
@@ -2074,12 +2076,13 @@ async def get_exercise_detail(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        exercise = exercises_collection.find_one({"exercise_id": exercise_id}, {"_id": 0})
+        exercise_result_temp = supabase.table(\'exercises\').select(\'*\').eq(\'exercise_id\', exercise_id).execute()
+        exercise = exercise_result_temp.data[0] if exercise_result_temp.data else None
         if not exercise:
             raise HTTPException(status_code=404, detail="Exercise not found")
         
         # Get user's last workout for this exercise (auto-suggestion feature)
-        last_session_raw = workout_sessions_collection.find_one(
+        last_session_result = supabase.table(\'workout_sessions\').select(\'*\').match(
             {"user_id": current_user["user_id"], "exercise_id": exercise_id},
             {"_id": 0},
             sort=[("created_at", -1)]
