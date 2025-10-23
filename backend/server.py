@@ -1325,7 +1325,7 @@ async def change_password(password_data: ChangePasswordRequest, current_user: di
     hashed_password = bcrypt.hashpw(password_data.new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     # Update password
-    supabase.table(\'users\').update({"password": hashed_password}).eq(\'user_id\', current_user["user_id"]).execute()
+    supabase.table('users').update({"password": hashed_password}).eq('user_id', current_user["user_id"]).execute()
     
     return {"message": "Password changed successfully"}
 
