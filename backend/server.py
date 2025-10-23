@@ -1601,20 +1601,12 @@ async def create_goal(goal: Goal, current_user: dict = Depends(get_current_user)
 
 @app.get("/api/goals")
 async def get_goals(current_user: dict = Depends(get_current_user)):
-    goals = list(goals_collection.find(
-        {"user_id": current_user["user_id"]},
-        {"_id": 0}
-    ))
+    goals = get_supabase_list(supabase.table('goals').select('*').eq('user_id', current_user['user_id']).execute())
     return {"goals": goals}
 
 @app.put("/api/goals/{goal_id}")
 async def update_goal(goal_id: str, goal: Goal, current_user: dict = Depends(get_current_user)):
-    result = goals_collection.update_one(
-        {"goal_id": goal_id, "user_id": current_user["user_id"]},
-        {"$set": {
-            "current_progress": goal.current_progress,
-            "target_value": goal.target_value,
-            "updated_at": datetime.utcnow().isoformat()
+    result = supabase.table('goals').update({'current_progress': goal_data.current_progress}).eq('goal_id', goal_id).eq('user_id', current_user['user_id']).execute()
         }}
     )
     if result.modified_count == 0:
@@ -1638,10 +1630,8 @@ async def add_measurement(measurement: Measurement, current_user: dict = Depends
 
 @app.get("/api/measurements/latest")
 async def get_latest_measurement(current_user: dict = Depends(get_current_user)):
-    measurement = measurements_collection.find_one(
-        {"user_id": current_user["user_id"]},
-        {"_id": 0},
-        sort=[("date", -1)]
+    measurement_list = get_supabase_list(supabase.table('measurements').select('*').eq('user_id', current_user['user_id']).order('measured_at', desc=True).limit(1).execute())
+    measurement = measurement_list[0] if measurement_list else None
     )
     if not measurement:
         return {"measurement": None}
@@ -1649,10 +1639,7 @@ async def get_latest_measurement(current_user: dict = Depends(get_current_user))
 
 @app.get("/api/measurements/history")
 async def get_measurements_history(limit: int = 30, current_user: dict = Depends(get_current_user)):
-    measurements = list(measurements_collection.find(
-        {"user_id": current_user["user_id"]},
-        {"_id": 0}
-    ).sort("date", -1).limit(limit))
+    measurements = get_supabase_list(supabase.table('measurements').select('*').eq('user_id', current_user['user_id']).order('measured_at', desc=True).execute())
     return {"measurements": measurements}
 
 # AI Fitness Coach Chatbot
@@ -1729,10 +1716,7 @@ async def chat_with_fitness_coach(chat: ChatMessage, current_user: dict = Depend
 @app.get("/api/chat/history")
 async def get_chat_history(limit: int = 20, current_user: dict = Depends(get_current_user)):
     """Get chat history"""
-    chats = list(chat_history_collection.find(
-        {"user_id": current_user["user_id"]},
-        {"_id": 0}
-    ).sort("timestamp", -1).limit(limit))
+    chats = get_supabase_list(supabase.table('chat_history').select('*').eq('user_id', current_user['user_id']).order('created_at', desc=False).execute())
     return {"chats": list(reversed(chats))}
 
 # ===== MEAL PLAN ENDPOINTS =====
@@ -1916,10 +1900,7 @@ async def create_meal_plan(plan: MealPlanCreate, current_user: dict = Depends(ge
 async def get_meal_plans(current_user: dict = Depends(get_current_user)):
     """Get all meal plans for user"""
     try:
-        plans = list(meal_plans_collection.find(
-            {"user_id": current_user["user_id"]},
-            {"_id": 0}
-        ).sort("created_at", -1))
+        plans = get_supabase_list(supabase.table('meal_plans').select('*').eq('user_id', current_user['user_id']).order('created_at', desc=True).execute())
         
         # Return summary info only (without full day details)
         plans_summary = []
@@ -1943,10 +1924,7 @@ async def get_meal_plans(current_user: dict = Depends(get_current_user)):
 async def get_meal_plan(plan_id: str, current_user: dict = Depends(get_current_user)):
     """Get specific meal plan with full details"""
     try:
-        plan = meal_plans_collection.find_one(
-            {"plan_id": plan_id, "user_id": current_user["user_id"]},
-            {"_id": 0}
-        )
+        plan = get_supabase_data(supabase.table('meal_plans').select('*').eq('plan_id', plan_id).eq('user_id', current_user['user_id']).execute())
         
         if not plan:
             raise HTTPException(status_code=404, detail="Meal plan not found")
@@ -1990,10 +1968,7 @@ async def update_meal(
             raise HTTPException(status_code=400, detail=f"Invalid meal category. Must be one of: {', '.join(valid_categories)}")
         
         # Find the meal plan
-        plan = meal_plans_collection.find_one(
-            {"plan_id": plan_id, "user_id": current_user["user_id"]},
-            {"_id": 0}
-        )
+        plan = get_supabase_data(supabase.table('meal_plans').select('*').eq('plan_id', plan_id).eq('user_id', current_user['user_id']).execute())
         
         if not plan:
             raise HTTPException(status_code=404, detail="Meal plan not found")
@@ -2076,10 +2051,8 @@ async def get_exercise_detail(
             raise HTTPException(status_code=404, detail="Exercise not found")
         
         # Get user's last workout for this exercise (auto-suggestion feature)
-        last_session_raw = workout_sessions_collection.find_one(
-            {"user_id": current_user["user_id"], "exercise_id": exercise_id},
-            {"_id": 0},
-            sort=[("created_at", -1)]
+        last_session_list = get_supabase_list(supabase.table('workout_sessions').select('*').eq('user_id', current_user['user_id']).eq('exercise_id', exercise_id).order('created_at', desc=True).limit(1).execute())
+        last_session_raw = last_session_list[0] if last_session_list else None
         )
         
         # Format last_session for auto-suggestion (simplified structure)
@@ -2200,10 +2173,10 @@ async def get_workout_sessions(
         if exercise_id:
             query["exercise_id"] = exercise_id
         
-        sessions = list(workout_sessions_collection.find(
-            query,
-            {"_id": 0}
-        ).sort("created_at", -1).limit(limit))
+        if 'exercise_id' in query:
+            sessions = get_supabase_list(supabase.table('workout_sessions').select('*').eq('user_id', current_user['user_id']).eq('exercise_id', query['exercise_id']).order('created_at', desc=True).execute())
+        else:
+            sessions = get_supabase_list(supabase.table('workout_sessions').select('*').eq('user_id', current_user['user_id']).order('created_at', desc=True).execute())
         
         return {"sessions": sessions, "count": len(sessions)}
         
@@ -2221,10 +2194,7 @@ async def get_session_detail(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        session = workout_sessions_collection.find_one(
-            {"session_id": session_id, "user_id": current_user["user_id"]},
-            {"_id": 0}
-        )
+        session = get_supabase_data(supabase.table('workout_sessions').select('*').eq('session_id', session_id).eq('user_id', current_user['user_id']).execute())
         
         if not session:
             raise HTTPException(status_code=404, detail="Session not found")
@@ -2301,16 +2271,10 @@ async def update_workout_session(
             "updated_at": datetime.utcnow().isoformat()
         }
         
-        workout_sessions_collection.update_one(
-            {"session_id": session_id, "user_id": current_user["user_id"]},
-            {"$set": update_data}
-        )
+        supabase.table('workout_sessions').update(update_data).eq('session_id', session_id).execute()
         
         # Return updated session
-        updated_session = workout_sessions_collection.find_one(
-            {"session_id": session_id},
-            {"_id": 0}
-        )
+        session = get_supabase_data(supabase.table('workout_sessions').select('*').eq('session_id', session_id).eq('user_id', current_user['user_id']).execute())
         
         return updated_session
         
@@ -2329,10 +2293,7 @@ async def get_exercise_history(
     try:
         current_user = decode_jwt_token(credentials.credentials)
         
-        sessions = list(workout_sessions_collection.find(
-            {"user_id": current_user["user_id"], "exercise_id": exercise_id},
-            {"_id": 0}
-        ).sort("created_at", -1).limit(limit))
+        sessions = get_supabase_list(supabase.table('workout_sessions').select('*').eq('user_id', current_user['user_id']).eq('exercise_id', exercise_id).execute())
         
         if not sessions:
             return {"history": [], "count": 0}
@@ -2370,10 +2331,7 @@ async def get_exercise_stats(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Get all sessions for this exercise
-        sessions = list(workout_sessions_collection.find(
-            {"user_id": current_user["user_id"], "exercise_id": exercise_id},
-            {"_id": 0}
-        ).sort("created_at", -1))
+        sessions = get_supabase_list(supabase.table('workout_sessions').select('*').eq('user_id', current_user['user_id']).eq('exercise_id', exercise_id).execute())
         
         if not sessions:
             return {
@@ -2452,10 +2410,7 @@ async def get_workout_dashboard_stats(
         current_user = decode_jwt_token(credentials.credentials)
         
         # Get all user's workout sessions
-        all_sessions = list(workout_sessions_collection.find(
-            {"user_id": current_user["user_id"]},
-            {"_id": 0}
-        ))
+        all_sessions = get_supabase_list(supabase.table('workout_sessions').select('*').eq('user_id', current_user['user_id']).execute())
         
         if not all_sessions:
             return {
